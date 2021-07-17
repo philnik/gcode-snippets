@@ -1,17 +1,37 @@
-
-
-(defconstant *pi* 3.141592953d0)
-(defconstant *2pi* (* 2.0d0 *pi*))
-
-
+(defconstant *pi* 3.141592653589793d0)
+(defconstant *2pi* 6.283185307179586d0)
 (defparameter center '(100.0d0 100.0d0 100.0d0))
-
 (defparameter holes-count 12)
-
 (defparameter bridges-length 4.0) ;; μήκος bridges
 (defparameter Rout 140.00d0) ;;εξωτερικός κύκλος
-
 (defparameter no-bridges 8)
+(defparameter Z0 '(0.0 0.0 0.0))
+(defparameter ZSafe '(0.0 0.0 25.0d0))
+(defparameter Zstart '(0.0 0.0 12.0d0))
+(defparameter R0 100) ;; ακτίνα κύκλου οπών
+(defparameter Rout 150) ;; ακτίνα εξωτερικού κύκλου
+(defparameter Rslot 50) ;; ακτίνα εσωτερικού κύκλου(πατουρα)
+(defparameter Rin 45) ;; ακτίνα εσωτερικού κύκλου
+(defparameter h 5) ;; Υψος πατούρας
+(defparameter f-drill-up 500.00) ;;προωση down
+(defparameter f-drill-down 500.00) ;;προωση up
+(defparameter hole-diameter 10.0) ;;διάμετρος οπών
+(defparameter fcut 1500.0) ;;; προωση κοπής κύκλου
+(defparameter tool-diameter-3175 3.175d0) ;;; διάμετρος εργαλείου κοπής
+(defparameter tool-diameter-8 8d0) ;;; διάμετρος εργαλείου
+(defparameter *stream* *STANDARD-OUTPUT*)
+
+(defun goto (point str)
+  (format str "G0 ~4T X~8,4F ~15T Y~8,4F ~25T Z~8,4F ~35T ~%" (x-of point) (y-of point) (z-of point)))
+
+(defun linear-move (point f str)
+  (format str "G1 ~4T X~8,4F ~15T Y~8,4F ~25T Z~8,4F ~35T F~D ~%" (x-of point) (y-of point) (z-of point) f))
+
+(defun clockwise-move-ij (point i j f str)
+  (format str "G2 ~4T X~8,4F ~15T Y~8,4F ~25T Z~8,4F  I~8,4F ~35T J~8,4F ~45T F~D ~%" (x-of point) (y-of point) (z-of point) i j f))
+
+(defun clockwise-move-R (point r f str)
+  (format str "G2 ~4T X~8,4F ~15T Y~8,4F ~25T Z~8,4F  R~8,4F  F~D ~%" (x-of point) (y-of point) (z-of point) r f))
 
 (defun x-of (point) (nth 0 point))
 (defun y-of (point) (nth 1 point))
@@ -40,7 +60,7 @@
 	 (yi (y-of center))
 	 (zi (z-of center))
 	 )
-    (list (+ xi (* radius (cos angle))) (+ yi (* radius (sin angle))))
+    (list (+ xi (* radius (cos angle))) (+ yi (* radius (sin angle))) zi)
     )
   )
 
@@ -49,7 +69,6 @@
   "deg angle version"
   (polar-to-rect-rad center radius (deg-to-rad angle))
   )
-
 
 (defun test-polar-to-rect ()
 (loop for i in '(0 45 90 135 180 225  270 315 360)
@@ -76,7 +95,7 @@
 	 (-SE- (polar-to-rect-deg point cut-radius 315))
 	 (-E-  (polar-to-rect-deg point cut-radius 0))
 	 )
-    	 
+
 	 (goto (point+ -N- Zsafe) str)
 	 (goto (point+ -N- Zstart) str)
 	 
@@ -86,8 +105,8 @@
 	 (clockwise-move-R (point+ (point* Zstart 0.00) -N-) cut-radius  fcut str)
 	 (clockwise-move-R (point+ (point* Zstart 0.00) -W-) cut-radius  fcut str)
 	 (clockwise-move-R (point+ (point* Zstart 0.00) -S-) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 1.00) -E-) cut-radius  fcut str)
-	 (goto (point+ -E- Zsafe) str)
+	 (clockwise-move-R (point+ (point* Zstart 1.00) -SE-) cut-radius  (* 2 fcut) str)
+	 (goto (point+ -SE- Zsafe) str)
 	 )
   )
 
@@ -108,9 +127,8 @@
 	       )
 	    (list j1 j2 j3)
 	    )
-	  )
-    )
-  )
+	  )))
+
 
 (defun print-bridge-angles (bridge-angle no-bridges)
   (let ((list-angles (bridge-angles bridge-angle no-bridges)))
@@ -137,36 +155,6 @@
 
 
 
-(defparameter Z0 '(0.0 0.0 0.0))
-(defparameter ZSafe '(0.0 0.0 25.0d0))
-(defparameter Zstart '(0.0 0.0 12.0d0))
-
-(defparameter R0 100) ;; ακτίνα κύκλου οπών
-(defparameter Rout 150) ;; ακτίνα εξωτερικού κύκλου
-(defparameter Rslot 50) ;; ακτίνα εσωτερικού κύκλου(πατουρα)
-(defparameter Rin 45) ;; ακτίνα εσωτερικού κύκλου
-(defparameter h 5) ;; Υψος πατούρας
-
-
-
-(defparameter f-drill-up 500.00) ;;προωση down
-(defparameter f-drill-down 500.00) ;;προωση up
-
-(defparameter hole-diameter 10.0) ;;διάμετρος οπών
-
-(defparameter fcut 1500.0) ;;; προωση κοπής κύκλου
-
-(defparameter tool-diameter-3175 3.175d0) ;;; διάμετρος εργαλείου κοπής
-
-(defparameter tool-diameter-8 8d0) ;;; διάμετρος εργαλείου
-
-
-(defparameter *stream* *STANDARD-OUTPUT*)
-
-
-(setq bridges-angle (/ bridges-length Rout))
-
-
 (defun holes-center (center R0 holes-count)
   (loop for i from 0 to (- holes-count 1.0)
 	collect (let* ((angle (* i 2.0d0 (/ 3.141592653 holes-count)))
@@ -176,24 +164,6 @@
 	(list  X Y Z)
 	)))
   
-;(holes-center (list 0 0 0) 10 8)
-
-
-(defparameter current-point '(0.0 0.0 0.0))
-
-(defun goto (point str)
-  (format str "G0 ~4T X~8,4F ~15T Y~8,4F ~25T Z~8,4F ~35T ~%" (x-of point) (y-of point) (z-of point)))
-
-(defun linear-move (point f str)
-  (format str "G1 ~4T X~8,4F ~15T Y~8,4F ~25T Z~8,4F ~35T F~D ~%" (x-of point) (y-of point) (z-of point) f))
-
-(defun clockwise-move-ij (point i j f str)
-  (format str "G2 ~4T X~8,4F ~15T Y~8,4F ~25T Z~8,4F  I~8,4F ~35T J~8,4F ~45T F~D ~%" (x-of point) (y-of point) (z-of point) i j f))
-
-(defun clockwise-move-R (point r f str)
-  (format str "G2 ~4T X~8,4F ~15T Y~8,4F ~25T Z~8,4F  R~8,4F  F~D ~%" (x-of point) (y-of point) (z-of point) r f))
-
-
 (defun helical-drill (point hole-diameter tool-diameter fcut str)
   (let* ((xi (x-of point))
 	 (yi (y-of point))
@@ -280,15 +250,10 @@
 (format t "(drilling D10)~%")
 
 
-(outer-circle (list 100.0 100.0 100.0)  50.0 12.0 *STANDARD-OUTPUT*)
-
-
+;(outer-circle (list 100.0 100.0 100.0)  50.0 12.0 *STANDARD-OUTPUT*)
 					;(drilling-cycle-2 center R0 holes-count *STANDARD-OUTPUT*)
-
-
-
-(outer-circle center  50.0 12.0 500.0 *STANDARD-OUTPUT*)
-(inner-circle center  50.0 12.0 500.0 *STANDARD-OUTPUT*)
+;(outer-circle center  50.0 12.0 500.0 *STANDARD-OUTPUT*)
+;(inner-circle center  50.0 12.0 500.0 *STANDARD-OUTPUT*)
 
 
 
