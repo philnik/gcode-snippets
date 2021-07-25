@@ -71,3 +71,20 @@ Yo(t):=Y(t)+r2*diff(X(t))/D(t);
 
 
 plot2d ([[parametric, X(t), Y(t),[t,0,7],[nticks,100]],[parametric, r1*cos(t), r1*sin(t),[t,0,7]]],[same_xy]);
+
+
+
+v:3500/60.0;
+a:400;
+t:1700.0/60/a,numer;
+v1:a*t;
+s:a*t^2;
+
+
+v:1700.0/60;
+r:2;
+w:v/r;
+ac:v^2/2.0;
+
+t:v/ac;
+s:ac*t^2;
