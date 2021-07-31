@@ -1,3 +1,4 @@
+
 (defconstant *pi* 3.141592653589793d0)
 (defconstant *2pi* 6.283185307179586d0)
 (defparameter center '(100.0d0 100.0d0 100.0d0))
@@ -171,39 +172,43 @@
 
 	 (cut-radius (/ (- hole-diameter tool-diameter)2.0d0))
 
-	 (north (list xi (+ yi cut-radius) zi))
-	 (south (list xi (- yi cut-radius) zi))
-	 (east (list (- xi cut-radius) yi zi))
-	 (west (list (+ xi cut-radius) yi zi))
+	 (-NE- (polar-to-rect-deg point cut-radius 45))
+	 (-N-  (polar-to-rect-deg point cut-radius 90))
+	 (-W-  (polar-to-rect-deg point cut-radius 180))
+	 (-SW- (polar-to-rect-deg point cut-radius 225))
+	 (-S-  (polar-to-rect-deg point cut-radius 270))
+	 (-SE- (polar-to-rect-deg point cut-radius 315))
+	 (-E-  (polar-to-rect-deg point cut-radius 0))
 	 )
+    
 	 
-	 (goto (point+ north Zsafe) str)
-	 (goto (point+ north Zstart) str)
+	 (goto (point+ -N- Zsafe) str)
+	 (goto (point+ -N- Zstart) str)
 	 
-	 (clockwise-move-R (point+ (point* Zstart 0.90) west) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.80) south) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.70) east) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.60) north) cut-radius  fcut str)
+	 (clockwise-move-R (point+ (point* Zstart 0.90) -W-) cut-radius  fcut str)
+	 (clockwise-move-R (point+ (point* Zstart 0.80) -S-) cut-radius  fcut str)
+	 (clockwise-move-R (point+ (point* Zstart 0.70) -E-) cut-radius  fcut str)
+	 (clockwise-move-R (point+ (point* Zstart 0.60) -N-) cut-radius  fcut str)
 
-	 (clockwise-move-R (point+ (point* Zstart 0.50) west) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.40) south) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.30) east) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.20) north) cut-radius  fcut str)
+	 (clockwise-move-R (point+ (point* Zstart 0.50) -W-) cut-radius  fcut str)
+	 (clockwise-move-R (point+ (point* Zstart 0.40) -S-) cut-radius  fcut str)
+	 (clockwise-move-R (point+ (point* Zstart 0.30) -E-) cut-radius  fcut str)
+	 (clockwise-move-R (point+ (point* Zstart 0.20) -N-) cut-radius  fcut str)
 	 
 	 
-	 (clockwise-move-R (point+ (point* Zstart 0.00) west) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.00) south) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.00) east) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.00) north) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.00) west) cut-radius  fcut str)
+	 (clockwise-move-R (point+ (point* Zstart 0.00) -W-) cut-radius  fcut str)
+	 (clockwise-move-R (point+ (point* Zstart 0.00) -S-) cut-radius  fcut str)
+	 (clockwise-move-R (point+ (point* Zstart 0.00) -E-) cut-radius  fcut str)
+	 (clockwise-move-R (point+ (point* Zstart 0.00) -N-) cut-radius  fcut str)
+	 (clockwise-move-R (point+ (point* Zstart 0.00) -W-) cut-radius  fcut str)
 
-	 (clockwise-move-R (point+ (point* Zstart 0.25) south) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.50) east) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.75) north) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 1.00) west) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 1.25) south) cut-radius  fcut str)
-
-	 (goto (point+ north Zsafe) str)
+	 (clockwise-move-R (point+ (point* Zstart 0.25) -S-) cut-radius  fcut str)
+	 (clockwise-move-R (point+ (point* Zstart 0.50) -E-) cut-radius  fcut str)
+	 (clockwise-move-R (point+ (point* Zstart 0.75) -N-) cut-radius  fcut str)
+	 (clockwise-move-R (point+ (point* Zstart 1.00) -W-) cut-radius  fcut str)
+	 (clockwise-move-R (point+ (point* Zstart 1.25) -S-) cut-radius  fcut str)
+	 
+	 (goto (point+ -N- Zsafe) str)
 	 )
   )
 
@@ -257,7 +262,37 @@
 
 
 
-(with-open-file (stream "/home/me/linuxcnc/nc_files/circles.ngc" :direction :output :if-exists :overwrite)
+(defmacro write-code-to-file (code file)
+  `(
+   (with-open-file (stream ,file :direction :output :if-exists :overwrite)
+     (format stream ,code)
+     )
+   )
+  )
+
+(write-code-to-file (helical-program center R0 holes-count) "/home/me/linuxcnc/nc_files/helical.ngc")
+
+(defun helical-program (center R0 holes-count)
+  (with-output-to-string (stream fstr)
+    (drill-cycle center R0 holes-count stream)
+    (format stream "~%")
+    (format stream "M30~%")
+    (format stream "~%")
+    (format stream "%")
+    (format stream "%")
+    )
+  fstr
+  )
+
+ (setq fstr (make-array '(0) :element-type 'base-char
+                             :fill-pointer 0 :adjustable t))
+ (with-output-to-string (s fstr)
+    (format s "here's some output")
+    (input-stream-p s))
+ fstr
+
+   
+   (with-open-file (stream "/home/me/linuxcnc/nc_files/circles.ngc" :direction :output :if-exists :overwrite)
 
   (drill-cycle center R0 holes-count stream)
   (format stream "~%")
@@ -267,8 +302,9 @@
   (format stream "%")
 )
 
-(with-open-file (stream "/home/me/linuxcnc/nc_files/helical-drill.ngc" :direction :output :if-exists :overwrite)
 
+
+(with-open-file (stream "/home/quill/linuxcnc/nc_files/helical-drill.ngc" :direction :output :if-exists :overwrite :if-does-not-exist :create)
   (hellical-drill-cycle center 30.0 3.175 100.0 12.0 500 stream)
   (format stream "~%")
   (format stream "M30~%")
@@ -279,7 +315,7 @@
 
 
 
-(with-open-file (stream "/home/me/linuxcnc/nc_files/outer-circle.ngc" :direction :output :if-exists :overwrite)
+(with-open-file (stream "/home/quill/linuxcnc/nc_files/outer-circle.ngc" :direction :output :if-exists :overwrite)
 
   (outer-circle (list 100.0 100.0 100.0)  50.0 3.0 500.0 stream)
   (format stream "~%")
@@ -290,7 +326,7 @@
 )
 
 
-(with-open-file (stream "/home/me/linuxcnc/nc_files/inner-circle.ngc" :direction :output :if-exists :overwrite)
+(with-open-file (stream "/home/quill/linuxcnc/nc_files/inner-circle.ngc" :direction :output :if-exists :overwrite)
 
   (inner-circle (list 100.0 100.0 100.0)  50.0 3.0 500.0 stream)
   (format stream "~%")
@@ -300,6 +336,9 @@
   (format stream "%")
 )
 
+
+;;check output as a list
+(format t"
 
   
 
