@@ -14,13 +14,24 @@
 (defparameter Rslot 50) ;; ακτίνα εσωτερικού κύκλου(πατουρα)
 (defparameter Rin 45) ;; ακτίνα εσωτερικού κύκλου
 (defparameter h 5) ;; Υψος πατούρας
-(defparameter f-drill-up 500.00) ;;προωση down
-(defparameter f-drill-down 500.00) ;;προωση up
+(defparameter fz+ 500.00) ;;προωση down
+(defparameter fz- 500.00) ;;προωση up
 (defparameter hole-diameter 10.0) ;;διάμετρος οπών
-(defparameter fcut 1500.0) ;;; προωση κοπής κύκλου
+(defparameter fxy 1500.0) ;;; ταχεία πρόωση
+(defparameter frapid 3000.0) ;;; προωση κοπής κύκλου
 (defparameter tool-diameter-3175 3.175d0) ;;; διάμετρος εργαλείου κοπής
 (defparameter tool-diameter-8 8d0) ;;; διάμετρος εργαλείου
 (defparameter *stream* *STANDARD-OUTPUT*)
+(defparameter *pathdir* "/home/quill/linuxcnc/lisp/")
+
+
+
+(defun s+ (s1 s2)
+  (concatenate 'string s1 s2))
+
+(defun x-of (point) (nth 0 point))
+(defun y-of (point) (nth 1 point))
+(defun z-of (point) (nth 2 point))
 
 (defun goto (point str)
   (format str "G0 ~4T X~8,4F ~15T Y~8,4F ~25T Z~8,4F ~35T ~%" (x-of point) (y-of point) (z-of point)))
@@ -28,22 +39,31 @@
 (defun linear-move (point f str)
   (format str "G1 ~4T X~8,4F ~15T Y~8,4F ~25T Z~8,4F ~35T F~D ~%" (x-of point) (y-of point) (z-of point) f))
 
-(defun clockwise-move-ij (point i j f str)
+(defun cw-ij (point i j f str)
   (format str "G2 ~4T X~8,4F ~15T Y~8,4F ~25T Z~8,4F  I~8,4F ~35T J~8,4F ~45T F~D ~%" (x-of point) (y-of point) (z-of point) i j f))
 
-(defun clockwise-move-R (point r f str)
+(defun cw-R (point r f str)
   (format str "G2 ~4T X~8,4F ~15T Y~8,4F ~25T Z~8,4F  R~8,4F  F~D ~%" (x-of point) (y-of point) (z-of point) r f))
 
-(defun x-of (point) (nth 0 point))
-(defun y-of (point) (nth 1 point))
-(defun z-of (point) (nth 2 point))
+(defun ccw-ij (point i j f str)
+  (format str "G3 ~4T X~8,4F ~15T Y~8,4F ~25T Z~8,4F  I~8,4F ~35T J~8,4F ~45T F~D ~%" (x-of point) (y-of point) (z-of point) i j f))
+
+(defun ccw-R (point r   &optional &rest keys &key (f fxy) (str nil))
+  (format str "G3 ~4T X~8,4F ~15T Y~8,4F ~25T Z~8,4F  R~8,4F  F~D ~%" (x-of point) (y-of point) (z-of point) r f))
+
+(setf fxy 1000.0)
+(let ((fxy 100.0))
+  (ccw-R '(0 0 0) 1)
+
+
+
+
 
 (defun point+ (point-1 point-2)
 (mapcar #'+ point-1 point-2))
 
 (defun point* (point sc)
 (mapcar #'* (list sc sc sc) point))
-
 
 (defun rad-to-deg (a)
   (* (/ 180.0 *pi*) a))
@@ -81,9 +101,8 @@
 	   (format t "angle:~2,3F     x:~2,3F          y:~2,3F~%" i xi yi)
 	   ))
 	   )
-	  
 
-(defun cut-circle-radius (point cut-radius fcut str)
+(defun cut-circle-radius (point cut-radius fxy str)
   (let* ((xi (x-of point))
 	 (yi (y-of point))
 	 (zi (z-of point))
@@ -100,19 +119,19 @@
 	 (goto (point+ -N- Zsafe) str)
 	 (goto (point+ -N- Zstart) str)
 	 
-	 (clockwise-move-R (point+ (point* Zstart 0.50) -W-) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.00) -S-) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.00) -E-) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.00) -N-) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.00) -W-) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.00) -S-) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 1.00) -SE-) cut-radius  (* 2 fcut) str)
+	 (cw-R (point+ (point* Zstart 0.50) -W-) cut-radius  fxy str)
+	 (cw-R (point+ (point* Zstart 0.00) -S-) cut-radius  fxy str)
+	 (cw-R (point+ (point* Zstart 0.00) -E-) cut-radius  fxy str)
+	 (cw-R (point+ (point* Zstart 0.00) -N-) cut-radius  fxy str)
+	 (cw-R (point+ (point* Zstart 0.00) -W-) cut-radius  fxy str)
+	 (cw-R (point+ (point* Zstart 0.00) -S-) cut-radius  fxy str)
+	 (cw-R (point+ (point* Zstart 1.00) -SE-) cut-radius  (* 2 fxy) str)
 	 (goto (point+ -SE- Zsafe) str)
 	 )
   )
 
 
-(cut-circle-radius center  50.0 500.0 *STANDARD-OUTPUT*)
+(cut-circle-radius '(0 0 0)  50.0 00.0 *STANDARD-OUTPUT*)
 
 
 
@@ -144,17 +163,13 @@
 ;(bridge-angles (arc-length-to-rad 4.0d0 100.0) 5)
 ;(print-bridge-angles (arc-length-to-rad 4.0d0 100.0) 5)
 
-
-
-(defun outer-circle (point diameter tool-diameter fcut str)
+(defun outer-circle (point diameter tool-diameter fxy str)
   (let 	 ((radius (/ (+ diameter tool-diameter) 2.0d0)))
-    (cut-circle-radius point radius fcut str))) 
+    (cut-circle-radius point radius fxy str))) 
 
-(defun inner-circle (point diameter tool-diameter fcut str)
+(defun inner-circle (point diameter tool-diameter fxy str)
   (let 	 ((radius (/ (- diameter tool-diameter) 2.0d0)))
-    (cut-circle-radius point radius fcut str)))
-
-
+    (cut-circle-radius point radius fxy str)))
 
 (defun holes-center (center R0 holes-count)
   (loop for i from 0 to (- holes-count 1.0)
@@ -165,7 +180,7 @@
 	(list  X Y Z)
 	)))
   
-(defun helical-drill (point hole-diameter tool-diameter fcut str)
+(defun helical-drill (point hole-diameter tool-diameter fxy str)
   (let* ((xi (x-of point))
 	 (yi (y-of point))
 	 (zi (z-of point))
@@ -185,34 +200,34 @@
 	 (goto (point+ -N- Zsafe) str)
 	 (goto (point+ -N- Zstart) str)
 	 
-	 (clockwise-move-R (point+ (point* Zstart 0.90) -W-) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.80) -S-) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.70) -E-) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.60) -N-) cut-radius  fcut str)
+	 (cw-R (point+ (point* Zstart 0.90) -W-) cut-radius  fxy str)
+	 (cw-R (point+ (point* Zstart 0.80) -S-) cut-radius  fxy str)
+	 (cw-R (point+ (point* Zstart 0.70) -E-) cut-radius  fxy str)
+	 (cw-R (point+ (point* Zstart 0.60) -N-) cut-radius  fxy str)
 
-	 (clockwise-move-R (point+ (point* Zstart 0.50) -W-) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.40) -S-) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.30) -E-) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.20) -N-) cut-radius  fcut str)
+	 (cw-R (point+ (point* Zstart 0.50) -W-) cut-radius  fxy str)
+	 (cw-R (point+ (point* Zstart 0.40) -S-) cut-radius  fxy str)
+	 (cw-R (point+ (point* Zstart 0.30) -E-) cut-radius  fxy str)
+	 (cw-R (point+ (point* Zstart 0.20) -N-) cut-radius  fxy str)
 	 	 
-	 (clockwise-move-R (point+ (point* Zstart 0.00) -W-) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.00) -S-) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.00) -E-) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.00) -N-) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.00) -W-) cut-radius  fcut str)
+	 (cw-R (point+ (point* Zstart 0.00) -W-) cut-radius  fxy str)
+	 (cw-R (point+ (point* Zstart 0.00) -S-) cut-radius  fxy str)
+	 (cw-R (point+ (point* Zstart 0.00) -E-) cut-radius  fxy str)
+	 (cw-R (point+ (point* Zstart 0.00) -N-) cut-radius  fxy str)
+	 (cw-R (point+ (point* Zstart 0.00) -W-) cut-radius  fxy str)
 
-	 (clockwise-move-R (point+ (point* Zstart 0.25) -S-) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.50) -E-) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 0.75) -N-) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 1.00) -W-) cut-radius  fcut str)
-	 (clockwise-move-R (point+ (point* Zstart 1.25) -S-) cut-radius  fcut str)
+	 (cw-R (point+ (point* Zstart 0.25) -S-) cut-radius  fxy str)
+	 (cw-R (point+ (point* Zstart 0.50) -E-) cut-radius  fxy str)
+	 (cw-R (point+ (point* Zstart 0.75) -N-) cut-radius  fxy str)
+	 (cw-R (point+ (point* Zstart 1.00) -W-) cut-radius  fxy str)
+	 (cw-R (point+ (point* Zstart 1.25) -S-) cut-radius  fxy str)
 	 
 	 (goto (point+ -N- Zsafe) str)
 	 )
   )
 
 
-(defun hellical-drill-cycle (center hole-diameter tool-diameter R0 holes-count fcut str)
+(defun hellical-drill-cycle (center hole-diameter tool-diameter R0 holes-count fxy str)
   (loop for i in (holes-center center R0 holes-count)
 	do (progn
 	     (let ((nu (point+ i Zsafe))
@@ -220,7 +235,7 @@
 		   (nd (point+ i '(0 0 0.0))))
 		 
 	       (goto nu str)
-	       (helical-drill center hole-diameter tool-diameter fcut str)
+	       (helical-drill center hole-diameter tool-diameter fxy str)
 			   ))
       )
   )
@@ -234,43 +249,37 @@
 		 (nd (point+ i '(0 0 0.0))))
 		 
 	     (goto nu str)
-	     (linear-move nd f-drill-down str)
-	     (linear-move nu f-drill-up str)
-	     (linear-move ns f-drill-up str)
-;;	     (drill-circle ns r1 fcut str)
+	     (linear-move nd fz- str)
+	     (linear-move nu fz+ str)
+	     (linear-move ns fz+ str)
+;;	     (drill-circle ns r1 fxy str)
 			   ))
       )
 )
-
 
 (format t "(circles-8.0)~%")
 (helical-drill center 9.5d0 3.175d0 600 *STANDARD-OUTPUT*)
 
 (hellical-drill-cycle center 10.0 3.175 100.0 8.0 500 *STANDARD-OUTPUT*)
 
-
-
 (format t "(circles-3.175)~%")
 (drill-cycle (list 1000.0 1000.0 100.0)  200.0 12.0 *STANDARD-OUTPUT*)
 (format t "(drilling D10)~%")
-
 
 ;(outer-circle (list 100.0 100.0 100.0)  50.0 12.0 *STANDARD-OUTPUT*)
 					;(drilling-cycle-2 center R0 holes-count *STANDARD-OUTPUT*)
 ;(outer-circle center  50.0 12.0 500.0 *STANDARD-OUTPUT*)
 ;(inner-circle center  50.0 12.0 500.0 *STANDARD-OUTPUT*)
 
+;; ;; (defmacro write-code-to-file (code file)
+;; ;;   `(
+;; ;;    (with-open-file (stream ,file :direction :output :if-exists :overwrite)
+;; ;;      (format stream ,code)
+;; ;;      )
+;; ;;    )
+;; ;;   )
 
-
-(defmacro write-code-to-file (code file)
-  `(
-   (with-open-file (stream ,file :direction :output :if-exists :overwrite)
-     (format stream ,code)
-     )
-   )
-  )
-
-(write-code-to-file (helical-program center R0 holes-count) "/home/me/linuxcnc/nc_files/helical.ngc")
+;; (write-code-to-file (helical-program center R0 holes-count) (s+ *pathdir*  "helical.ngc"))
 
 (defun helical-program (center R0 holes-count)
   (with-output-to-string (stream fstr)
@@ -287,7 +296,9 @@
 
  (setq fstr (make-array '(0) :element-type 'base-char
                              :fill-pointer 0 :adjustable t))
- (with-output-to-string (s fstr)
+
+(setq fstr "")
+(with-output-to-string (s fstr)
     (format s "here's some output")
     (input-stream-p s))
  fstr
@@ -304,7 +315,6 @@
 )
 
 
-
 (with-open-file (stream "/home/quill/linuxcnc/nc_files/helical-drill.ngc" :direction :output :if-exists :overwrite :if-does-not-exist :create)
   (hellical-drill-cycle center 30.0 3.175 100.0 12.0 500 stream)
   (format stream "~%")
@@ -314,10 +324,12 @@
   (format stream "%")
 )
 
-(hellical-drill-cycle center 30.0 3.175 100.0 12.0 500 *STANDARD-OUTPUT*)
 
+;; currently works
+(hellical-drill-cycle '(0 0 0) 10.0 4 100.0 12.0 1700 *STANDARD-OUTPUT*)
+;;;
 
-(with-open-file (stream "/home/quill/linuxcnc/nc_files/outer-circle.ngc" :direction :output :if-exists :overwrite)
+(with-open-file (stream (s+ *pathdir*  "outer-circle.ngc") :direction :output :if-exists :overwrite))
 
   (outer-circle (list 100.0 100.0 100.0)  50.0 3.0 500.0 stream)
   (format stream "~%")
@@ -328,7 +340,7 @@
 )
 
 
-(with-open-file (stream "/home/quill/linuxcnc/nc_files/inner-circle.ngc" :direction :output :if-exists :overwrite)
+(with-open-file (stream  (s+ *pathdir* "inner-circle.ngc") :direction :output :if-exists :overwrite)
 
   (inner-circle (list 100.0 100.0 100.0)  50.0 3.0 500.0 stream)
   (format stream "~%")
