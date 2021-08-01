@@ -194,8 +194,7 @@
 	 (clockwise-move-R (point+ (point* Zstart 0.40) -S-) cut-radius  fcut str)
 	 (clockwise-move-R (point+ (point* Zstart 0.30) -E-) cut-radius  fcut str)
 	 (clockwise-move-R (point+ (point* Zstart 0.20) -N-) cut-radius  fcut str)
-	 
-	 
+	 	 
 	 (clockwise-move-R (point+ (point* Zstart 0.00) -W-) cut-radius  fcut str)
 	 (clockwise-move-R (point+ (point* Zstart 0.00) -S-) cut-radius  fcut str)
 	 (clockwise-move-R (point+ (point* Zstart 0.00) -E-) cut-radius  fcut str)
@@ -211,6 +210,7 @@
 	 (goto (point+ -N- Zsafe) str)
 	 )
   )
+
 
 (defun hellical-drill-cycle (center hole-diameter tool-diameter R0 holes-count fcut str)
   (loop for i in (holes-center center R0 holes-count)
@@ -284,6 +284,7 @@
   fstr
   )
 
+
  (setq fstr (make-array '(0) :element-type 'base-char
                              :fill-pointer 0 :adjustable t))
  (with-output-to-string (s fstr)
@@ -292,7 +293,7 @@
  fstr
 
    
-   (with-open-file (stream "/home/me/linuxcnc/nc_files/circles.ngc" :direction :output :if-exists :overwrite)
+   (with-open-file (stream "/home/quill/linuxcnc/nc_files/circles.ngc" :direction :output :if-exists :overwrite)
 
   (drill-cycle center R0 holes-count stream)
   (format stream "~%")
@@ -313,6 +314,7 @@
   (format stream "%")
 )
 
+(hellical-drill-cycle center 30.0 3.175 100.0 12.0 500 *STANDARD-OUTPUT*)
 
 
 (with-open-file (stream "/home/quill/linuxcnc/nc_files/outer-circle.ngc" :direction :output :if-exists :overwrite)
@@ -338,7 +340,16 @@
 
 
 ;;check output as a list
-(format t"
+
+(defmacro c (center radius)
+  `(list 'command "circle" ,center "r" ,radius)
+  )
+
+(c '(list 0 0) 1)
+
+(format t "~S~%" '(command "circle" (list 0 0) "R" 3))
+
+(format t "~S~%" (c '(list 0 0) 1))
 
   
 
