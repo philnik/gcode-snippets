@@ -42,22 +42,30 @@
 (defun cw-ij (point i j f str)
   (format str "G2 ~4T X~8,4F ~15T Y~8,4F ~25T Z~8,4F  I~8,4F ~35T J~8,4F ~45T F~D ~%" (x-of point) (y-of point) (z-of point) i j f))
 
-(defun cw-R (point r f str)
+(defun clockwise-R (point r f str)
   (format str "G2 ~4T X~8,4F ~15T Y~8,4F ~25T Z~8,4F  R~8,4F  F~D ~%" (x-of point) (y-of point) (z-of point) r f))
 
-(defun ccw-ij (point i j f str)
-  (format str "G3 ~4T X~8,4F ~15T Y~8,4F ~25T Z~8,4F  I~8,4F ~35T J~8,4F ~45T F~D ~%" (x-of point) (y-of point) (z-of point) i j f))
+(defun cw-R (point r  &optional &rest keys &key (f fxy) (str nil))
+  (if (= r 0.0)
+      (format t "ERROR: G2/G3 R=0")
+      (format str "G2 ~4T X~8,4F ~15T Y~8,4F ~25T Z~8,4F  R~8,4F  F~D ~%" (x-of point) (y-of point) (z-of point) r f)))
 
 (defun ccw-R (point r   &optional &rest keys &key (f fxy) (str nil))
   (format str "G3 ~4T X~8,4F ~15T Y~8,4F ~25T Z~8,4F  R~8,4F  F~D ~%" (x-of point) (y-of point) (z-of point) r f))
 
+
+(defun ccw-ij (point &optional &rest keys &key (i 0.0) (j 0.0) (f fxy) (str nil))
+  (if (and (= i 0.0) (= j 0.0))
+      (format t "G2/G3 error: i=0 & j=0~%")
+      (format str "G3 ~4T X~8,4F ~15T Y~8,4F ~25T Z~8,4F  I~8,4F ~35T J~8,4F ~45T F~D ~%" (x-of point) (y-of point) (z-of point) i j f))
+  )
+
+;(ccw-ij '(0 0.0 0.0))
+
+
 (setf fxy 1000.0)
 (let ((fxy 100.0))
   (ccw-R '(0 0 0) 1)
-
-
-
-
 
 (defun point+ (point-1 point-2)
 (mapcar #'+ point-1 point-2))
@@ -119,21 +127,46 @@
 	 (goto (point+ -N- Zsafe) str)
 	 (goto (point+ -N- Zstart) str)
 	 
-	 (cw-R (point+ (point* Zstart 0.50) -W-) cut-radius  fxy str)
-	 (cw-R (point+ (point* Zstart 0.00) -S-) cut-radius  fxy str)
-	 (cw-R (point+ (point* Zstart 0.00) -E-) cut-radius  fxy str)
-	 (cw-R (point+ (point* Zstart 0.00) -N-) cut-radius  fxy str)
-	 (cw-R (point+ (point* Zstart 0.00) -W-) cut-radius  fxy str)
-	 (cw-R (point+ (point* Zstart 0.00) -S-) cut-radius  fxy str)
-	 (cw-R (point+ (point* Zstart 1.00) -SE-) cut-radius  (* 2 fxy) str)
+	 (clockwise-R (point+ (point* Zstart 0.50) -W-) cut-radius  fxy str)
+	 (clockwise-R (point+ (point* Zstart 0.00) -S-) cut-radius  fxy str)
+	 (clockwise-R (point+ (point* Zstart 0.00) -E-) cut-radius  fxy str)
+	 (clockwise-R (point+ (point* Zstart 0.00) -N-) cut-radius  fxy str)
+	 (clockwise-R (point+ (point* Zstart 0.00) -W-) cut-radius  fxy str)
+	 (clockwise-R (point+ (point* Zstart 0.00) -S-) cut-radius  fxy str)
+	 (clockwise-R (point+ (point* Zstart 1.00) -SE-) cut-radius  (* 2 fxy) str)
 	 (goto (point+ -SE- Zsafe) str)
 	 )
   )
 
+  (defparameter *cw* 0)
+  (defparameter *ccw* 1)
+  (cw-R '(0 0 0) 1.0)
+  (ccw-R '(0 0 0) 1.0)
+  (cut-circle '(0 0 0)  100.0 :f 1300 :overcut -4 :direction :cw :start-angle 0)
+  (cut-circle '(0 0 0)  100.0 :overcut -4 :direction :ccw :start-angle 0)
 
-(cut-circle-radius '(0 0 0)  50.0 00.0 *STANDARD-OUTPUT*)
-
-
+(equal 0 1)
+  
+  
+(defun cut-circle (center radius &optional &rest keys &key (f fxy) (start-angle 0.0) (overcut 0.0) (direction :cw))
+  (let* ((xi (x-of center))
+	 (yi (y-of center))
+	 (zi (z-of center))
+	 (start-point (polar-to-rect-deg center radius start-angle)))
+    (progn
+      (case direction
+	(:cw (setf end-point (polar-to-rect-deg center radius (+ start-angle overcut))))
+	(:ccw (setf end-point (polar-to-rect-deg center radius (- start-angle overcut)))))
+      (concatenate 'string
+		 (goto (point+ start-point  Zsafe) nil)
+		 (goto (point+ start-point Zstart) nil)
+		 (linear-move  start-point fz- nil)
+		 (case direction 
+		     (:cw (cw-R end-point radius :f f))
+		     (:ccw (ccw-R end-point radius :f f)))
+		 (linear-move (point+ end-point Zstart) fz+  nil)
+		 (goto (point+ end-point Zsafe) nil)
+		 ))))
 
 (defun bridge-angles (bridge-angle no-bridges)
   (let ((step-angle (- (/ *2pi* no-bridges) bridge-angle)))
@@ -148,7 +181,6 @@
 	    (list j1 j2 j3)
 	    )
 	  )))
-
 
 (defun print-bridge-angles (bridge-angle no-bridges)
   (let ((list-angles (bridge-angles bridge-angle no-bridges)))
@@ -200,27 +232,27 @@
 	 (goto (point+ -N- Zsafe) str)
 	 (goto (point+ -N- Zstart) str)
 	 
-	 (cw-R (point+ (point* Zstart 0.90) -W-) cut-radius  fxy str)
-	 (cw-R (point+ (point* Zstart 0.80) -S-) cut-radius  fxy str)
-	 (cw-R (point+ (point* Zstart 0.70) -E-) cut-radius  fxy str)
-	 (cw-R (point+ (point* Zstart 0.60) -N-) cut-radius  fxy str)
+	 (clockwise-R (point+ (point* Zstart 0.90) -W-) cut-radius  fxy str)
+	 (clockwise-R (point+ (point* Zstart 0.80) -S-) cut-radius  fxy str)
+	 (clockwise-R (point+ (point* Zstart 0.70) -E-) cut-radius  fxy str)
+	 (clockwise-R (point+ (point* Zstart 0.60) -N-) cut-radius  fxy str)
 
-	 (cw-R (point+ (point* Zstart 0.50) -W-) cut-radius  fxy str)
-	 (cw-R (point+ (point* Zstart 0.40) -S-) cut-radius  fxy str)
-	 (cw-R (point+ (point* Zstart 0.30) -E-) cut-radius  fxy str)
-	 (cw-R (point+ (point* Zstart 0.20) -N-) cut-radius  fxy str)
+	 (clockwise-R (point+ (point* Zstart 0.50) -W-) cut-radius  fxy str)
+	 (clockwise-R (point+ (point* Zstart 0.40) -S-) cut-radius  fxy str)
+	 (clockwise-R (point+ (point* Zstart 0.30) -E-) cut-radius  fxy str)
+	 (clockwise-R (point+ (point* Zstart 0.20) -N-) cut-radius  fxy str)
 	 	 
-	 (cw-R (point+ (point* Zstart 0.00) -W-) cut-radius  fxy str)
-	 (cw-R (point+ (point* Zstart 0.00) -S-) cut-radius  fxy str)
-	 (cw-R (point+ (point* Zstart 0.00) -E-) cut-radius  fxy str)
-	 (cw-R (point+ (point* Zstart 0.00) -N-) cut-radius  fxy str)
-	 (cw-R (point+ (point* Zstart 0.00) -W-) cut-radius  fxy str)
+	 (clockwise-R (point+ (point* Zstart 0.00) -W-) cut-radius  fxy str)
+	 (clockwise-R (point+ (point* Zstart 0.00) -S-) cut-radius  fxy str)
+	 (clockwise-R (point+ (point* Zstart 0.00) -E-) cut-radius  fxy str)
+	 (clockwise-R (point+ (point* Zstart 0.00) -N-) cut-radius  fxy str)
+	 (clockwise-R (point+ (point* Zstart 0.00) -W-) cut-radius  fxy str)
 
-	 (cw-R (point+ (point* Zstart 0.25) -S-) cut-radius  fxy str)
-	 (cw-R (point+ (point* Zstart 0.50) -E-) cut-radius  fxy str)
-	 (cw-R (point+ (point* Zstart 0.75) -N-) cut-radius  fxy str)
-	 (cw-R (point+ (point* Zstart 1.00) -W-) cut-radius  fxy str)
-	 (cw-R (point+ (point* Zstart 1.25) -S-) cut-radius  fxy str)
+	 (clockwise-R (point+ (point* Zstart 0.25) -S-) cut-radius  fxy str)
+	 (clockwise-R (point+ (point* Zstart 0.50) -E-) cut-radius  fxy str)
+	 (clockwise-R (point+ (point* Zstart 0.75) -N-) cut-radius  fxy str)
+	 (clockwise-R (point+ (point* Zstart 1.00) -W-) cut-radius  fxy str)
+	 (clockwise-R (point+ (point* Zstart 1.25) -S-) cut-radius  fxy str)
 	 
 	 (goto (point+ -N- Zsafe) str)
 	 )
