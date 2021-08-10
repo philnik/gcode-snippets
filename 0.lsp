@@ -24,8 +24,6 @@
 (defparameter *stream* *STANDARD-OUTPUT*)
 (defparameter *pathdir* "/home/quill/linuxcnc/lisp/")
 
-
-
 (defun s+ (s1 s2)
   (concatenate 'string s1 s2))
 
@@ -61,7 +59,6 @@
   )
 
 ;(ccw-ij '(0 0.0 0.0))
-
 
 (setf fxy 1000.0)
 (let ((fxy 100.0))
@@ -138,16 +135,6 @@
 	 )
   )
 
-  (defparameter *cw* 0)
-  (defparameter *ccw* 1)
-  (cw-R '(0 0 0) 1.0)
-  (ccw-R '(0 0 0) 1.0)
-  (cut-circle '(0 0 0)  100.0 :f 1300 :overcut -4 :direction :cw :start-angle 0)
-  (cut-circle '(0 0 0)  100.0 :overcut -4 :direction :ccw :start-angle 0)
-
-(equal 0 1)
-  
-  
 (defun cut-circle (center radius &optional &rest keys &key (f fxy) (start-angle 0.0) (overcut 0.0) (direction :cw))
   (let* ((xi (x-of center))
 	 (yi (y-of center))
@@ -167,6 +154,25 @@
 		 (linear-move (point+ end-point Zstart) fz+  nil)
 		 (goto (point+ end-point Zsafe) nil)
 		 ))))
+
+(defun cut-outside-circle (center r tdia &optional &rest keys &key (f fxy) (start-angle 0.0) (overcut 0.0) (direction :cw))
+  "outside circle conventional is clockwise"
+  (let ((radius (+ r (* tdia 0.5))))
+    (cut-circle center radius :f f :start-angle start-angle :overcut overcut :direction :cw)
+    ))
+
+(defun cut-inside-circle (center r tdia &optional &rest keys &key (f fxy) (start-angle 0.0) (overcut 0.0) (direction :ccw))
+  "outside circle conventional is clockwise"
+  (let ((radius (- r (* tdia 0.5))))
+    (cut-circle center radius :f f :start-angle start-angle :overcut overcut :direction direction)
+    ))
+
+(cw-R '(0 0 0) 1.0)
+(ccw-R '(0 0 0) 1.0)
+(cut-circle '(0 0 0)  100.0 :f 1300 :overcut -4 :direction :cw :start-angle 0)
+(cut-circle '(0 0 0)  100.0 :overcut -4 :direction :ccw :start-angle 0)
+(cut-inside-circle '(0 0 0)  100.0 3 :f 1300 :overcut -4 :direction :cw :start-angle 0)
+  
 
 (defun bridge-angles (bridge-angle no-bridges)
   (let ((step-angle (- (/ *2pi* no-bridges) bridge-angle)))
@@ -228,7 +234,6 @@
 	 (-E-  (polar-to-rect-deg point cut-radius 0))
 	 )
     
-	 
 	 (goto (point+ -N- Zsafe) str)
 	 (goto (point+ -N- Zstart) str)
 	 
@@ -325,7 +330,6 @@
   fstr
   )
 
-
  (setq fstr (make-array '(0) :element-type 'base-char
                              :fill-pointer 0 :adjustable t))
 
@@ -335,7 +339,6 @@
     (input-stream-p s))
  fstr
 
-   
    (with-open-file (stream "/home/quill/linuxcnc/nc_files/circles.ngc" :direction :output :if-exists :overwrite)
 
   (drill-cycle center R0 holes-count stream)
@@ -356,7 +359,6 @@
   (format stream "%")
 )
 
-
 ;; currently works
 (hellical-drill-cycle '(0 0 0) 10.0 4 100.0 12.0 1700 *STANDARD-OUTPUT*)
 ;;;
@@ -370,7 +372,6 @@
   (format stream "%")
   (format stream "%")
 )
-
 
 (with-open-file (stream  (s+ *pathdir* "inner-circle.ngc") :direction :output :if-exists :overwrite)
 
