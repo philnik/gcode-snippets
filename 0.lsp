@@ -263,8 +263,7 @@
 	 )
   )
 
-
-(defun hellical-drill-cycle (center hole-diameter tool-diameter R0 holes-count fxy str)
+  (defun hellical-drill-cycle (center hole-diameter tool-diameter R0 holes-count fxy str)
   (loop for i in (holes-center center R0 holes-count)
 	do (progn
 	     (let ((nu (point+ i Zsafe))
