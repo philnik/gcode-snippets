@@ -24,6 +24,23 @@
 
 * math-functions
 
+#+name: math-functions
+#+BEGIN_SRC lisp :noweb yes :tangle step.lisp
+(defconstant *pi* 3.141592653589793d0)
+(defconstant *2pi* 6.283185307179586d0)
+
+(defun rad-to-deg (a)
+  (* (/ 180.0d0 *pi*) a))
+
+(defun deg-to-rad (a)
+  (/ a (/ 180.0d0 *pi*)))
+
+#+END_SRC
+
+#+RESULTS:
+: DEG-TO-RAD
+
+
 * point-functions
 
 #+BEGIN_SRC lisp :noweb yes :tangle step.lisp
@@ -246,9 +263,23 @@ G0   X   2.000   Y   2.000   Z  12.000
 #+end_example
 
 
-* array
+* divide circle
 
-
+#+name: divide-circle
+#+BEGIN_SRC lisp :results value :noweb yes :tangle yes
+(defun holes-center (flange)
+  (let ((center (cut-data-center flange))
+	(R0 (cut-data-R0 flange))
+	(holes-count (cut-data-holes-count flange))
+	)
+  (loop for i from 0 to (- holes-count 1.0)
+	collect (let* ((angle (* i 2.0d0 (/ *pi* holes-count)))
+		      (X (+ (x-of center) (* R0 (cos angle))))
+		      (Y (+ (y-of center) (* R0 (sin angle))))
+		      (Z (z-of center)))
+	(list  X Y Z)
+		  ))))
+#+END_SRC
 
 
 
