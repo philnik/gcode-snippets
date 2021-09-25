@@ -1,0 +1,259 @@
+# -*- mode:org; epa-file-encrypt-to: ("f.nikolakopoulos@gmail.com") -*-
+#+STARTUP: indent
+#+STARTUP: hidestars
+#+OPTIONS: html-link-use-abs-url:nil html-postamble:auto html-preamble:t html-scripts:t
+#+OPTIONS: html-style:t html5-fancy:t tex:t
+#+CREATOR: <a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.4.50.1 (<a href="http://orgmode.org">Org</a> mode 8.2.6)
+#+HTML_CONTAINER: div
+#+HTML_DOCTYPE: xhtml-strict
+#+HTML_HEAD:
+#+HTML_HEAD_EXTRA:
+#+HTML_LINK_HOME:
+#+HTML_LINK_UP:
+#+HTML_MATHJAX:
+#+INFOJS_OPT:
+#+LATEX_HEADER:
+#+LATEX_CLASS: article
+#+LATEX_CLASS_OPTIONS: [a4paper]
+#+LATEX_HEADER: \usepackage[cm-default]{fontspec}                                         
+#+LATEX_HEADER: \usepackage{xunicode}                                                     
+#+LATEX_HEADER: \usepackage{xltxtra}                                                      
+#+LATEX_HEADER: \usepackage{xgreek}                                                                                 
+#+LATEX_HEADER: \setmainfont[Mapping=tex-text]{Times New Roman}
+#+SETUPFILE:   /home/quill/public_html/org-html-themes/org/theme-readtheorg-local.setup
+
+* math-functions
+
+* point-functions
+
+#+BEGIN_SRC lisp :noweb yes :tangle step.lisp
+    (defun x-of (point) (nth 0 point))
+    (defun y-of (point) (nth 1 point))
+    (defun z-of (point) (nth 2 point))
+
+  (defun add-vector-point (point-1 point-2)
+    (mapcar #'+ point-1 point-2))
+
+#+END_SRC
+
+#+RESULTS:
+: ADD-VECTOR-POINT
+
+
+* move-functions
+
+#+NAME: move-functions
+#+BEGIN_SRC lisp :noweb yes :tangle yes :results output
+
+(defun goto (point str)
+  (format str "G0 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F ~35T ~%" (x-of point) (y-of point) (z-of point)))
+
+(defun linear-move (point f str)
+  (format str "G1 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F ~35T F~D ~%" (x-of point) (y-of point) (z-of point) f))
+
+(defun clockwise-move-ij (point i j f str)
+  (format str "G2 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F  I~8,3F ~35T J~8,3F ~45T F~D ~%" (x-of point) (y-of point) (z-of point) i j f))
+
+(defun clockwise-move-R (point r f str)
+  (format str "G2 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F  R~8,3F  F~D ~%" (x-of point) (y-of point) (z-of point) r f))
+
+#+END_SRC
+
+
+* Step function
+
+  not used it is better to choose the points on an array
+#+NAME: step-function
+#+BEGIN_SRC lisp :tangle step.lisp :noweb yes
+  (defun step-over (z0 z1 step)
+    (let* ((dz (- z1 z0))
+	   (no-steps(+ 0 (floor (/ dz step))))
+	   (result '())
+	   )
+      (push z1 result)
+      (dotimes (n no-steps)
+	(push (- (car result) step) result)
+	)
+      (if (/= z0 (car result))
+	  (push z0 result))
+      result)
+    )
+#+END_SRC
+
+#+RESULTS: step-function
+: STEP-OVER
+
+#+NAME: test-step-function
+#+BEGIN_SRC lisp :results output
+  (format t "~a~%"  (step-over 10.0 1.0 -1.5))
+  (format t "~a~%"  (step-over 1.0 10.0  1.5))
+#+END_SRC
+
+#+RESULTS: test-step-function
+: (10.0 8.5 7.0 5.5 4.0 2.5 1.0)
+: (1.0 2.5 4.0 5.5 7.0 8.5 10.0)
+
+
+
+* helical-drill
+
+** define helica-drill function
+  
+#+NAME: helical-drill-at-point
+#+BEGIN_SRC lisp :tangle yes :results output
+
+  (defun helical-drill (point z-list radius f- f+ output-stream)
+    (let ((xi (x-of point))
+	  (yi (y-of point))
+	  (zstart (car z-list))
+	  (zend (car (last z-list))))
+
+      (format output-stream "~%(helical drilling point:~a)~%" point)
+      (goto (list xi yi zstart) output-stream)
+
+      (loop while z-list
+	    do (progn
+		 (clockwise-move-R (list (- xi radius ) yi (pop z-list) ) radius f- output-stream)
+		 (if z-list
+		     (clockwise-move-R (list (+ xi radius ) yi (pop z-list) ) radius f- output-stream)
+		     )))
+
+      (goto (list xi yi zend) output-stream)
+      )
+    )    
+
+#+END_SRC
+
+#+RESULTS: helical-drill-at-point
+
+
+** test helical function
+
+#+name: helical-drill-test
+#+BEGIN_SRC lisp :results output
+  (setq z-list '(10.0 9.0 7.5 5.0 3.0 2.0 1.0 0.0 0.0 1.5 2.5 5.0 7.5 10.0 12.0))
+  (setq radius 10.0) 
+  (setq f- 600.0)
+  (setq point '(0.0d0 0.0d0 0.0d0))
+  (setq output-stream *STANDARD-OUTPUT*)
+  (helical-drill point z-list radius f- f+ *STANDARD-OUTPUT*)
+  (helical-drill point z-list 2.0 f- f+ *STANDARD-OUTPUT*)
+
+#+END_SRC
+
+* helical drill array
+
+** define drill array
+
+#+name: helical-drill-array
+#+BEGIN_SRC lisp :results output :noweb yes :tangle yes
+  (defun helical-drill-array (point-array z-list radius f- f+ output-stream)
+    (loop for point in point-array
+          do (helical-drill point z-list radius f- f+ output-stream)
+          ))
+#+END_SRC
+
+
+** test drill array
+
+We take the values from the following table:
+#+tblname: my-table
+|   x |   y |
+|-----+-----|
+| 0.0 | 2.0 |
+| 1.0 | 3.0 |
+| 100 | 200 |
+|   1 |  10 |
+|   2 |   2 |
+
+#+name: test-drill-array
+#+BEGIN_SRC lisp :results output :var point-array=my-table
+    (setq z-list '(10.0 7.5 5.0 2.0  0.0 0.0  2.5  7.5  12.0))
+    (setq radius 10.0) 
+    (setq f- 600.0)
+    (setq output-stream *STANDARD-OUTPUT*)
+
+    (helical-drill-array point-array z-list radius f- f+ output-stream)
+#+END_SRC
+
+#+RESULTS: test-drill-array
+#+begin_example
+
+(helical drilling point:(0.0 2.0))
+G0   X   0.000   Y   2.000   Z  10.000   
+G2   X -10.000   Y   2.000   Z  10.000  R  10.000  F600.0 
+G2   X  10.000   Y   2.000   Z   7.500  R  10.000  F600.0 
+G2   X -10.000   Y   2.000   Z   5.000  R  10.000  F600.0 
+G2   X  10.000   Y   2.000   Z   2.000  R  10.000  F600.0 
+G2   X -10.000   Y   2.000   Z   0.000  R  10.000  F600.0 
+G2   X  10.000   Y   2.000   Z   0.000  R  10.000  F600.0 
+G2   X -10.000   Y   2.000   Z   2.500  R  10.000  F600.0 
+G2   X  10.000   Y   2.000   Z   7.500  R  10.000  F600.0 
+G2   X -10.000   Y   2.000   Z  12.000  R  10.000  F600.0 
+G0   X   0.000   Y   2.000   Z  12.000   
+
+(helical drilling point:(1.0 3.0))
+G0   X   1.000   Y   3.000   Z  10.000   
+G2   X  -9.000   Y   3.000   Z  10.000  R  10.000  F600.0 
+G2   X  11.000   Y   3.000   Z   7.500  R  10.000  F600.0 
+G2   X  -9.000   Y   3.000   Z   5.000  R  10.000  F600.0 
+G2   X  11.000   Y   3.000   Z   2.000  R  10.000  F600.0 
+G2   X  -9.000   Y   3.000   Z   0.000  R  10.000  F600.0 
+G2   X  11.000   Y   3.000   Z   0.000  R  10.000  F600.0 
+G2   X  -9.000   Y   3.000   Z   2.500  R  10.000  F600.0 
+G2   X  11.000   Y   3.000   Z   7.500  R  10.000  F600.0 
+G2   X  -9.000   Y   3.000   Z  12.000  R  10.000  F600.0 
+G0   X   1.000   Y   3.000   Z  12.000   
+
+(helical drilling point:(100 200))
+G0   X 100.000   Y 200.000   Z  10.000   
+G2   X  90.000   Y 200.000   Z  10.000  R  10.000  F600.0 
+G2   X 110.000   Y 200.000   Z   7.500  R  10.000  F600.0 
+G2   X  90.000   Y 200.000   Z   5.000  R  10.000  F600.0 
+G2   X 110.000   Y 200.000   Z   2.000  R  10.000  F600.0 
+G2   X  90.000   Y 200.000   Z   0.000  R  10.000  F600.0 
+G2   X 110.000   Y 200.000   Z   0.000  R  10.000  F600.0 
+G2   X  90.000   Y 200.000   Z   2.500  R  10.000  F600.0 
+G2   X 110.000   Y 200.000   Z   7.500  R  10.000  F600.0 
+G2   X  90.000   Y 200.000   Z  12.000  R  10.000  F600.0 
+G0   X 100.000   Y 200.000   Z  12.000   
+
+(helical drilling point:(1 10))
+G0   X   1.000   Y  10.000   Z  10.000   
+G2   X  -9.000   Y  10.000   Z  10.000  R  10.000  F600.0 
+G2   X  11.000   Y  10.000   Z   7.500  R  10.000  F600.0 
+G2   X  -9.000   Y  10.000   Z   5.000  R  10.000  F600.0 
+G2   X  11.000   Y  10.000   Z   2.000  R  10.000  F600.0 
+G2   X  -9.000   Y  10.000   Z   0.000  R  10.000  F600.0 
+G2   X  11.000   Y  10.000   Z   0.000  R  10.000  F600.0 
+G2   X  -9.000   Y  10.000   Z   2.500  R  10.000  F600.0 
+G2   X  11.000   Y  10.000   Z   7.500  R  10.000  F600.0 
+G2   X  -9.000   Y  10.000   Z  12.000  R  10.000  F600.0 
+G0   X   1.000   Y  10.000   Z  12.000   
+
+(helical drilling point:(2 2))
+G0   X   2.000   Y   2.000   Z  10.000   
+G2   X  -8.000   Y   2.000   Z  10.000  R  10.000  F600.0 
+G2   X  12.000   Y   2.000   Z   7.500  R  10.000  F600.0 
+G2   X  -8.000   Y   2.000   Z   5.000  R  10.000  F600.0 
+G2   X  12.000   Y   2.000   Z   2.000  R  10.000  F600.0 
+G2   X  -8.000   Y   2.000   Z   0.000  R  10.000  F600.0 
+G2   X  12.000   Y   2.000   Z   0.000  R  10.000  F600.0 
+G2   X  -8.000   Y   2.000   Z   2.500  R  10.000  F600.0 
+G2   X  12.000   Y   2.000   Z   7.500  R  10.000  F600.0 
+G2   X  -8.000   Y   2.000   Z  12.000  R  10.000  F600.0 
+G0   X   2.000   Y   2.000   Z  12.000   
+#+end_example
+
+
+* array
+
+
+
+
+
+
+
+
+
+
