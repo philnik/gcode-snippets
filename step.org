@@ -29,6 +29,7 @@
   (defconstant *pi* 3.141592653589793d0)
   (defconstant *2pi* 6.283185307179586d0)
 
+
   (defun rad-to-deg (a)
     (* (/ 180.0d0 *pi*) a))
 
@@ -42,10 +43,130 @@
           ;;;turn to integer and find the closest to make 4-quarters
       (* (round (/ divide 8.0))8))
     )
+
+  (defun vector-length (v)
+    (let* ((p1 (nth 0 v))
+           (p2 (nth 1 v))
+           (p1x (x-of p1))
+           (p1y (y-of p1))
+           (p2x (x-of p2))
+           (p2y (y-of p2))
+           )
+      (sqrt (+ (expt (- p2x p1x) 2.0d0) (expt (- p2y p1y) 2.0d0)))
+      ))
+(defun vector-direction (v)
+  (let* ((p1 (nth 0 v))
+         (p2 (nth 1 v))
+         (p1x (x-of p1))
+         (p1y (y-of p1))
+         (p2x (x-of p2))
+         (p2y (y-of p2))
+         (angle
+           (if (= p1x p2x)
+               (if (> p2y p1y)
+                   (* *pi* 0.5d0)
+                   (* *pi* -0.5d0))
+	       (/ (- p2y p1y) (- p2x p1x))
+               )))
+    (list (cos angle) (sin angle))))
+
+
+
+
+
+  (defun vector-rotate (v b-angle)
+    (let* ((p1 (nth 0 v))
+           (p2 (nth 1 v))
+           (p1x (x-of p1))
+           (p1y (y-of p1))
+           (p2x (x-of p2))
+           (p2y (y-of p2))
+           (angle (/ (- p2y p1y) (- p2x p1x)))
+           (c-angle (+ angle b-angle))
+           )
+      (list (cos c-angle) (sin c-angle))
+      ))
+
+
+  (defun vector-direction-rotate (v b-angle)
+    (let* ((p1x 0.0d0)
+           (p1y 0.0d0)
+           (p2x (x-of v))
+           (p2y (y-of v))
+           (angle (/ (- p2y p1y) (- p2x p1x)))
+           (c-angle (+ angle b-angle))
+           )
+      (list (cos c-angle) (sin c-angle))
+      ))
+
+  (defun p+ (p1 p2)
+    (let* ((p1x (x-of p1))
+           (p1y (y-of p1))
+           (p2x (x-of p2))
+           (p2y (y-of p2))
+           )
+      (list (+ p1x p2x) (+ p1y p2y))
+      ))
+
+  (defun scale-point (p scale-factor)
+    (let* ((px (x-of p))
+           (py (y-of p))
+           )
+      (list (* scale-factor px) (* scale-factor py))
+      ))
+
 #+END_SRC
 
 #+RESULTS: math-functions
-: NO-OF-POINTS-FROM-ARC-RADIUS
+: SCALE-POINT
+
+#+NAME: test-math-functions
+#+BEGIN_SRC lisp :results output raw
+
+  (setq point1 '(100.0d0 0.0))
+  (setq point2 '(200.0d0 0.0d0))
+  (setq v (list point1 point2))
+
+  (let ((vdir (vector-direction v)))
+    (format t "|point1:| ~8,4F | ~8,4F |~%" (x-of point1) (y-of point1))
+    (format t "|point2:| ~8,4F | ~8,4F |~%" (x-of point2) (y-of point2))
+    (format t "|direction:| ~8,4F |~8,4F  |~%" (x-of vdir) (y-of vdir)))
+
+
+  (setq point3 '(000.0d0 10.0))
+  (setq point4 '(000.0d0 20.0d0))
+  (setq v (list point3 point4))
+
+  (let ((vdir (vector-direction v)))
+    (format t "|point1:| ~8,4F | ~8,4F |~%" (x-of point3) (y-of point3))
+    (format t "|point2:| ~8,4F | ~8,4F |~%" (x-of point4) (y-of point4))
+    (format t "|direction:| ~8,4F |~8,4F  |~%" (x-of vdir) (y-of vdir)))
+
+
+  (setq point3 '(000.0d0 10.0))
+  (setq point4 '(000.0d0 -20.0d0))
+  (setq v (list point3 point4))
+
+  (let ((vdir (vector-direction v)))
+    (format t "|point1:| ~8,4F | ~8,4F |~%" (x-of point3) (y-of point3))
+    (format t "|point2:| ~8,4F | ~8,4F |~%" (x-of point4) (y-of point4))
+    (format t "|direction:| ~8,4F |~8,4F  |~%" (x-of vdir) (y-of vdir)))
+
+
+#+END_SRC
+
+#+RESULTS: test-math-functions
+| point1:    | 100.0000 |   0.0000 |
+| point2:    | 200.0000 |   0.0000 |
+| direction: |   1.0000 |   0.0000 |
+| point1:    |   0.0000 |  10.0000 |
+| point2:    |   0.0000 |  20.0000 |
+| direction: |   0.0000 |   1.0000 |
+| point1:    |   0.0000 |  10.0000 |
+| point2:    |   0.0000 | -20.0000 |
+| direction: |   0.0000 |  -1.0000 |
+
+
 
 ** test divide step
 
@@ -346,7 +467,7 @@ We take the values from the following table:
 
 #+name: test-drill-array
 #+BEGIN_SRC lisp :results output :var point-array=my-table
-    (setq z-list '(10.0 7.5 5.0 2.0  0.0 0.0  2.5  7.5  12.0))
+    (setq z-list '(10.0 7.5 5.0 2.0 0.0 0.0  2.5  7.5  12.0))
     (setq radius 10.0) 
     (setq f- 600.0)
     (setq output-stream *STANDARD-OUTPUT*)
@@ -693,7 +814,7 @@ We make an array of internal and external point of arcs this one is for moving o
 We borrow from divide circle the points
 
 #+name: divide-circle-2
-#+BEGIN_SRC lisp :results output raw
+#+BEGIN_SRC lisp :results output raw :tangle yes :noweb yes
   (defun point-couples (center radius trochoidal-width no-of-points)
     (let* ((internal-points (divide-circle center radius no-of-points))
            (external-points (divide-circle center (+ radius trochoidal-width) no-of-points))
@@ -736,10 +857,102 @@ We borrow from divide circle the points
 
   
 
+
+
+
+
+
+
+** test divide orthogonal
+
+#+name: test-divide-ortho
+#+BEGIN_SRC lisp :results output raw
+
+  (setq point1 '(0.0 0.0))
+  (setq point2 '(100 0.0))
+  (setq point3 '(100 100.0))
+  (setq point4 '(0 100.0))
+
+  (setq trochoidal-width 10.0)
+  (setq l-step 9.1)
+
+  (setq vector1 (list point1 point2))
+  (setq vector2 (list point2 point3))
+  (setq vector3 (list point3 point4))
+  (setq vector4 (list point4 point1))
+
+  (setq length-vector1 (vector-length vector1))
+  (setq direction-vector1 (vector-length vector1))
+
+  (setq no-of-points (round(/ length-vector1 l-step)))
+  (setq r-step (/ length-vector1 no-of-points))
+
+  (defun divide-vector (v step-length)
+    (let* ((vdir (vector-direction v))
+           (vdir-per (vector-direction-rotate vdir (/ *pi* 2.0d0)))
+           (start-point (nth 0 v))
+           (end-point (nth 1 v))
+           (vlength (vector-length v))
+           (no-of-points (round(/ length-vector1 l-step)))
+           (r-step (round(/ vlength no-of-points)))
+           (vector-array '()))
+      (progn
+        (dotimes (i no-of-points)
+          (let ((point (p+ start-point (scale-point vdir (* i r-step))))
+                )
+            (push point vector-array)
+            ))
+        (reverse vector-array))))
+
+  (loop for i in (divide-vector vector4 l-step)
+        do (format t "| ~8,3F |  ~8,3F |   ~%" (nth 0 i) (nth 1 i))
+        )
+#+END_SRC
+
+  #+RESULTS: test-divide-ortho
+  | 100.000 | 100.000 |
+  | 109.000 | 100.000 |
+  | 118.000 | 100.000 |
+  | 127.000 | 100.000 |
+  | 136.000 | 100.000 |
+  | 145.000 | 100.000 |
+  | 154.000 | 100.000 |
+  | 163.000 | 100.000 |
+  | 172.000 | 100.000 |
+  | 181.000 | 100.000 |
+  | 190.000 | 100.000 |
+  l-step:   5.100
+  no-of-points:20
+  r-step:5.0d0
+  |    0.000 |     0.000 |   
+  |    5.000 |     0.000 |   
+  |   10.000 |     0.000 |   
+  |   15.000 |     0.000 |   
+  |   20.000 |     0.000 |   
+  |   25.000 |     0.000 |   
+  |   30.000 |     0.000 |   
+  |   35.000 |     0.000 |   
+  |   40.000 |     0.000 |   
+  |   45.000 |     0.000 |   
+  |   50.000 |     0.000 |   
+  |   55.000 |     0.000 |   
+  |   60.000 |     0.000 |   
+  |   65.000 |     0.000 |   
+  |   70.000 |     0.000 |   
+  |   75.000 |     0.000 |   
+  |   80.000 |     0.000 |   
+  |   85.000 |     0.000 |   
+  |   90.000 |     0.000 |   
+  |   95.000 |     0.000 |   
+  
+
+
+  
+  
 ** test-trochoidal-circle-external-610
   
 #+NAME: test-trochoidal-circle-610
-#+BEGIN_SRC lisp :tangle yes :results output file :file trochoidal-circle-610-diameter-external.ngc
+#+BEGIN_SRC lisp :tangle yes :results output file :file trochoidal-circle-610--3.0mm-diameter-external.ngc
     (setq output-stream *STANDARD-OUTPUT*)
                   ;;;linear step
     (setq l-step 1.5d0)
@@ -749,7 +962,7 @@ We borrow from divide circle the points
 
                         ;;;most internal radius of the path
   (setq internal-radius (/ 612.0 2.0d0))
-  (setq tool-diameter 3.175)
+  (setq tool-diameter 4.0)
   (setq radius (+ internal-radius (/ tool-diameter 2.0))) 
                       ;;;most external width of the path
   (setq trochoidal-width 4.0)
@@ -804,7 +1017,7 @@ We borrow from divide circle the points
 #+END_SRC
 
 #+RESULTS: test-trochoidal-circle-610
-[[file:trochoidal-circle-610-diameter-external.ngc]]
+[[file:trochoidal-circle-610--3.0mm-diameter-external.ngc]]
 
 #+RESULTS: test-trochoidal-circle
 [[file:trochoidal-circle.ngc]]
@@ -817,10 +1030,15 @@ We borrow from divide circle the points
 | internal diameter |   610.999 |        |
 | length            | 1918.5369 | mm     |
 | feed              |       300 | mm/min |
-| passes            |         4 |        |
-|                   | 25.580492 | min    |
+| passes            |         2 |        |
+|                   | 12.790246 | min    |
 #+TBLFM: @2$2=3.175/2.0::@3$2=@1-@2::@4$2=2*@3::@5$2=@4*3.14::@8$2=@5*@7/@6
 
+|   |  460 |
+|   |  600 |
+|   | 2120 |
+|   |      |
+#+TBLFM: @1$2=560-100::@2$2=700-100::@3$2=2*@1+2*@2
 
 
 
@@ -897,9 +1115,6 @@ We borrow from divide circle the points
 #+RESULTS: test-trochoidal-internal-circle-500
 [[file:trochoidal-circle-500-diameter-internal.ngc]]
 
-
-
-
 | x                 |  247.413 |   |
 | r-tool            |   1.5875 |   |
 | internal radius   | 249.0005 |   |
@@ -911,21 +1126,16 @@ We borrow from divide circle the points
 |                   | 240.8255 |   |
 #+TBLFM: @3$2=@1+@2::@5$2=@4/2.0::@8$2=@6-@7
 
-
-
-
-
-
 ** test-trochoidal-circle-internal-496
   
 #+NAME: test-trochoidal-internal-circle-496
 #+BEGIN_SRC lisp :tangle yes :results output file :file trochoidal-circle-496-diameter-internal.ngc
-    (setq output-stream *STANDARD-OUTPUT*)
+  (setq output-stream *STANDARD-OUTPUT*)
                   ;;;linear step
-    (setq l-step 1.5d0)
-    (setq zi 0.0)
-    (setq f- 900)
-    (setq center '(0.0 0.0))
+  (setq l-step 1.5d0)
+  (setq zi 0.0)
+  (setq f- 900)
+  (setq center '(0.0 0.0))
 
                         ;;;most internal radius of the path
   (setq internal-radius (/ 494 2.0d0))
@@ -988,6 +1198,87 @@ We borrow from divide circle the points
 [[file:trochoidal-circle-496-diameter-internal.ngc]]
 
 
+| x                 |  247.413 |   |
+| r-tool            |   1.5875 |   |
+| internal radius   | 249.0005 |   |
+|-------------------+----------+---|
+| internal diameter |      496 |   |
+| internal radius   |     248. |   |
+| x                 |  242.413 |   |
+| passes            |   1.5875 |   |
+|                   | 240.8255 |   |
+#+TBLFM: @3$2=@1+@2::@5$2=@4/2.0::@8$2=@6-@7
+
+** test-trochoidal-orthogonal-internal-496
+  
+#+NAME: test-trochoidal-internal-circle-496
+#+BEGIN_SRC lisp :tangle yes :results output file :file trochoidal-circle-496-diameter-internal.ngc
+  (setq output-stream *STANDARD-OUTPUT*)
+                  ;;;linear step
+  (setq l-step 1.5d0)
+  (setq zi 0.0)
+  (setq f- 900)
+  (setq center '(0.0 0.0))
+
+                        ;;;most internal radius of the path
+  (setq internal-radius (/ 494 2.0d0))
+  (setq tool-diameter 3.175)
+  (setq trochoidal-width 4.0)
+  (setq radius (- internal-radius trochoidal-width (/ tool-diameter 2.0))) 
+                      ;;;most external width of the path
+
+  (setq no-of-points (no-of-points-from-arc-radius l-step radius))
+  ;;(setq radius 50.0)
+  ;;(setq no-of-points 16)
+  (setq start-point '(0.0d0 0.0d0))
+
+  (setq couple (point-couples center radius trochoidal-width no-of-points))
+
+
+                                  ;;;we start from the first point in couple array
+
+                                ;;;replace later with an helicoidal cutting
+                ;  (linear-move start-point  f- output-stream)
+
+            (setq z-list-in '(25.0 16.0 10.0 7.5 5.0 0.0 0.0))
+
+            (setq z-list-out (reverse z-list-in))
+
+              (prologue 10000 output-stream)
+
+        (setf start-point (append (caar couple) (list zi)))
+
+
+      (setq helical-start-center
+              (let* ((point-min (caar couple))
+                     (point-max (cadar couple))
+                     (x (* 0.5 (+ (x-of point-min) (x-of point-max))))
+                     (y (* 0.5 (+ (y-of point-min) (y-of point-max))))
+                     )
+              (list x y zi)
+                ))
+
+        (helical-drill helical-start-center z-list-in (/ trochoidal-width 2.0) f- f- output-stream)
+
+          (format output-stream "~% ~% (start trochoid)~%")
+                      (dotimes (i (+ 1 no-of-points))
+                        (let* ((pair (pop couple))
+                               (in-point (append (car pair) (list zi)))
+                               (out-point (append (cadr pair) (list zi)))
+                               (trochoidal-radius (/ trochoidal-width 2.0))
+                               )
+                          (linear-move in-point  f- output-stream)
+                          (ccw-move-R out-point trochoidal-radius f- output-stream)
+                          (ccw-move-R in-point trochoidal-radius  f- output-stream)
+                          ))
+
+          (format output-stream "~% ~% (end trochoid)~%")
+        (helical-drill helical-start-center z-list-out (/ trochoidal-width 2.0) f- f- output-stream)
+                (epilogue output-stream)
+#+END_SRC
+
+#+RESULTS: test-trochoidal-internal-circle-496
+[[file:trochoidal-circle-496-diameter-internal.ngc]]
 
 
 | x                 |  247.413 |   |
