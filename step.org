@@ -28,172 +28,185 @@
 
 #+name: quicklisp-functions
 #+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both
-    (load #P"/home/quill/quicklisp/setup.lisp")
-    (ql:quickload :computable-reals)
-    (use-package :computable-reals)
+    ;; (load "/home/quill/quicklisp/setup.lisp")
+    ;; (ql:quickload :computable-reals)
+    ;; (use-package :computable-reals)
 
 #+END_SRC
 
-
+#+RESULTS: quicklisp-functions
+: T
 
 * math-functions
 
 #+name: math-functions
-#+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both
-          (defconstant *pi* 3.141592653589793d0)
-          (defconstant *2pi* 6.283185307179586d0)
+#+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both :cache yes
+  (defconstant *pi* 3.141592653589793d0)
+  (defconstant *2pi* 6.283185307179586d0)
 
-          (defun rad-to-deg (a)
-            (* (/ 180.0d0 *pi*) a))
+  (defun rad-to-deg (a)
+    (* (/ 180.0d0 *pi*) a))
 
-          (defun deg-to-rad (a)
-            (/ a (/ 180.0d0 *pi*)))
+  (defun deg-to-rad (a)
+    (/ a (/ 180.0d0 *pi*)))
 
-          (defun no-of-points-from-arc-radius (steps radius)
-          "we get the no-of-points to divide circle"
-            (let* ((divide (/ (* *2pi* radius) steps))
-                   )
+  (defun no-of-points-from-arc-radius (steps radius)
+    "we get the no-of-points to divide circle"
+    (let* ((divide (/ (* *2pi* radius) steps))
+           )
                   ;;;turn to integer and find the closest to make 4-quarters
-              (* (round (/ divide 8.0))8))
-            )
+      (* (round (/ divide 8.0))8))
+    )
 
-          (defun length-vector (v)
-            (let* ((p1 (nth 0 v))
-                   (p2 (nth 1 v))
-                   (p1x (x-of p1))
-                   (p1y (y-of p1))
-                   (p2x (x-of p2))
-                   (p2y (y-of p2))
-                   )
-              (sqrt (+ (expt (- p2x p1x) 2.0d0) (expt (- p2y p1y) 2.0d0)))
-              ))
+  (defun length-vector (v)
+    (let* ((p1 (nth 0 v))
+           (p2 (nth 1 v))
+           (p1x (x-of p1))
+           (p1y (y-of p1))
+           (p2x (x-of p2))
+           (p2y (y-of p2))
+           )
+      (sqrt (+ (expt (- p2x p1x) 2.0d0) (expt (- p2y p1y) 2.0d0)))
+      ))
 
   (defun normal-vector (v)
-      (let* ((p1 (nth 0 v))
-             (p2 (nth 1 v))
-             (p1x (x-of p1))
-             (p1y (y-of p1))
-             (p2x (x-of p2))
-             (p2y (y-of p2))
-             (angle
-               (if (= p1x p2x)
-                   (if (> p2y p1y)
-                       (* *pi* 0.5d0)
-                       (* *pi* -0.5d0))
-                   (atan (/ (- p2y p1y) (- p2x p1x)))
-                   )))
-        (list '(0.0d0 0.0d0) (list (cos angle) (sin angle)))
-        ))
+    (let* ((p1 (nth 0 v))
+           (p2 (nth 1 v))
+           (p1x (x-of p1))
+           (p1y (y-of p1))
+           (p2x (x-of p2))
+           (p2y (y-of p2))
+           (angle
+             (if (= p1x p2x)
+                 (if (> p2y p1y)
+                     (* *pi* 0.5d0)
+                     (* *pi* -0.5d0))
+                 (atan (/ (- p2y p1y) (- p2x p1x)))
+                 )))
+      (list '(0.0d0 0.0d0) (list (cos angle) (sin angle)))
+      ))
 
-      (defun angle-vector (v)
-        (let* ((p1 (nth 0 v))
-               (p2 (nth 1 v))
-               (p1x (x-of p1))
-               (p1y (y-of p1))
-               (p2x (x-of p2))
-               (p2y (y-of p2)))
-          (if (= p1x p2x)
-              (if (> p2y p1y)
-                  (* *pi* 0.5d0)
-                  (* *pi* -0.5d0))
-              (atan (/ (- p2y p1y) (- p2x p1x))))
-              ))
+  (defun angle-vector (v)
+    (let* ((p1 (nth 0 v))
+           (p2 (nth 1 v))
+           (p1x (x-of p1))
+           (p1y (y-of p1))
+           (p2x (x-of p2))
+           (p2y (y-of p2)))
+      (if (= p1x p2x)
+          (if (> p2y p1y)
+              (* *pi* 0.5d0)
+              (* *pi* -0.5d0))
+          (atan (/ (- p2y p1y) (- p2x p1x))))
+      ))
 
+  (defun p+ (p1 p2)
+    (let* ((p1x (x-of p1))
+           (p1y (y-of p1))
+           (p2x (x-of p2))
+           (p2y (y-of p2))
+           )
+      (list (+ p1x p2x) (+ p1y p2y))
+      ))
 
+  (defun scale-point (p scale-factor)
+    (let* ((px (x-of p))
+           (py (y-of p))
+           )
+      (list (* scale-factor px) (* scale-factor py))
+      ))
 
+  (defun vector-scale (v scale-factor)
+    (let* ((p1 (nth 0 v))
+           (p2 (nth 1 v))
+           (p1x (x-of p1))
+           (p1y (y-of p1))
+           (p2x (x-of p2))
+           (p2y (y-of p2))
+           (length (length-vector v))
+           (angle (angle-vector v)))
+      (list p1 (list (+ p1x (* length (cos angle))) (+ p1y (* length (sin angle)))))
+      ))
 
-
-          (defun p+ (p1 p2)
-            (let* ((p1x (x-of p1))
-                   (p1y (y-of p1))
-                   (p2x (x-of p2))
-                   (p2y (y-of p2))
-                   )
-              (list (+ p1x p2x) (+ p1y p2y))
-              ))
-
-          (defun scale-point (p scale-factor)
-            (let* ((px (x-of p))
-                   (py (y-of p))
-                   )
-              (list (* scale-factor px) (* scale-factor py))
-              ))
-
-      (defun vector-scale (v scale-factor)
-        (let* ((p1 (nth 0 v))
-               (p2 (nth 1 v))
-               (p1x (x-of p1))
-               (p1y (y-of p1))
-               (p2x (x-of p2))
-               (p2y (y-of p2))
-               (length (length-vector v))
-               (angle (angle-vector v)))
-          (list p1 (list (+ p1x (* length (cos angle))) (+ p1y (* length (sin angle)))))
-          ))
-
-      (defun vector-rotate (v b-angle)
-        (let* ((p1 (nth 0 v))
-               (p2 (nth 1 v))
-               (p1x (x-of p1))
-               (p1y (y-of p1))
-               (p2x (x-of p2))
-               (p2y (y-of p2))
-               (length (length-vector v))
-               (angle (angle-vector v))
-               (new-angle (+ angle b-angle)))
-          (list p1 (list (+ p1x (* length (cos new-angle))) (+ p1y (* length (sin new-angle)))))
-          ))
+  (defun vector-rotate (v b-angle)
+    (let* ((p1 (nth 0 v))
+           (p2 (nth 1 v))
+           (p1x (x-of p1))
+           (p1y (y-of p1))
+           (p2x (x-of p2))
+           (p2y (y-of p2))
+           (length (length-vector v))
+           (angle (angle-vector v))
+           (new-angle (+ angle b-angle)))
+      (list p1 (list (+ p1x (* length (cos new-angle))) (+ p1y (* length (sin new-angle)))))
+      ))
 
   (defun vector-transform-by-vector (v tr-vector)
-        (let* ((p1 (nth 0 v))
-               (p2 (nth 1 v))
-               (p1x (x-of p1))
-               (p1y (y-of p1))
-               (p2x (x-of p2))
-               (p2y (y-of p2))
-               (tr-point (list (- p2x p1x) (- p2y p1y))))
-          (list (p+ p1 tr-point) (p+ p2 tr-point))
-          ))
+    (let* ((p1 (nth 0 v))
+           (p2 (nth 1 v))
+           (p1x (x-of p1))
+           (p1y (y-of p1))
+           (p2x (x-of p2))
+           (p2y (y-of p2))
+           (tr-point (list (- p2x p1x) (- p2y p1y))))
+      (list (p+ p1 tr-point) (p+ p2 tr-point))
+      ))
+
+  (defun vector-offset (v distance)
+    (let* ((p1 (nth 0 v))
+           (p2 (nth 1 v))
+	   (vrotate (vector-rotate v (* *pi* 0.5)))
+	   (normal-vrotate (normal-vector vrotate))
+	   (dvector (vector-scale normal-vrotate distance))
+	   )
+      (vector-transform-by-vector v dvector)
+      ))
 
   (defun vector-reverse (v)
-        (let* ((p1 (nth 0 v))
-               (p2 (nth 1 v)))
-          (list p2 p1)
-          ))
-
-
+    (let* ((p1 (nth 0 v))
+           (p2 (nth 1 v)))
+      (list p2 p1)
+      ))
 
 #+END_SRC
 
-#+RESULTS: math-functions
-: SCALE-VECTOR
+#+RESULTS[15de9f7f1bb56c565acddd28a7da35cccbfedc78]: math-functions
+: VECTOR-REVERSE
 
 #+NAME: test-math-functions-0
 #+BEGIN_SRC lisp :results output raw
 
-    (setq point3 '(000.0d0 10.0))
-    (setq point4 '(000.0d0 -20.0d0))
+    (setq point3 '(10.0d0 20.0))
+    (setq point4 '(20.0d0 20.0d0))
     (setq v (list point3 point4))
   (setq a-angle (* *pi* 0.5d0))
-    (let ((vdir (normal-vector v)))
+(let* ((vdir (normal-vector v))
+      (voffset (vector-offset v 10.0))
+      (point1 (nth 0  voffset))
+      (point2 (nth 1 voffset))
+      )
       (format t "|point1:| ~8,4F | ~8,4F |~%" (x-of point3) (y-of point3))
       (format t "|point2:| ~8,4F | ~8,4F |~%" (x-of point4) (y-of point4))
-      (format t "|direction-angle:| ~8,4F |  |~%" (rad-to-deg(normal-vector-angle v)))
-      (format t "|direction:| ~8,4F | ~8,4F |~%" (x-of vdir) (y-of vdir))
-      (let ((v-rotate (vector-rotate v a-angle)))
+  (format t "|direction-angle:| ~8,4F |  |~%" (rad-to-deg(angle-vector v)))
+  (format t "|point3:| ~8,4F | ~8,4F |~%" (x-of point1) (y-of point1))
+  (format t "|point4:| ~8,4F | ~8,4F |~%" (x-of point2) (y-of point2)))
+
+(let ((v-rotate (vector-rotate v a-angle)))
         (format t "|direction-rotate:| ~8,4F | ~8,4F |~%" (x-of v-rotate) (y-of v-rotate))
-        (format t "|direction-angle:| ~8,4F |  |~%" (rad-to-deg(normal-vector-angle v-rotate)))
+        (format t "|direction-angle:| ~8,4F |  |~%" (rad-to-deg(angle-vector v-rotate)))
+	
         ))
 
 #+END_SRC
 
 #+RESULTS: test-math-functions-0
-| point1:           |        0.0000 |       10.0000 |
-| point2:           |        0.0000 |      -20.0000 |
-| direction-angle:  |      -90.0000 |               |
-| direction:        |        0.0000 |       -1.0000 |
-| direction-rotate: | (0.0d0 0.0d0) | (1.0d0 0.0d0) |
-| direction-angle:  |        0.0000 |               |
+| point1:           |       10.0000 |         20.0000 |
+| point2:           |       20.0000 |         20.0000 |
+| direction-angle:  |        0.0000 |                 |
+| point3:           |       20.0000 |         20.0000 |
+| point4:           |       30.0000 |         20.0000 |
+| direction-rotate: | (10.0d0 20.0) | (10.0d0 30.0d0) |
+| direction-angle:  |       90.0000 |                 |
 
 #+NAME: test-math-functions
 #+BEGIN_SRC lisp :results output raw
@@ -234,26 +247,26 @@
     (let ((vdir (normal-vector v)))
       (format t "|point1:| ~8,4F | ~8,4F |~%" (x-of point3) (y-of point3))
       (format t "|point2:| ~8,4F | ~8,4F |~%" (x-of point4) (y-of point4))
-      (format t "|direction-angle:| ~8,4F |  |~%" (normal-vector-angle v))
+      (format t "|direction-angle:| ~8,4F |  |~%" (angle-vector v))
       (format t "|direction-angle:| ~8,4F |  |~%" (vector-rotate v a-angle)))
 
 
 #+END_SRC
 
 #+RESULTS: test-math-functions
-| point1:          |      100.0000 |   0.0000 |
-| point2:          |      200.0000 |   0.0000 |
-| direction:       |        1.0000 |   0.0000 |
-| point1:          |        0.0000 |  10.0000 |
-| point2:          |        0.0000 |  20.0000 |
-| direction:       |        0.0000 |   1.0000 |
-| point1:          |        0.0000 |  10.0000 |
-| point2:          |        0.0000 | -20.0000 |
-| direction:       |        0.0000 |  -1.0000 |
-| point1:          |        0.0000 |  10.0000 |
-| point2:          |        0.0000 | -20.0000 |
-| direction-angle: |       -1.5708 |          |
-| direction-angle: | (1.0d0 0.0d0) |          |
+| point1:          |                       100.0000 |                         0.0000 |
+| point2:          |                       200.0000 |                         0.0000 |
+| direction:       |                  (0.0d0 0.0d0) |                  (1.0d0 0.0d0) |
+| point1:          |                         0.0000 |                        10.0000 |
+| point2:          |                         0.0000 |                        20.0000 |
+| direction:       |                  (0.0d0 0.0d0) |  (6.123233995736766d-17 1.0d0) |
+| point1:          |                         0.0000 |                        10.0000 |
+| point2:          |                         0.0000 |                       -20.0000 |
+| direction:       |                  (0.0d0 0.0d0) | (6.123233995736766d-17 -1.0d0) |
+| point1:          |                         0.0000 |                        10.0000 |
+| point2:          |                         0.0000 |                       -20.0000 |
+| direction-angle: |                        -1.5708 |                                |
+| direction-angle: | ((0.0d0 10.0) (30.0d0 10.0d0)) |                                |
 
 
 
@@ -314,7 +327,8 @@
 
 * point-functions
 
-#+BEGIN_SRC lisp  :noweb yes :tangle step.lisp :comments both
+#+NAME: point-functions
+#+BEGIN_SRC lisp  :noweb yes :tangle step.lisp :comments both :cache yes
     (defun x-of (point) (nth 0 point))
     (defun y-of (point) (nth 1 point))
     (defun z-of (point) (nth 2 point))
@@ -323,10 +337,6 @@
     (mapcar #'+ point-1 point-2))
 
 #+END_SRC
-
-#+RESULTS:
-: ADD-VECTOR-POINT
-
 
 * move-functions
 
@@ -553,6 +563,8 @@ G1   X   0.000   Y   0.000   Z  12.000   F600.0
           ))
 #+END_SRC
 
+#+RESULTS: helical-drill-array
+
 
 ** test drill array
 
@@ -636,7 +648,7 @@ G1   X   2.000   Y   2.000   Z  12.000   F600.0
 #+END_SRC
 
 #+RESULTS: drill-array-on-divide-circle
-[[file:test-helical-drill-on-circle.ngc]]
+[[file:test-divide.ngc]]
 
 
 
@@ -686,42 +698,15 @@ G1   X   2.000   Y   2.000   Z  12.000   F600.0
 #+END_SRC
 
 #+RESULTS: helical-drill-test
-#+begin_example
-
-(helical drilling point: X   0.000 Y   0.000)
-G0   X  10.000   Y   0.000   Z  10.000   
-G02   X -10.000   Y   0.000   Z   9.000  R  10.000  F600.0 
-G02   X  10.000   Y   0.000   Z   7.500  R  10.000  F600.0 
-G02   X -10.000   Y   0.000   Z   5.000  R  10.000  F600.0 
-G02   X  10.000   Y   0.000   Z   3.000  R  10.000  F600.0 
-G02   X -10.000   Y   0.000   Z   2.000  R  10.000  F600.0 
-G02   X  10.000   Y   0.000   Z   1.000  R  10.000  F600.0 
-G02   X -10.000   Y   0.000   Z   0.000  R  10.000  F600.0 
-G02   X  10.000   Y   0.000   Z   0.000  R  10.000  F600.0 
-G02   X -10.000   Y   0.000   Z   1.500  R  10.000  F600.0 
-G02   X  10.000   Y   0.000   Z   2.500  R  10.000  F600.0 
-G02   X -10.000   Y   0.000   Z   5.000  R  10.000  F600.0 
-G02   X  10.000   Y   0.000   Z   7.500  R  10.000  F600.0 
-G02   X -10.000   Y   0.000   Z  10.000  R  10.000  F600.0 
-G0   X   0.000   Y   0.000   Z  12.000   
-
-(helical drilling point: X   0.000 Y   0.000)
-G0   X   2.000   Y   0.000   Z  10.000   
-G02   X  -2.000   Y   0.000   Z   9.000  R   2.000  F600.0 
-G02   X   2.000   Y   0.000   Z   7.500  R   2.000  F600.0 
-G02   X  -2.000   Y   0.000   Z   5.000  R   2.000  F600.0 
-G02   X   2.000   Y   0.000   Z   3.000  R   2.000  F600.0 
-G02   X  -2.000   Y   0.000   Z   2.000  R   2.000  F600.0 
-G02   X   2.000   Y   0.000   Z   1.000  R   2.000  F600.0 
-G02   X  -2.000   Y   0.000   Z   0.000  R   2.000  F600.0 
-G02   X   2.000   Y   0.000   Z   0.000  R   2.000  F600.0 
-G02   X  -2.000   Y   0.000   Z   1.500  R   2.000  F600.0 
-G02   X   2.000   Y   0.000   Z   2.500  R   2.000  F600.0 
-G02   X  -2.000   Y   0.000   Z   5.000  R   2.000  F600.0 
-G02   X   2.000   Y   0.000   Z   7.500  R   2.000  F600.0 
-G02   X  -2.000   Y   0.000   Z  10.000  R   2.000  F600.0 
-G0   X   0.000   Y   0.000   Z  12.000   
-#+end_example
+: 
+: (drilling point: X   0.000 Y   0.000)
+: G0   X   0.000   Y   0.000   Z  20.000   
+: G1   X   0.000   Y   0.000   Z  10.000   F600.0 
+: G1   X   0.000   Y   0.000   Z   5.000   F600.0 
+: G1   X   0.000   Y   0.000   Z   0.000   F600.0 
+: G1   X   0.000   Y   0.000   Z   5.000   F600.0 
+: G1   X   0.000   Y   0.000   Z  10.000   F600.0 
+: G0   X   0.000   Y   0.000   Z  20.000   
 
 
 ** define drill array
@@ -761,49 +746,27 @@ We take the values from the following table:
 #+RESULTS: test-drill-array-
 #+begin_example
 
-(drilling point: X   0.000 Y   2.000)
-G0   X   0.000   Y   2.000   Z  10.000   
-G1   X   0.000   Y   2.000   Z   7.500   F600.0 
-G1   X   0.000   Y   2.000   Z   5.000   F600.0 
-G1   X   0.000   Y   2.000   Z   2.000   F600.0 
-G1   X   0.000   Y   2.000   Z   0.000   F600.0 
-G1   X   0.000   Y   2.000   Z   0.000   F600.0 
-G1   X   0.000   Y   2.000   Z   2.500   F600.0 
-G1   X   0.000   Y   2.000   Z   7.500   F600.0 
-G0   X   0.000   Y   2.000   Z  12.000   
+(drilling point: X   0.000 Y   0.000)
+G0   X   0.000   Y   0.000   Z  10.000   
+G1   X   0.000   Y   0.000   Z   7.500   F600.0 
+G1   X   0.000   Y   0.000   Z   5.000   F600.0 
+G1   X   0.000   Y   0.000   Z   2.000   F600.0 
+G1   X   0.000   Y   0.000   Z   0.000   F600.0 
+G1   X   0.000   Y   0.000   Z   0.000   F600.0 
+G1   X   0.000   Y   0.000   Z   2.500   F600.0 
+G1   X   0.000   Y   0.000   Z   7.500   F600.0 
+G0   X   0.000   Y   0.000   Z  12.000   
 
-(drilling point: X   1.000 Y   3.000)
-G0   X   1.000   Y   3.000   Z  10.000   
-G1   X   1.000   Y   3.000   Z   7.500   F600.0 
-G1   X   1.000   Y   3.000   Z   5.000   F600.0 
-G1   X   1.000   Y   3.000   Z   2.000   F600.0 
-G1   X   1.000   Y   3.000   Z   0.000   F600.0 
-G1   X   1.000   Y   3.000   Z   0.000   F600.0 
-G1   X   1.000   Y   3.000   Z   2.500   F600.0 
-G1   X   1.000   Y   3.000   Z   7.500   F600.0 
-G0   X   1.000   Y   3.000   Z  12.000   
-
-(drilling point: X 100.000 Y 200.000)
-G0   X 100.000   Y 200.000   Z  10.000   
-G1   X 100.000   Y 200.000   Z   7.500   F600.0 
-G1   X 100.000   Y 200.000   Z   5.000   F600.0 
-G1   X 100.000   Y 200.000   Z   2.000   F600.0 
-G1   X 100.000   Y 200.000   Z   0.000   F600.0 
-G1   X 100.000   Y 200.000   Z   0.000   F600.0 
-G1   X 100.000   Y 200.000   Z   2.500   F600.0 
-G1   X 100.000   Y 200.000   Z   7.500   F600.0 
-G0   X 100.000   Y 200.000   Z  12.000   
-
-(drilling point: X   1.000 Y  10.000)
-G0   X   1.000   Y  10.000   Z  10.000   
-G1   X   1.000   Y  10.000   Z   7.500   F600.0 
-G1   X   1.000   Y  10.000   Z   5.000   F600.0 
-G1   X   1.000   Y  10.000   Z   2.000   F600.0 
-G1   X   1.000   Y  10.000   Z   0.000   F600.0 
-G1   X   1.000   Y  10.000   Z   0.000   F600.0 
-G1   X   1.000   Y  10.000   Z   2.500   F600.0 
-G1   X   1.000   Y  10.000   Z   7.500   F600.0 
-G0   X   1.000   Y  10.000   Z  12.000   
+(drilling point: X   1.000 Y   1.000)
+G0   X   1.000   Y   1.000   Z  10.000   
+G1   X   1.000   Y   1.000   Z   7.500   F600.0 
+G1   X   1.000   Y   1.000   Z   5.000   F600.0 
+G1   X   1.000   Y   1.000   Z   2.000   F600.0 
+G1   X   1.000   Y   1.000   Z   0.000   F600.0 
+G1   X   1.000   Y   1.000   Z   0.000   F600.0 
+G1   X   1.000   Y   1.000   Z   2.500   F600.0 
+G1   X   1.000   Y   1.000   Z   7.500   F600.0 
+G0   X   1.000   Y   1.000   Z  12.000   
 
 (drilling point: X   2.000 Y   2.000)
 G0   X   2.000   Y   2.000   Z  10.000   
@@ -883,6 +846,9 @@ We plan to test the trochoidal move on a line across x
   (epilogue output-stream)
 #+END_SRC
 
+#+RESULTS: test-trochoidal-line
+[[file:test-divide.ngc]]
+
 #+RESULTS: tests
 [[file:test-divide.ngc]]
 
@@ -924,6 +890,7 @@ We borrow from divide circle the points
   #+END_SRC
 
   #+RESULTS: test-divide-circle-2
+  |  280.000 |   -0.000 |   |  290.000 |   -0.000 |
   |  197.990 | -197.990 |   |  205.061 | -205.061 |
   |   -0.000 | -280.000 |   |   -0.000 | -290.000 |
   | -197.990 | -197.990 |   | -205.061 | -205.061 |
@@ -931,7 +898,6 @@ We borrow from divide circle the points
   | -197.990 |  197.990 |   | -205.061 |  205.061 |
   |    0.000 |  280.000 |   |    0.000 |  290.000 |
   |  197.990 |  197.990 |   |  205.061 |  205.061 |
-  |  280.000 |    0.000 |   |  290.000 |    0.000 |
 
 
 
@@ -950,76 +916,76 @@ We borrow from divide circle the points
 #+name: test-divide-ortho
 #+BEGIN_SRC lisp :results output raw :tangle yes :noweb yes
 
-        (setq point1 '(0.0 0.0))
-        (setq point2 '(100 0.0))
-        (setq point3 '(100 100.0))
-        (setq point4 '(0 100.0))
+(setq point1 '(0.0 0.0))
+(setq point2 '(100 0.0))
+(setq point3 '(100 100.0))
+(setq point4 '(0 100.0))
 
-        (setq trochoidal-width 10.0)
-        (setq l-step 9.1)
+(setq trochoidal-width 10.0)
+(setq l-step 9.1)
 
-        (setq vector1 (list point1 point2))
-        (setq vector2 (list point2 point3))
-        (setq vector3 (list point3 point4))
-        (setq vector4 (list point4 point1))
+(setq vector1 (list point1 point2))
+(setq vector2 (list point2 point3))
+(setq vector3 (list point3 point4))
+(setq vector4 (list point4 point1))
 
-        (setq length-vector1 (length-vector vector1))
-        (setq direction-vector1 (length-vector vector1))
+(setq length-vector1 (length-vector vector1))
+(setq direction-vector1 (length-vector vector1))
 
-        (setq no-of-points (round(/ length-vector1 l-step)))
-        (setq r-step (/ length-vector1 no-of-points))
+(setq no-of-points (round(/ length-vector1 l-step)))
+(setq r-step (/ length-vector1 no-of-points))
 
-        (defun divide-vector (v step-length)
-          (let* ((vdir (normal-vector v))
-                 (vdir-per (normal-vector-rotate vdir (* *pi* 05d0)))
-                 (start-point (nth 0 v))
-                 (end-point (nth 1 v))
-                 (vlength (length-vector v))
-                 (no-of-points (round(/ length-vector1 l-step)))
-                 (r-step (round(/ vlength no-of-points)))
-                 (vector-array '()))
-            (progn
-              (dotimes (i no-of-points)
-                (let ((point (p+ start-point (scale-point vdir (* i r-step))))
-                      )
-                  (push point vector-array)
-                  ))
-              (reverse vector-array))))
+(defun divide-vector (v step-length)
+  (let* ((vdir (normal-vector v))
+         (vdir-per (normal-vector-rotate vdir (* *pi* 05d0)))
+         (start-point (nth 0 v))
+         (end-point (nth 1 v))
+         (vlength (length-vector v))
+         (no-of-points (round(/ length-vector1 l-step)))
+         (r-step (round(/ vlength no-of-points)))
+         (vector-array '()))
+    (progn
+      (dotimes (i no-of-points)
+        (let ((point (p+ start-point (scale-point vdir (* i r-step))))
+              )
+          (push point vector-array)
+          ))
+      (reverse vector-array))))
 
-      (defun offset-vector (v offset)
-        (let* ((vdir (normal-vector v))
-               (start-point (nth 0 v))
-               (end-point (nth 1 v))
-               (vlength (length-vector v))
-               (vector-array '())
-               (vdir-perpendicular (normal-vector-rotate vdir (* *pi* 0.5)))
-               (new-start-point (p+ start-point (scale-point vdir-perpendicular offset)))
-               (new-end-point (p+ end-point (scale-point vdir-perpendicular (sqrt offset)))))
-          (list new-start-point new-end-point)))
+(defun offset-vector (v offset)
+  (let* ((vdir (normal-vector v))
+         (start-point (nth 0 v))
+         (end-point (nth 1 v))
+         (vlength (length-vector v))
+         (vector-array '())
+         (vdir-perpendicular (normal-vector-rotate vdir (* *pi* 0.5)))
+         (new-start-point (p+ start-point (scale-point vdir-perpendicular offset)))
+         (new-end-point (p+ end-point (scale-point vdir-perpendicular (sqrt offset)))))
+    (list new-start-point new-end-point)))
 
-    (setq v vector2)
-    (setq offset 10.0d0)
+(setq v vector2)
+(setq offset 10.0d0)
 
-    (setq vdir (normal-vector v))
-    (setq start-point (nth 0 v))
-    (setq end-point (nth 1 v))
-    (setq vlength (length-vector v))
-    (setq vector-array '())
-    (setq vdir-perpendicular (vector-rotate vdir (* *pi* 0.5)))
-    (setq new-start-point (p+ start-point (scale-vector vdir-perpendicular offset)))
-    (setq new-end-point (p+ end-point (scale-point vdir-perpendicular (sqrt offset))))
+(setq vdir (normal-vector v))
+(setq start-point (nth 0 v))
+(setq end-point (nth 1 v))
+(setq vlength (length-vector v))
+(setq vector-array '())
+(setq vdir-perpendicular (vector-rotate vdir (* *pi* 0.5)))
+;;(setq new-start-point (p+ start-point (vector-scale vdir-perpendicular offset)))
+;;(setq new-end-point (p+ end-point (scale-point vdir-perpendicular (sqrt offset))))
 
 
-  (let ((v start-point))
-    (format t "| start-point: |  ~8,3F | ~8,3F | ~%" (x-of v) (y-of v)))
-  (let ((v end-point))
-    (format t "| end-point: |  ~8,3F | ~8,3F | ~%" (x-of v) (y-of v)))
-  (let ((v vdir))
-    (format t "| vdir: |  ~8,3F | ~8,3F | ~%" (x-of v) (y-of v)))
-  (let ((v vlength))
-    (format t "| vlength: |  ~8,3F | | ~%" v))
-  (let ((v (vector-rotate vector4 (* *pi* 0.5))))
-    (format t "| vdir-perpendicular: |  ~8,3F | ~8,3F | ~%" (x-of v) (y-of v)))
+;; (let ((v start-point))
+;;   (format t "| start-point: |  ~8,3F | ~8,3F | ~%" (x-of v) (y-of v)))
+;; (let ((v end-point))
+;;   (format t "| end-point: |  ~8,3F | ~8,3F | ~%" (x-of v) (y-of v)))
+;; (let ((v vdir))
+;;   (format t "| vdir: |  ~8,3F | ~8,3F | ~%" (x-of v) (y-of v)))
+;; (let ((v vlength))
+;;   (format t "| vlength: |  ~8,3F | | ~%" v))
+;; (let ((v (vector-rotate vector4 (* *pi* 0.5))))
+;;   (format t "| vdir-perpendicular: |  ~8,3F | ~8,3F | ~%" (x-of v) (y-of v)))
 
 
           #+END_SRC
@@ -1034,7 +1000,7 @@ We borrow from divide circle the points
 ** external-trochoidal-circle
   
 #+NAME: trochoidal-circle
-#+BEGIN_SRC lisp :tangle yes :noweb yes
+#+BEGIN_SRC lisp :tangle yes :noweb yes :comments both :cache yes
 
     (defun internal-trochoidal-circle (l-step zi f- center tool-diameter internal-radius trochoidal-width z-list-in output-stream)
       (progn
@@ -1109,11 +1075,14 @@ We borrow from divide circle the points
      ))
 #+END_SRC
 
+#+RESULTS[5e3f7cc01028ccf8e891b9ce90996c299cb8d8a8]: trochoidal-circle
+: EXTERNAL-TROCHOIDAL-CIRCLE
+
   
 ** test-trochoidal-circle-external-610
   
 #+NAME: test-trochoidal-circle-610
-#+BEGIN_SRC lisp :tangle yes :results output file :file trochoidal-circle-610--3.0mm-diameter-external.ngc
+#+BEGIN_SRC lisp :tangle yes :results output file :file trochoidal-circle-610--3.0mm-diameter-external.ngc :comments both :cache yes
   (setq output-stream *STANDARD-OUTPUT*)
                     ;;;linear step
   (setq l-step 10.0d0)
@@ -1131,7 +1100,7 @@ We borrow from divide circle the points
 
 #+END_SRC
 
-#+RESULTS: test-trochoidal-circle-610
+#+RESULTS[40cc094f5c1473133d5f40d83231a9f85d803646]: test-trochoidal-circle-610
 [[file:trochoidal-circle-610--3.0mm-diameter-external.ngc]]
 
 #+RESULTS: test-trochoidal-circle
@@ -1162,7 +1131,7 @@ We borrow from divide circle the points
 ** test-trochoidal-circle-internal-500
   
 #+NAME: test-trochoidal-internal-circle-500
-#+BEGIN_SRC lisp :tangle yes :results output file :file trochoidal-circle-500-diameter-internal.ngc
+#+BEGIN_SRC lisp :tangle yes :results output file :file trochoidal-circle-500-diameter-internal.ng :comments both :cache yes
   (setq output-stream *STANDARD-OUTPUT*)
   (setq l-step 2.0d0)
   (setq zi 7.5)
@@ -1196,18 +1165,18 @@ We borrow from divide circle the points
 ** test-trochoidal-circle-internal-496
   
 #+NAME: test-trochoidal-internal-circle-496
-#+BEGIN_SRC lisp :tangle yes :results output file :file trochoidal-circle-496-diameter-internal.ngc
-  (setq output-stream *STANDARD-OUTPUT*)
+#+BEGIN_SRC lisp :tangle yes :results output file :file trochoidal-circle-496-diameter-internal.ngc :comments both :cache yes
+(setq output-stream *STANDARD-OUTPUT*)
                     ;;;linear step
-  (setq l-step 1.5d0)
-  (setq zi 0.0)
-  (setq f- 900)
-  (setq center '(0.0 0.0))
-  (setq internal-radius (/ 494 2.0d0))
-  (setq tool-diameter 3.175)
-  (setq trochoidal-width 4.0)
+(setq l-step 1.5d0)
+(setq zi 0.0)
+(setq f- 900)
+(setq center '(0.0 0.0))
+(setq internal-radius (/ 494 2.0d0))
+(setq tool-diameter 3.175)
+(setq trochoidal-width 4.0)
 
-  (internal-trochoidal-circle l-step zi f- center tool-diameter internal-radius trochoidal-width z-list-in output-stream)
+(internal-trochoidal-circle l-step zi f- center tool-diameter internal-radius trochoidal-width z-list-in output-stream)
 
 #+END_SRC
 
