@@ -171,8 +171,6 @@
 : (10.0 8.5 7.0 5.5 4.0 2.5 1.0)
 : (1.0 2.5 4.0 5.5 7.0 8.5 10.0)
 
-
-
 ** test-divide-circle
 
 #+name: test-divide-circle
@@ -490,6 +488,10 @@ We plan to test the trochoidal move on a line across x
   |  197.990 |  197.990 |   |  205.061 |  205.061 |
 
 
+
+
+
+* test trochoidal
 
     
 ** test-trochoidal-circle-external-610
