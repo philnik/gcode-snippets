@@ -24,9 +24,8 @@
   (R0 (/ 445.00d0 2.0)) ;; ακτίνα κύκλου οπών
   (f+ 500.00) ;;προωση up
   (f- 500.00) ;;προωση down
-  (tool-diameter 3.175d0) ;;; διάμετρος εργαλείου
-  (hole-diameter 9.5d0) ;;ακτίνα οπών
-  (points-array '())
+  (tool-diameter 4.0d0) ;;; διάμετρος εργαλείου
+  (hole-diameter 22.0d0) ;;ακτίνα οπών
   (hole-cut-radius 0.0d0  ) ;;; ακτίνα κοπής
   (fxy 500.0) ;;; προωση κοπής
   (fxy1 500.0) ;;; προωση κοπής 1
@@ -37,7 +36,7 @@
 
 (setq flange-1 (make-cut-data))
 
-(setf (cut-data-center flange-1) '(0.0d0 0.0d0 0.0d0)) ; κέντρο κύκλου
+(setf (cut-data-center flange-1) '(250.0d0 250.0d0 0.0d0)) ; κέντρο κύκλου
 (setf (cut-data-R0 flange-1) (/ 445.0 2.0)) ; ακτίνα οπών
 (setf (cut-data-tool-diameter flange-1) 4.0d0) ; διάμετρος εργαλείου
 (setf (cut-data-hole-diameter flange-1) 22.0)  ; ακτίνα κύκλου
@@ -66,6 +65,7 @@
 (defun deg-to-rad (a)
   (/ a (/ 180.0 *pi*)))
 
+
 (defun holes-center (flange)
   (let ((center (cut-data-center flange))
 	(R0 (cut-data-R0 flange))
@@ -79,9 +79,6 @@
 	(list  X Y Z)
 		  ))))
 
-;;;
-(holes-center flange-1)
-
 (defun goto (point str)
   (format str "G0 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F ~35T ~%" (x-of point) (y-of point) (z-of point)))
 
@@ -94,68 +91,35 @@
 (defun clockwise-move-R (point r f str)
   (format str "G2 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F  R~8,3F  F~D ~%" (x-of point) (y-of point) (z-of point) r f))
 
-(defun error-message (str)
-  (format *STANDARD-OUTPUT* "ERROR:~a~%" str)
-  (s+ "ERROR:" str)
-  )
-(error-message "hello")
-
-(+ 1.0(car(last '(1 2 3))))
-
-(defun drill-circle (point z1 z0 step-down step-up ri fcut str)
-  ;;;helicoidal circle drilling
-  ;;;point: center of the drilling circle
-  ;;;Z1:    start/top of the helicoidal move
-  ;;;Z0:    end/bottom of the helicoidal move
-  ;;;ri:    helica radius
-  ;;;step-down: step down
-  ;;;step-up: step up
-  ;;;fcut: cutting f
-  ;;;str: output stream
+(defun drill-circle (point ri fcut str)
   (let ((xi (x-of point))
 	(yi (y-of point))
-	(zi (z-of point))
-	(zi Z1)
-	)
+	(zi (z-of point)))
     ;;(linear-move (list (+ xi ri) yi zi) fcut str)
+   (goto (list (+ xi ri) yi zi) str)
+   (clockwise-move-R (list (- xi r1 ) (+ yi ) zi) ri fcut str)
+   (clockwise-move-R (list (+ xi r1 ) (+ yi ) zi) ri fcut str)
+   (clockwise-move-R (list (- xi r1 ) (+ yi ) (* zi 0.75)) ri fcut str)
+   (clockwise-move-R (list (+ xi r1 ) (+ yi ) (* zi 0.75)) ri fcut str)
 
-    ;;;G0 to the top center
-    (goto (list    xi     yi z1) str)
+   (clockwise-move-R (list (- xi r1 ) (+ yi ) (* zi 0.5)) ri fcut str)
+   (clockwise-move-R (list (+ xi r1 ) (+ yi ) (* zi 0.5)) ri fcut str)
 
-    ;;;G0 to start of helicoidal move
-    (goto (list (+ xi ri) yi z1) str)
-
-    (loop for zh in (step-over z1 z0 step-down)
-	  do (
-	      ;;; we do one half helical and one half circle at same height
-              (clockwise-move-R (list (- xi ri ) (+ yi ) zh) ri fcut str)
-	      (clockwise-move-R (list (+ xi r1 ) (+ yi ) zh) ri fcut str)
-	      ))
-    ;;;add this line to do a full circle at the bottom
-    (clockwise-move-R (list (- xi ri ) (+ yi ) z0) ri fcut str)
-
-    ;;;start to get up
-    (loop for zh in (step-over z0 z1 step-up)
-	  do (
-              (clockwise-move-R (list (- xi ri ) (+ yi ) zh) ri fcut str)
-	      (clockwise-move-R (list (+ xi r1 ) (+ yi ) zh) ri fcut str)
-	      ))
-    (clockwise-move-R (list (- xi ri ) (+ yi ) z1) ri fcut str)
-
-    ;;;return to the center of the circle at top
-    (goto (list    xi     yi z1) str)
-
-    ;;; add a blank line
-    (format t "~%" str)
+   (clockwise-move-R (list (- xi r1 ) (+ yi ) (* zi 0.25)) ri fcut str)
+   (clockwise-move-R (list (+ xi r1 ) (+ yi ) (* zi 0.25)) ri fcut str)
+   
+   (clockwise-move-R (list (- xi r1 ) (+ yi ) 0.0d0) ri fcut str)
+   (clockwise-move-R (list (+ xi r1 ) (+ yi ) 0.0d0) ri fcut str)
+   (clockwise-move-R (list (- xi r1 ) (+ yi ) 0.0d0) ri fcut str)
+   (clockwise-move-R (list (+ xi r1 ) (+ yi ) (* zi 0.25)) ri fcut str)
+   (clockwise-move-R (list (- xi r1 ) (+ yi ) (* zi 0.5)) ri fcut str)
+   (clockwise-move-R (list (+ xi r1 ) (+ yi ) (* zi 0.75)) ri fcut str)
+   (clockwise-move-R (list (- xi r1 ) (+ yi ) zi) ri fcut str)
+   (clockwise-move-R (list (+ xi r1 ) (+ yi ) zi) ri fcut str)
 					;    (goto (list (+ xi ri) yi zi) str)
 					;    (goto (list (+ xi ri) yi zi) str)
 
    ))
-
-
-(drill-circle '(0 0 100.0) (/(- 9.5 3.175)2.0) 500.0 *STANDARD-OUTPUT*)
-
-
 
 (defun drilling-cycle (flange str)
   (let ((holes-centers (hole-center flange))

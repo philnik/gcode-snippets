@@ -56,12 +56,6 @@
       (format str "G3 ~4T X~8,4F ~15T Y~8,4F ~25T Z~8,4F  I~8,4F ~35T J~8,4F ~45T F~D ~%" (x-of point) (y-of point) (z-of point) i j f))
   )
 
-;(ccw-ij '(0 0.0 0.0))
-
-;; (setf fxy 1000.0)
-;; (let ((fxy 100.0))
-;;   (ccw-R '(0 0 0) 1)
-
 (defun point+ (point-1 point-2)
 (mapcar #'+ point-1 point-2))
 

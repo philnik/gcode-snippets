@@ -1,21 +1,23 @@
+
 (defconstant *pi* 3.141592653589793d0)
 (defconstant *2pi* 6.283185307179586d0)
-(defparameter center '(250.0d0 250.0d0 100.0d0))
+(defparameter center '(100.0d0 100.0d0 100.0d0))
 (defparameter holes-count 12)
 (defparameter bridges-length 4.0) ;; μήκος bridges
+(defparameter Rout 140.00d0) ;;εξωτερικός κύκλος
 (defparameter no-bridges 8)
 (defparameter Z0 '(0.0 0.0 0.0))
-(defparameter ZSafe '(0.0 0.0 50.0d0))
-(defparameter Zstart '(0.0 0.0 18.0d0))
-(defparameter R0 445.0d0) ;; ακτίνα κύκλου οπών
-(defparameter Rout 495.0d0) ;; ακτίνα εξωτερικού κύκλου
-(defparameter Rslot 371.00d0) ;; ακτίνα εσωτερικού κύκλου(πατουρα)
-(defparameter Rin 359.00d0) ;; ακτίνα εσωτερικού κύκλου
-(defparameter h 7.5) ;; Υψος πατούρας
+(defparameter ZSafe '(0.0 0.0 25.0d0))
+(defparameter Zstart '(0.0 0.0 12.0d0))
+(defparameter R0 100) ;; ακτίνα κύκλου οπών
+(defparameter Rout 150) ;; ακτίνα εξωτερικού κύκλου
+(defparameter Rslot 50) ;; ακτίνα εσωτερικού κύκλου(πατουρα)
+(defparameter Rin 45) ;; ακτίνα εσωτερικού κύκλου
+(defparameter h 5) ;; Υψος πατούρας
 (defparameter fz+ 500.00) ;;προωση down
 (defparameter fz- 500.00) ;;προωση up
-(defparameter hole-diameter 20.0) ;;διάμετρος οπών
-(defparameter fxy 600.0) ;;; ταχεία πρόωση
+(defparameter hole-diameter 10.0) ;;διάμετρος οπών
+(defparameter fxy 1500.0) ;;; ταχεία πρόωση
 (defparameter frapid 3000.0) ;;; προωση κοπής κύκλου
 (defparameter tool-diameter-3175 3.175d0) ;;; διάμετρος εργαλείου κοπής
 (defparameter tool-diameter-8 8d0) ;;; διάμετρος εργαλείου
@@ -58,9 +60,9 @@
 
 ;(ccw-ij '(0 0.0 0.0))
 
-;; (setf fxy 1000.0)
-;; (let ((fxy 100.0))
-;;   (ccw-R '(0 0 0) 1)
+(setf fxy 1000.0)
+(let ((fxy 100.0))
+  (ccw-R '(0 0 0) 1)
 
 (defun point+ (point-1 point-2)
 (mapcar #'+ point-1 point-2))
@@ -133,8 +135,7 @@
 	 )
   )
 
-(defun cut-circle (center radius &optional &rest keys
-		   &key	(f fxy) (start-angle 0.0) (overcut 0.0) (direction :cw)  (ZSafe Zsafe) (ZStart ZStart))
+(defun cut-circle (center radius &optional &rest keys &key (f fxy) (start-angle 0.0) (overcut 0.0) (direction :cw))
   (let* ((xi (x-of center))
 	 (yi (y-of center))
 	 (zi (z-of center))
@@ -144,8 +145,8 @@
 	(:cw (setf end-point (polar-to-rect-deg center radius (+ start-angle overcut))))
 	(:ccw (setf end-point (polar-to-rect-deg center radius (- start-angle overcut)))))
       (concatenate 'string
-		 (goto (point+ start-point  ZSafe) nil)
-		 (goto (point+ start-point ZStart) nil)
+		 (goto (point+ start-point  Zsafe) nil)
+		 (goto (point+ start-point Zstart) nil)
 		 (linear-move  start-point fz- nil)
 		 (case direction 
 		     (:cw (cw-R end-point radius :f f))
@@ -200,15 +201,15 @@
 ;(bridge-angles (arc-length-to-rad 4.0d0 100.0) 5)
 ;(print-bridge-angles (arc-length-to-rad 4.0d0 100.0) 5)
 
-(defun outer-circle (point diameter tool-diameter fxy ZSafe Zstart  str)
+(defun outer-circle (point diameter tool-diameter fxy str)
   (let 	 ((radius (/ (+ diameter tool-diameter) 2.0d0)))
     (cut-circle-radius point radius fxy str))) 
 
-(defun inner-circle (point diameter tool-diameter fxy  ZSafe Zstart str)
+(defun inner-circle (point diameter tool-diameter fxy str)
   (let 	 ((radius (/ (- diameter tool-diameter) 2.0d0)))
     (cut-circle-radius point radius fxy str)))
 
-(defun holes-center (center R0 holes-count ZSafe Zstart )
+(defun holes-center (center R0 holes-count)
   (loop for i from 0 to (- holes-count 1.0)
 	collect (let* ((angle (* i 2.0d0 (/ 3.141592653 holes-count)))
 		      (X (+ (x-of center) (* R0 (cos angle))))
@@ -217,7 +218,7 @@
 	(list  X Y Z)
 	)))
   
-(defun helical-drill (point hole-diameter tool-diameter fxy ZSafe Zstart  str)
+(defun helical-drill (point hole-diameter tool-diameter fxy str)
   (let* ((xi (x-of point))
 	 (yi (y-of point))
 	 (zi (z-of point))
@@ -262,29 +263,23 @@
 	 )
   )
 
-(defun hellical-drill-cycle (center hole-diameter tool-diameter R0 holes-count fxy ZSafe Zstart  str)
-  ;;center: center of the cycle
-  ;;hole-diameter: external diameter of holes
-  ;;tool-diameter: tool diameter
-  ;;R0: diameter of circle holes are
-  ;;holes-count: number of holes
-  ;;fxy: feed
-  ;;str: where to write data
-  (loop for i in (holes-center center R0 holes-count ZSafe Zstart )
+
+(defun hellical-drill-cycle (center hole-diameter tool-diameter R0 holes-count fxy str)
+  (loop for i in (holes-center center R0 holes-count)
 	do (progn
 	     (let ((nu (point+ i Zsafe))
 		   (ns (point+ i Zstart))
 		   (nd (point+ i '(0 0 0.0))))
 		 
 	       (goto nu str)
-	       (helical-drill center hole-diameter tool-diameter fxy ZSafe Zstart  str)
+	       (helical-drill center hole-diameter tool-diameter fxy str)
 			   ))
       )
   )
 
 
-(defun drill-cycle (center R0 holes-count ZSafe Zstart  str)
-(loop for i in (holes-center center R0 holes-count ZSafe Zstart )
+(defun drill-cycle (center R0 holes-count str)
+(loop for i in (holes-center center R0 holes-count)
       do (progn
 	   (let ((nu (point+ i Zsafe))
 		 (ns (point+ i Zstart))
@@ -300,17 +295,32 @@
 )
 
 (format t "(circles-8.0)~%")
-(helical-drill center 9.5d0 3.175d0 600 ZSafe Zstart  *STANDARD-OUTPUT*)
+(helical-drill center 9.5d0 3.175d0 600 *STANDARD-OUTPUT*)
 
-(hellical-drill-cycle center 10.0 3.175 100.0 8.0 500 ZSafe Zstart  *STANDARD-OUTPUT*)
+(hellical-drill-cycle center 10.0 3.175 100.0 8.0 500 *STANDARD-OUTPUT*)
 
 (format t "(circles-3.175)~%")
-(drill-cycle (list 1000.0 1000.0 100.0)  200.0 12.0  ZSafe Zstart *STANDARD-OUTPUT*)
+(drill-cycle (list 1000.0 1000.0 100.0)  200.0 12.0 *STANDARD-OUTPUT*)
 (format t "(drilling D10)~%")
 
-(defun helical-program (center R0 holes-count ZSafe Zstart )
+;(outer-circle (list 100.0 100.0 100.0)  50.0 12.0 *STANDARD-OUTPUT*)
+					;(drilling-cycle-2 center R0 holes-count *STANDARD-OUTPUT*)
+;(outer-circle center  50.0 12.0 500.0 *STANDARD-OUTPUT*)
+;(inner-circle center  50.0 12.0 500.0 *STANDARD-OUTPUT*)
+
+;; ;; (defmacro write-code-to-file (code file)
+;; ;;   `(
+;; ;;    (with-open-file (stream ,file :direction :output :if-exists :overwrite)
+;; ;;      (format stream ,code)
+;; ;;      )
+;; ;;    )
+;; ;;   )
+
+;; (write-code-to-file (helical-program center R0 holes-count) (s+ *pathdir*  "helical.ngc"))
+
+(defun helical-program (center R0 holes-count)
   (with-output-to-string (stream fstr)
-    (drill-cycle center R0 holes-count ZSafe Zstart  stream)
+    (drill-cycle center R0 holes-count stream)
     (format stream "~%")
     (format stream "M30~%")
     (format stream "~%")
@@ -323,24 +333,25 @@
  (setq fstr (make-array '(0) :element-type 'base-char
                              :fill-pointer 0 :adjustable t))
 
-;(setq fstr "")
+(setq fstr "")
 (with-output-to-string (s fstr)
     (format s "here's some output")
     (input-stream-p s))
-;; fstr
+ fstr
 
-(with-open-file (stream "/home/quill/linuxcnc/nc_files/circles.ngc" :direction :output :if-exists :overwrite)
-  (drill-cycle center R0 holes-count ZSafe Zstart  stream)
+   (with-open-file (stream "/home/quill/linuxcnc/nc_files/circles.ngc" :direction :output :if-exists :overwrite)
+
+  (drill-cycle center R0 holes-count stream)
   (format stream "~%")
   (format stream "M30~%")
   (format stream "~%")
   (format stream "%")
   (format stream "%")
 )
- 
+
 
 (with-open-file (stream "/home/quill/linuxcnc/nc_files/helical-drill.ngc" :direction :output :if-exists :overwrite :if-does-not-exist :create)
-  (hellical-drill-cycle center 30.0 3.175 100.0 12.0 500 ZSafe Zstart  stream)
+  (hellical-drill-cycle center 30.0 3.175 100.0 12.0 500 stream)
   (format stream "~%")
   (format stream "M30~%")
   (format stream "~%")
@@ -349,65 +360,22 @@
 )
 
 ;; currently works
-(hellical-drill-cycle '(0 0 0) 10.0 4 100.0 12.0 1700  ZSafe Zstart  *STANDARD-OUTPUT*)
+(hellical-drill-cycle '(0 0 0) 10.0 4 100.0 12.0 1700 *STANDARD-OUTPUT*)
 ;;;
 
-(with-open-file (stream (s+ *pathdir*  "outer-circle.ngc") :direction :output :if-exists :overwrite :if-does-not-exist :create)
-  (outer-circle (list 100.0 100.0 100.0)  50.0 3.0 500.0  ZSafe Zstart  stream)
+(with-open-file (stream (s+ *pathdir*  "outer-circle.ngc") :direction :output :if-exists :overwrite))
+
+  (outer-circle (list 100.0 100.0 100.0)  50.0 3.0 500.0 stream)
   (format stream "~%")
   (format stream "M30~%")
   (format stream "~%")
   (format stream "%")
   (format stream "%")
-  )
+)
 
+(with-open-file (stream  (s+ *pathdir* "inner-circle.ngc") :direction :output :if-exists :overwrite)
 
-(with-open-file (stream  (s+ *pathdir* "inner-circle.ngc") :direction :output :if-exists :overwrite :if-does-not-exist :create)
-  (inner-circle (list 100.0 100.0 100.0)  50.0 3.0 500.0  ZSafe Zstart  stream)
-  (format stream "~%")
-  (format stream "M30~%")
-  (format stream "~%")
-  (format stream "%")
-  (format stream "%")
-  )
-
-  
-
-
-(hellical-drill-cycle center 30.0 3.175 100.0 12.0 500  ZSafe Zstart  *STANDARD-OUTPUT*)
-
-
-
-;; hellical-drill-cycle (center hole-diameter tool-diameter R0 holes-count fxy str)
-  ;;center: center of the cycle
-  ;;hole-diameter: external diameter of holes
-  ;;tool-diameter: tool diameter
-  ;;R0: diameter of circle holes are
-  ;;holes-count: number of holes
-  ;;fxy: feed
-  ;;str: where to write data
-
-(defparameter center '(250.0d0 250.0d0 0.00d0))
-(defparameter hole-diameter 20.0) ;;διάμετρος οπών
-(defparameter tool-diameter 3.175d0) ;;; διάμετρος εργαλείου κοπής
-(defparameter R0 (/ 445.0d0 2.0)) ;; ακτίνα κύκλου οπών
-(defparameter holes-count 12)
-(defparameter fxy 600.0) ;;; ταχεία πρόωση
-(defparameter Z0 '(0.0 0.0 0.0))
-(defparameter ZSafe '(0.0 0.0 50.0d0))
-(defparameter Zstart '(0.0 0.0 18.0d0))
-(defparameter fz+ 500.00) ;;προωση down
-(defparameter fz- 500.00) ;;προωση up
-(defparameter frapid 3000.0) ;;; προωση κοπής κύκλου
-(defparameter *stream* *STANDARD-OUTPUT*)
-
-(setq file-1 "/home/quill/linuxcnc/lisp/nc_files/helical-drill-00.cnc")
-
-
-
-
-(with-open-file (stream file-1 :direction :output :if-exists :overwrite :if-does-not-exist :create)
-  (hellical-drill-cycle center hole-diameter tool-diameter R0 holes-count fxy ZSafe Zstart stream)
+  (inner-circle (list 100.0 100.0 100.0)  50.0 3.0 500.0 stream)
   (format stream "~%")
   (format stream "M30~%")
   (format stream "~%")
@@ -416,21 +384,18 @@
 )
 
 
-(defparameter center '(0.00d0 0.0d0 0.00d0))
-(defparameter hole-diameter 10.0) ;;διάμετρος οπών
-(defparameter tool-diameter 1.0d0) ;;; διάμετρος εργαλείου κοπής
-(defparameter R0 (/ 200.0d0 2.0)) ;; ακτίνα κύκλου οπών
-(defparameter holes-count 4)
-(defparameter fxy 600.0) ;;; ταχεία πρόωση
-(defparameter Z0 '(0.0 0.0 0.0))
-(defparameter ZSafe '(0.0 0.0 50.0d0))
-(defparameter Zstart '(0.0 0.0 16.0d0))
-(defparameter fz+ 500.00) ;;προωση down
-(defparameter fz- 500.00) ;;προωση up
-(defparameter frapid 3000.0) ;;; προωση κοπής κύκλου
-(defparameter *stream* *STANDARD-OUTPUT*)
+;;check output as a list
 
+(defmacro c (center radius)
+  `(list 'command "circle" ,center "r" ,radius)
+  )
 
-(hellical-drill-cycle center hole-diameter tool-diameter R0 holes-count fxy ZSafe Zstart *STANDARD-OUTPUT*)
+(c '(list 0 0) 1)
+
+(format t "~S~%" '(command "circle" (list 0 0) "R" 3))
+
+(format t "~S~%" (c '(list 0 0) 1))
+
+  
 
 

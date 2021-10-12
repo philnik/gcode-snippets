@@ -79,6 +79,19 @@
 	(list  X Y Z)
 		  ))))
 
+(setq a '())
+(push 1 a)
+
+
+  (defun polar-to-rect (center radius angle)
+    (list
+     (+ (x-of center) (* radius (cos angle)))
+     (+ (y-of center) (* radius (sin angle)))
+     ))
+
+(polar-to-rect '(0 0) 1 1)
+
+
 ;;;
 (holes-center flange-1)
 

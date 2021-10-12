@@ -23,6 +23,20 @@
 #+SETUPFILE:   /home/quill/public_html/org-html-themes/org/theme-readtheorg-local.setup
 
 
+* git functions
+
+git clone git@bitbucket.org:philnik/cnc.git
+git clone https://philnik@bitbucket.org/philnik/cnc.git
+
+git remote add origin https://username@your.bitbucket.domain:7999/yourproject/repo.git 
+
+git remote add bitbucket  https://philnik@bitbucket.org:7999/philnik/cnc.git
+
+git push -u origin master
+
+
+
+
 * quicklisp functions
 
 
@@ -86,6 +100,8 @@
       (list '(0.0d0 0.0d0) (list (cos angle) (sin angle)))
       ))
 
+
+
   (defun angle-vector (v)
     (let* ((p1 (nth 0 v))
            (p2 (nth 1 v))
@@ -125,7 +141,7 @@
            (p2y (y-of p2))
            (length (length-vector v))
            (angle (angle-vector v)))
-      (list p1 (list (+ p1x (* length (cos angle))) (+ p1y (* length (sin angle)))))
+      (list p1 (list (+ p1x (* scale-factor (cos angle))) (+ p1y (* scale-factor (sin angle)))))
       ))
 
   (defun vector-rotate (v b-angle)
@@ -141,7 +157,8 @@
       (list p1 (list (+ p1x (* length (cos new-angle))) (+ p1y (* length (sin new-angle)))))
       ))
 
-  (defun vector-transform-by-vector (v tr-vector)
+
+(defun vector-transform-to-zero (v)
     (let* ((p1 (nth 0 v))
            (p2 (nth 1 v))
            (p1x (x-of p1))
@@ -149,6 +166,19 @@
            (p2x (x-of p2))
            (p2y (y-of p2))
            (tr-point (list (- p2x p1x) (- p2y p1y))))
+      (list (list 0.0d0 0.0d0) tr-point)
+      ))
+
+
+(defun vector-transform-by-vector (v tr-vector)
+    (let* ((p1 (nth 0 v))
+           (p2 (nth 1 v))
+           (p1x (x-of p1))
+           (p1y (y-of p1))
+           (p2x (x-of p2))
+           (p2y (y-of p2))
+           (zero-vector (vector-transform-to-zero tr-vector))
+	   (tr-point (cadr zero-vector)))
       (list (p+ p1 tr-point) (p+ p2 tr-point))
       ))
 
@@ -159,54 +189,64 @@
 	   (normal-vrotate (normal-vector vrotate))
 	   (dvector (vector-scale normal-vrotate distance))
 	   )
-      (vector-transform-by-vector v dvector)
-      ))
+      (progn
+;	(print-vector-data dvector)
+;	(print-vector-data normal-vrotate)
+	(vector-transform-by-vector v dvector)
+	)))
 
-  (defun vector-reverse (v)
+(defun vector-reverse (v)
     (let* ((p1 (nth 0 v))
            (p2 (nth 1 v)))
       (list p2 p1)
       ))
 
+    (defun x-of (point) (nth 0 point))
+    (defun y-of (point) (nth 1 point))
+    (defun z-of (point) (nth 2 point))
+
 #+END_SRC
 
-#+RESULTS[15de9f7f1bb56c565acddd28a7da35cccbfedc78]: math-functions
-: VECTOR-REVERSE
+#+RESULTS[a93d7667d56ba9c9000128dd0172bb203e6a3004]: math-functions
+: Z-OF
 
 #+NAME: test-math-functions-0
 #+BEGIN_SRC lisp :results output raw
 
-    (setq point3 '(10.0d0 20.0))
-    (setq point4 '(20.0d0 20.0d0))
-    (setq v (list point3 point4))
-  (setq a-angle (* *pi* 0.5d0))
-(let* ((vdir (normal-vector v))
-      (voffset (vector-offset v 10.0))
-      (point1 (nth 0  voffset))
-      (point2 (nth 1 voffset))
-      )
-      (format t "|point1:| ~8,4F | ~8,4F |~%" (x-of point3) (y-of point3))
-      (format t "|point2:| ~8,4F | ~8,4F |~%" (x-of point4) (y-of point4))
-  (format t "|direction-angle:| ~8,4F |  |~%" (rad-to-deg(angle-vector v)))
-  (format t "|point3:| ~8,4F | ~8,4F |~%" (x-of point1) (y-of point1))
-  (format t "|point4:| ~8,4F | ~8,4F |~%" (x-of point2) (y-of point2)))
+(setq point3 '(100.0d0 0.0))
+(setq point4 '(100.0d0 10.0d0))
+(setq v (list point3 point4))
+(setq a-angle (* *pi* 0.5d0))
+(setq offset -10.0)
 
-(let ((v-rotate (vector-rotate v a-angle)))
-        (format t "|direction-rotate:| ~8,4F | ~8,4F |~%" (x-of v-rotate) (y-of v-rotate))
-        (format t "|direction-angle:| ~8,4F |  |~%" (rad-to-deg(angle-vector v-rotate)))
-	
-        ))
+(defun print-vector-data (v)
+    (let* ((p1 (nth 0 v))
+	   (p2 (nth 1 v))
+	   (p1x (x-of p1))
+	   (p1y (y-of p1))
+	   (p2x (x-of p2))
+	   (p2y (y-of p2)))
+      (progn
+	(format t "|start-point:| ~8,4F | ~8,4F |~%" p1x p1y)
+	(format t "|end-point:| ~8,4F | ~8,4F |~%" p2x p2y)
+	(format t "|direction-angle:| ~8,4F |  |~%" (rad-to-deg(angle-vector v)))
+	)))
+
+  (print-vector-data v)
+
+  (setq v2 (vector-offset v offset))
+
+  (print-vector-data v2)
 
 #+END_SRC
 
 #+RESULTS: test-math-functions-0
-| point1:           |       10.0000 |         20.0000 |
-| point2:           |       20.0000 |         20.0000 |
-| direction-angle:  |        0.0000 |                 |
-| point3:           |       20.0000 |         20.0000 |
-| point4:           |       30.0000 |         20.0000 |
-| direction-rotate: | (10.0d0 20.0) | (10.0d0 30.0d0) |
-| direction-angle:  |       90.0000 |                 |
+| start-point:     | 100.0000 |  0.0000 |
+| end-point:       | 100.0000 | 10.0000 |
+| direction-angle: |  90.0000 |         |
+| start-point:     |  90.0000 |  0.0000 |
+| end-point:       |  90.0000 | 10.0000 |
+| direction-angle: |  90.0000 |         |
 
 #+NAME: test-math-functions
 #+BEGIN_SRC lisp :results output raw
@@ -329,12 +369,6 @@
 
 #+NAME: point-functions
 #+BEGIN_SRC lisp  :noweb yes :tangle step.lisp :comments both :cache yes
-    (defun x-of (point) (nth 0 point))
-    (defun y-of (point) (nth 1 point))
-    (defun z-of (point) (nth 2 point))
-
-  (defun add-vector-point (point-1 point-2)
-    (mapcar #'+ point-1 point-2))
 
 #+END_SRC
 

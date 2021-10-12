@@ -1,0 +1,116 @@
+
+
+
+
+(defparameter center '(100.0 100.0 0.0))
+
+(defparameter holes-count 8)
+
+(defparameter Z0 '(0.0 0.0 0.0))
+(defparameter ZSafe '(0.0 0.0 20.0))
+(defparameter Zstart '(0.0 0.0 12.0))
+
+(defparameter R0 100)
+
+(defparameter f-drill-up 500.00) ;;προωση down
+(defparameter f-drill-down 500.00) ;;προωση up
+
+(defparameter r1 10.0) ;;διάμετρος οπών
+
+(defparameter fcut 1500.0) ;;; προωση κοπής κύκλου
+
+(defparameter d1 3.175) ;;; διάμετρος εργαλείου
+
+(defparameter *stream* *STANDARD-OUTPUT*)
+
+
+(defun x-of (point) (nth 0 point))
+(defun y-of (point) (nth 1 point))
+(defun z-of (point) (nth 2 point))
+
+(setq centeri '())
+
+
+(defun holes-center (center R0 holes-count)
+  (loop for i from 0 to holes-count
+	collect (let* ((angle (* i (/ 360.0 holes-count)))
+		      (X (+ (x-of center) (* R0 (cos angle))))
+		      (Y (+ (y-of center) (* R0 (sin angle))))
+		      (Z (z-of center)))
+	(list  X Y Z)
+	)))
+  
+;(holes-center (list 0 0 0) 10 8)
+
+
+(defparameter current-point '(0.0 0.0 0.0))
+
+(defun goto (point str)
+  (format str "G0 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F ~35T ~%" (x-of point) (y-of point) (z-of point)))
+
+
+(defun linear-move (point f str)
+  (format str "G1 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F ~35T F~D ~%" (x-of point) (y-of point) (z-of point) f))
+
+
+(defun clockwise-move-ij (point i j f str)
+  (format str "G2 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F  I~8,3F ~35T J~8,3F ~45T F~D ~%" (x-of point) (y-of point) (z-of point) i j f))
+
+
+(defun clockwise-move-R (point r f str)
+  (format str "G2 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F  R~8,3F  F~D ~%" (x-of point) (y-of point) (z-of point) r f))
+
+
+(defun add-vector-point (point-1 point-2)
+(mapcar #'+ point-1 point-2))
+
+
+
+(defun drill-circle (point ri fcut)
+  (let ((xi (x-of point))
+	(yi (y-of point))
+	(zi (z-of point)))
+   (goto (list (+ xi ri) yi zi))
+   (clockwise-move-R (list (- xi r1 ) (+ yi ) (+ zi -2)) ri fcut)
+   (clockwise-move-R (list (+ xi r1 ) (+ yi ) (+ zi -4)) ri fcut)
+   (clockwise-move-R (list (- xi r1 ) (+ yi ) (+ zi -6)) ri fcut)
+   (clockwise-move-R (list (+ xi r1 ) (+ yi ) (+ zi -8)) ri fcut)
+   (clockwise-move-R (list (- xi r1 ) (+ yi ) (+ zi -10)) ri fcut)
+   (clockwise-move-R (list (+ xi r1 ) (+ yi ) (+ zi -10)) ri fcut)
+   (clockwise-move-R (list (- xi r1 ) (+ yi ) (+ zi -10)) ri fcut)
+   (clockwise-move-R (list (+ xi r1 ) (+ yi ) (+ zi -10)) ri fcut)
+   (clockwise-move-R (list (- xi r1 ) (+ yi ) (+ zi -10)) ri fcut)
+   (clockwise-move-R (list (+ xi r1 ) (+ yi ) (+ zi )) ri fcut)
+   (clockwise-move-R (list (- xi r1 ) (+ yi ) (+ zi )) ri fcut)
+   (goto (list (+ xi ri) yi zi))
+   )
+  )
+
+
+
+
+(defun drilling-cycle (center R0 hole-count str)
+(loop for i in (holes-center center R0 holes-count)
+      do (progn
+	   (let ((nu (add-vector-point i Zsafe))
+		 (nd (add-vector-point i '(0 0 0.0))))
+		 
+	     (goto nu str)
+	     (linear-move nd f-drill-down str)
+	     (linear-move nu f-drill-up str)
+;;	     (drill-circle nu r1 fcut )
+			   ))
+      )
+)
+
+(drilling-cycle center R0 hole-count *STANDARD-OUTPUT*)
+
+  (with-open-file (stream "/home/me/linuxcnc/nc_files/circles.ngc" :direction :output :if-exists :overwrite)
+    (with-output-to-string (str)
+      (format str (get-internal-time))
+      (eval `(format ,str ,control-string ,@values))
+      (write-string str stream)
+      ))
+  )
+
+

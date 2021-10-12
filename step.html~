@@ -1,0 +1,843 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2021-09-26 Κυρ 12:59 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>&lrm;</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="Nikolakopoulos Filippos" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+
+<link rel="stylesheet" type="text/css" href="org-html-themes/src/readtheorg_theme/css/htmlize.css"/>
+<link rel="stylesheet" type="text/css" href="org-html-themes/src/readtheorg_theme/css/readtheorg.css"/>
+<script type="text/javascript" src="org-html-themes/src/lib/js/jquery.min.js"></script>
+<script type="text/javascript" src="org-html-themes/src/lib/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="org-html-themes/src/lib/js/jquery.stickytableheaders.min.js"></script>
+<script type="text/javascript" src="org-html-themes/src/readtheorg_theme/js/readtheorg.js"></script>
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:e95b018ef3580986a04669f1b5879592219e2a7a&dn=public-domain.txt Public Domain
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+</head>
+<body>
+<div id="content">
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org68f4ba8">1. math-functions</a></li>
+<li><a href="#orgddff0f8">2. stream-patches</a></li>
+<li><a href="#org68a4f95">3. point-functions</a></li>
+<li><a href="#orgb3f2af9">4. move-functions</a></li>
+<li><a href="#org83779d8">5. Step function</a></li>
+<li><a href="#org3f52fc0">6. divide circle</a>
+<ul>
+<li><a href="#org546968a">6.1. test-divide-circle</a></li>
+</ul>
+</li>
+<li><a href="#org7511478">7. helical-drill</a>
+<ul>
+<li><a href="#org87cbd93">7.1. define helical-drill function</a></li>
+<li><a href="#org647faba">7.2. test helical function</a></li>
+<li><a href="#org85e86f4">7.3. define drill array</a></li>
+<li><a href="#org951b571">7.4. test drill array</a></li>
+<li><a href="#org315df72">7.5. drill-array-on-divide-circle</a></li>
+</ul>
+</li>
+<li><a href="#org53ce88d">8. simple-drill</a>
+<ul>
+<li><a href="#org893d331">8.1. define simple drill function</a></li>
+<li><a href="#orgf2e07cd">8.2. test drill function</a></li>
+<li><a href="#orgaac08e2">8.3. define drill array</a></li>
+<li><a href="#org663ed46">8.4. test drill array</a></li>
+<li><a href="#org9984120">8.5. drill-array-on-divide-circle</a></li>
+</ul>
+</li>
+<li><a href="#org06f816d">9. trochoidal move</a>
+<ul>
+<li><a href="#orgb808c72">9.1. circle 1</a></li>
+<li><a href="#orga31a310">9.2. divide-circle-2</a></li>
+<li><a href="#orgcc51d58">9.3. circle 1</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org68f4ba8" class="outline-2">
+<h2 id="org68f4ba8"><span class="section-number-2">1</span> math-functions</h2>
+<div class="outline-text-2" id="text-1">
+<div class="org-src-container">
+<pre class="src src-lisp" id="orgfefcb42">(defconstant *pi* 3.141592653589793d0)
+(defconstant *2pi* 6.283185307179586d0)
+
+(defun rad-to-deg (a)
+  (* (/ 180.0d0 *pi*) a))
+
+(defun deg-to-rad (a)
+  (/ a (/ 180.0d0 *pi*)))
+
+</pre>
+</div>
+
+<pre class="example">
+DEG-TO-RAD
+</pre>
+</div>
+</div>
+
+<div id="outline-container-orgddff0f8" class="outline-2">
+<h2 id="orgddff0f8"><span class="section-number-2">2</span> stream-patches</h2>
+<div class="outline-text-2" id="text-2">
+<div class="org-src-container">
+<pre class="src src-lisp" id="org42984b3">(defun prologue (spindle output-stream)
+  (format output-stream "(prologue)~% M3~% M5~% M9~% S~d ~% ~% (end of prologue)~%" spindle)
+  )
+(defun epilogue (output-stream)
+  (format output-stream "~%  (epilogue) M3~% M5~% M30~% ~% %% ~% (end of program)~% %%")
+  )
+</pre>
+</div>
+</div>
+</div>
+
+
+
+<div id="outline-container-org68a4f95" class="outline-2">
+<h2 id="org68a4f95"><span class="section-number-2">3</span> point-functions</h2>
+<div class="outline-text-2" id="text-3">
+<div class="org-src-container">
+<pre class="src src-lisp">  (defun x-of (point) (nth 0 point))
+  (defun y-of (point) (nth 1 point))
+  (defun z-of (point) (nth 2 point))
+
+(defun add-vector-point (point-1 point-2)
+  (mapcar #'+ point-1 point-2))
+
+</pre>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-orgb3f2af9" class="outline-2">
+<h2 id="orgb3f2af9"><span class="section-number-2">4</span> move-functions</h2>
+<div class="outline-text-2" id="text-4">
+<div class="org-src-container">
+<pre class="src src-lisp" id="org3e4f7c8">
+  (defun goto (point str)
+    (format str "G0 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F ~35T ~%" (x-of point) (y-of point) (z-of point)))
+
+  (defun linear-move (point f str)
+    (format str "G1 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F ~35T F~D ~%" (x-of point) (y-of point) (z-of point) f))
+
+  (defun clockwise-move-ij (point i j f str)
+    (format str "G2 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F  I~8,3F ~35T J~8,3F ~45T F~D ~%" (x-of point) (y-of point) (z-of point) i j f))
+
+  (defun clockwise-move-R (point r f str)
+    (format str "G02 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F  R~8,3F  F~D ~%" (x-of point) (y-of point) (z-of point) r f))
+
+(defun ccw-move-R (point r f str)
+  (format str "G03 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F  R~8,3F  F~D ~%" (x-of point) (y-of point) (z-of point) r f))
+
+
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org83779d8" class="outline-2">
+<h2 id="org83779d8"><span class="section-number-2">5</span> Step function</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+not used it is better to choose the points on an array
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp" id="org928c32a">(defun step-over (z0 z1 step)
+  (let* ((dz (- z1 z0))
+	 (no-steps(+ 0 (floor (/ dz step))))
+	 (result '())
+	 )
+    (push z1 result)
+    (dotimes (n no-steps)
+      (push (- (car result) step) result)
+      )
+    (if (/= z0 (car result))
+	(push z0 result))
+    result)
+  )
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-lisp" id="org2ed6a31">(format t "~a~%"  (step-over 10.0 1.0 -1.5))
+(format t "~a~%"  (step-over 1.0 10.0  1.5))
+</pre>
+</div>
+</div>
+</div>
+
+
+
+
+<div id="outline-container-org3f52fc0" class="outline-2">
+<h2 id="org3f52fc0"><span class="section-number-2">6</span> divide circle</h2>
+<div class="outline-text-2" id="text-6">
+<div class="org-src-container">
+<pre class="src src-lisp" id="orgc8c3577">
+(defun polar-to-rect (center radius angle)
+  (list
+   (+ (x-of center) (* radius (cos angle)))
+   (+ (y-of center) (* radius (sin angle)))
+   ))
+
+  (defun divide-circle (center radius no-of-points)
+    (let ((angle (/ *2pi* no-of-points))
+	  (point-array '()))
+
+      (dotimes (n no-of-points)
+	(push (polar-to-rect center radius (* n angle)) point-array)
+	)
+    point-array
+      ))
+
+</pre>
+</div>
+</div>
+
+
+<div id="outline-container-org546968a" class="outline-3">
+<h3 id="org546968a"><span class="section-number-3">6.1</span> test-divide-circle</h3>
+<div class="outline-text-3" id="text-6-1">
+<div class="org-src-container">
+<pre class="src src-lisp" id="orgda2a7e8">
+(loop for i in (divide-circle '(0 0) 280.0d0 16)
+      do (format t "| ~8,3F |  ~8,3F | ~%" (car i) (cadr i)))
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+<div id="outline-container-org7511478" class="outline-2">
+<h2 id="org7511478"><span class="section-number-2">7</span> helical-drill</h2>
+<div class="outline-text-2" id="text-7">
+</div>
+<div id="outline-container-org87cbd93" class="outline-3">
+<h3 id="org87cbd93"><span class="section-number-3">7.1</span> define helical-drill function</h3>
+<div class="outline-text-3" id="text-7-1">
+<div class="org-src-container">
+<pre class="src src-lisp" id="org5b7fa07">
+(defun helical-drill (point z-list radius f- f+ output-stream)
+  (let ((xi (x-of point))
+	(yi (y-of point))
+	(zstart (car z-list))
+	(zend (car (last z-list))))
+
+    (format output-stream "~%(helical drilling point: X~8,3F Y~8,3F)~%" (x-of point) (y-of point))
+
+    (goto (list (+ xi radius ) yi (pop z-list) ) output-stream)
+
+    (loop while z-list
+	  do (progn
+	       (clockwise-move-R (list (- xi radius ) yi (pop z-list) ) radius f- output-stream)
+	       (if (cdr z-list)
+		   (clockwise-move-R (list (+ xi radius ) yi (pop z-list) ) radius f- output-stream)
+		   (goto (list xi yi (pop z-list)) output-stream)
+		   )))
+    )
+  )    
+
+</pre>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org647faba" class="outline-3">
+<h3 id="org647faba"><span class="section-number-3">7.2</span> test helical function</h3>
+<div class="outline-text-3" id="text-7-2">
+<div class="org-src-container">
+<pre class="src src-lisp" id="orgbe37bbc">(setq z-list '(10.0 9.0 7.5 5.0 3.0 2.0 1.0 0.0 0.0 1.5 2.5 5.0 7.5 10.0 12.0))
+(setq radius 10.0) 
+(setq f- 600.0)
+(setq point '(0.0d0 0.0d0 0.0d0))
+(setq output-stream *STANDARD-OUTPUT*)
+(helical-drill point z-list radius f- f+ *STANDARD-OUTPUT*)
+(helical-drill point z-list 2.0 f- f+ *STANDARD-OUTPUT*)
+
+</pre>
+</div>
+</div>
+</div>
+
+
+
+
+<div id="outline-container-org85e86f4" class="outline-3">
+<h3 id="org85e86f4"><span class="section-number-3">7.3</span> define drill array</h3>
+<div class="outline-text-3" id="text-7-3">
+<div class="org-src-container">
+<pre class="src src-lisp" id="org365acfd">(defun helical-drill-array (point-array z-list radius f- f+ output-stream)
+  (loop for point in point-array
+	do (helical-drill point z-list radius f- f+ output-stream)
+	))
+</pre>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org951b571" class="outline-3">
+<h3 id="org951b571"><span class="section-number-3">7.4</span> test drill array</h3>
+<div class="outline-text-3" id="text-7-4">
+<p>
+We take the values from the following table:
+</p>
+<table id="org82e17b3" border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">x</th>
+<th scope="col" class="org-right">y</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">0,0</td>
+<td class="org-right">2,0</td>
+</tr>
+
+<tr>
+<td class="org-right">1,0</td>
+<td class="org-right">3,0</td>
+</tr>
+
+<tr>
+<td class="org-right">100</td>
+<td class="org-right">200</td>
+</tr>
+
+<tr>
+<td class="org-right">1</td>
+<td class="org-right">10</td>
+</tr>
+
+<tr>
+<td class="org-right">2</td>
+<td class="org-right">2</td>
+</tr>
+</tbody>
+</table>
+
+<div class="org-src-container">
+<pre class="src src-lisp" id="org24bc2a3">(setq z-list '(10.0 7.5 5.0 2.0  0.0 0.0  2.5  7.5  12.0))
+(setq radius 10.0) 
+(setq f- 600.0)
+(setq output-stream *STANDARD-OUTPUT*)
+
+(helical-drill-array point-array z-list radius f- f+ output-stream)
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org315df72" class="outline-3">
+<h3 id="org315df72"><span class="section-number-3">7.5</span> drill-array-on-divide-circle</h3>
+<div class="outline-text-3" id="text-7-5">
+<div class="org-src-container">
+<pre class="src src-lisp" id="orgb9c53aa">(setq z-list '(30.0 16.0 15.0 12.0 7.5 5.0 2.0  0.0 0.0 2.5 14  16.0 30.0 ))
+(setq radius 10.0) 
+(setq f- 1600.0)
+(setq output-stream *STANDARD-OUTPUT*)
+
+(setq center '(0.0d0 0.0d0))
+(setq divide-radius 100.0)
+(setq no-of-points 16) 
+(setq point-array (divide-circle center divide-radius no-of-points))
+
+(prologue 12000 output-stream) 
+(helical-drill-array point-array z-list radius f- f+ output-stream)
+(epilogue output-stream)
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div id="outline-container-org53ce88d" class="outline-2">
+<h2 id="org53ce88d"><span class="section-number-2">8</span> simple-drill</h2>
+<div class="outline-text-2" id="text-8">
+</div>
+<div id="outline-container-org893d331" class="outline-3">
+<h3 id="org893d331"><span class="section-number-3">8.1</span> define simple drill function</h3>
+<div class="outline-text-3" id="text-8-1">
+<div class="org-src-container">
+<pre class="src src-lisp" id="org1d3793b">
+(defun drill-point (point z-list f- f+ output-stream)
+  (let ((xi (x-of point))
+	(yi (y-of point))
+	(zstart (car z-list))
+	(zend (car (last z-list))))
+
+    (format output-stream "~%(drilling point: X~8,3F Y~8,3F)~%" (x-of point) (y-of point))
+
+    (goto (list xi yi (pop z-list)) output-stream)
+
+    (loop while z-list
+	  do (progn
+	       (linear-move (list xi yi (pop z-list)) f- output-stream)
+	       (if (cdr z-list)
+		   (linear-move (list xi yi (pop z-list)) f- output-stream)
+		   (goto (list xi yi (pop z-list)) output-stream)
+		   ))))
+    ))
+
+
+</pre>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-orgf2e07cd" class="outline-3">
+<h3 id="orgf2e07cd"><span class="section-number-3">8.2</span> test drill function</h3>
+<div class="outline-text-3" id="text-8-2">
+<div class="org-src-container">
+<pre class="src src-lisp" id="orge2c199f">(setq z-list '(20.0 10.0 5.0 0.0 5.0 10.0 20.0))
+(setq f- 600.0)
+(setq point '(0.0d0 0.0d0 0.0d0))
+(setq output-stream *STANDARD-OUTPUT*)
+(drill-point point z-list f- f+ *STANDARD-OUTPUT*)
+</pre>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-orgaac08e2" class="outline-3">
+<h3 id="orgaac08e2"><span class="section-number-3">8.3</span> define drill array</h3>
+<div class="outline-text-3" id="text-8-3">
+<div class="org-src-container">
+<pre class="src src-lisp" id="orgab0373a">(defun drill-array (point-array z-list f- f+ output-stream)
+  (loop for point in point-array
+	do (drill-point point z-list f- f+ output-stream)
+	))
+</pre>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org663ed46" class="outline-3">
+<h3 id="org663ed46"><span class="section-number-3">8.4</span> test drill array</h3>
+<div class="outline-text-3" id="text-8-4">
+<p>
+We take the values from the following table:
+</p>
+<table id="orgdb66756" border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">x</th>
+<th scope="col" class="org-right">y</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">0,0</td>
+<td class="org-right">2,0</td>
+</tr>
+
+<tr>
+<td class="org-right">1,0</td>
+<td class="org-right">3,0</td>
+</tr>
+
+<tr>
+<td class="org-right">100</td>
+<td class="org-right">200</td>
+</tr>
+
+<tr>
+<td class="org-right">1</td>
+<td class="org-right">10</td>
+</tr>
+
+<tr>
+<td class="org-right">2</td>
+<td class="org-right">2</td>
+</tr>
+</tbody>
+</table>
+
+<div class="org-src-container">
+<pre class="src src-lisp" id="org9398800">(setq z-list '(10.0 7.5 5.0 2.0  0.0 0.0  2.5  7.5  12.0))
+(setq f- 600.0)
+(setq output-stream *STANDARD-OUTPUT*)
+
+(drill-array point-array z-list f- f+ output-stream)
+</pre>
+</div>
+</div>
+</div>
+
+
+
+<div id="outline-container-org9984120" class="outline-3">
+<h3 id="org9984120"><span class="section-number-3">8.5</span> drill-array-on-divide-circle</h3>
+<div class="outline-text-3" id="text-8-5">
+<div class="org-src-container">
+<pre class="src src-lisp" id="orgf7a59b9">(setq z-list '(30.0 16.0 15.0 12.0 7.5 5.0 2.0  0.0 0.0 2.5 14  16.0 30.0 ))
+(setq radius 10.0) 
+(setq f- 1600.0)
+(setq output-stream *STANDARD-OUTPUT*)
+
+(setq center '(0.0d0 0.0d0))
+(setq divide-radius 100.0)
+(setq no-of-points 16) 
+(setq point-array (divide-circle center divide-radius no-of-points))
+
+(prologue 12000 output-stream) 
+(drill-array point-array z-list f- f+ output-stream)
+(epilogue output-stream)
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+<div id="outline-container-org06f816d" class="outline-2">
+<h2 id="org06f816d"><span class="section-number-2">9</span> trochoidal move</h2>
+<div class="outline-text-2" id="text-9">
+<p>
+We devide the move on cycles
+</p>
+
+<ol class="org-ol">
+<li>Dive in to piece with helicoidal cutting</li>
+<li>Proceed to on straight move (or arc if move on arc)</li>
+<li>Do a full circle ( this move will be a half circle later)</li>
+<li>move to 2</li>
+</ol>
+
+<p>
+We skip (1) for now.
+</p>
+</div>
+
+<div id="outline-container-orgb808c72" class="outline-3">
+<h3 id="orgb808c72"><span class="section-number-3">9.1</span> circle 1</h3>
+<div class="outline-text-3" id="text-9-1">
+<div class="org-src-container">
+<pre class="src src-lisp" id="org9f084da">
+	;;;linear move
+  (setq l-step 1.5d0)
+	;;;radius of circle
+  (setq radius 1.5d0)
+  (setq zi 0.0)
+  (setq f- 600)
+
+  (setq start-point '(0.0d0 0.0d0))
+
+  (setq output-stream *STANDARD-OUTPUT*)
+
+  (setq x0 (x-of start-point))
+  (setq y0 (y-of start-point))
+
+  (prologue 10000 output-stream)
+  (dotimes (n 100)
+    (let ((xi (+ x0 (* n l-step)))
+	  (yi (+ y0 (* n l-step))))
+      (linear-move (list xi y0 zi)  f- output-stream)
+      (clockwise-move-R (list xi (+ y0 radius radius) zi) radius f- output-stream)
+      (clockwise-move-R (list xi (+ y0 0.0) zi) radius f- output-stream)
+      ))
+(epilogue output-stream)
+</pre>
+</div>
+
+<p>
+<a href="test-divide.ngc">test-divide.ngc</a>
+</p>
+</div>
+</div>
+
+
+
+<div id="outline-container-orga31a310" class="outline-3">
+<h3 id="orga31a310"><span class="section-number-3">9.2</span> divide-circle-2</h3>
+</div>
+
+
+
+
+<div id="outline-container-orgcc51d58" class="outline-3">
+<h3 id="orgcc51d58"><span class="section-number-3">9.3</span> circle 1</h3>
+<div class="outline-text-3" id="text-9-3">
+<div class="org-src-container">
+<pre class="src src-lisp" id="orga2ee363">
+	;;;linear move
+  (setq l-step 1.5d0)
+	;;;radius of circle
+  (setq radius 1.5d0)
+  (setq zi 0.0)
+  (setq f- 600)
+
+  (setq start-point '(0.0d0 0.0d0))
+
+  (setq output-stream *STANDARD-OUTPUT*)
+
+  (setq x0 (x-of start-point))
+  (setq y0 (y-of start-point))
+
+  (prologue 10000 output-stream)
+  (dotimes (n 100)
+    (let ((xi (+ x0 (* n l-step)))
+	  (yi (+ y0 (* n l-step))))
+      (linear-move (list xi y0 zi)  f- output-stream)
+      (ccw-move-R (list xi (+ y0 radius radius) zi) radius f- output-stream)
+      (linear-move (list xi (+ y0 0.0) zi)  f- output-stream)
+      ))
+(epilogue output-stream)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Nikolakopoulos Filippos</p>
+<p class="date">Created: 2021-09-26 Κυρ 12:59</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

@@ -23,12 +23,6 @@ find_root( ex2,t, 0, 1000);
 my_preamble:"set terminal wxt;set size ratio -1; set view equal xy "$
 
 
-plot2d([[parametric,4.5*cos(t),4.5*sin(t),[t,0,7]] ,  [parametric,1.5*cos(t),1.5*sin(t),[t,0,7]],[parametric, X(t), Y(t), [t, 15, 45]]],[x,-5,5],[y,-5,5],[same_xy],[gnuplot_term, wxt],[gnuplot_preamble,my_preamble]);
-
-plot2d(X(t)**2+Y(t)**2,[t,200.0,500.0]);
-
-plot2d ([parametric, cos(t), sin(t), [t,-%pi,%pi],[nticks,80]], [x, -4/3, 4/3])$
-
 
 r1:5.0-3.175;
 r2:3.175/2.0;
@@ -38,6 +32,21 @@ v2:5.0;
 
 X(t):=r1*cos(v1*t)+r2*cos(v2*t);
 Y(t):=r1*sin(v1*t)+r2*sin(v2*t);
+
+plot2d([[parametric,4.5*cos(t),4.5*sin(t),[t,0,7]],
+  [parametric,1.5*cos(t),1.5*sin(t),[t,0,7]],
+  [parametric, X(t), Y(t), [t, 15, 45]]],
+  [x,-5,5],[y,-5,5],
+  [same_xy])$
+
+/*  [gnuplot_term, wxt],[gnuplot_preamble,my_preamble]);*/
+
+plot2d(X(t)**2+Y(t)**2,[t,200.0,500.0]);
+
+
+/*kill(all);*/
+plot2d ([parametric, cos(t), sin(t), [t,-%pi,%pi],[nticks,80]])$
+
 
 debugmode(true);
 
@@ -50,7 +59,7 @@ Xo(1);
 
 Yo(1);
 
-plot2d ([[parametric, X(t), Y(t),[t,0,7]],[parametric, (5-3.175/2.0)*cos(t), (5-3.175/2.0)*sin(t),[t,0,7]]],[same_xy]);
+plot2d([[parametric, X(t), Y(t),[t,0,7]],[parametric, (5-3.175/2.0)*cos(t), (5-3.175/2.0)*sin(t),[t,0,7]]],[same_xy]);
 
 
 
@@ -88,3 +97,57 @@ ac:v^2/2.0;
 
 t:v/ac;
 s:ac*t^2;
+
+
+
+/* R=1000.0
+
+  s:(x1-x0)^2+(y1-y0)^2-R^2=0.0
+*/
+
+/* biarc from wikipedia */
+
+/* A:(-c,0) B(c,0)
+-%pi<a<%pi  -%pi<b<%pi
+u1=k1*L1   u2=k2*L2
+*/
+w(a,b):=(a+b)/2.0;
+k1(c,a,b,p):=-(1/c)*(sin(a)+(1/p)*sin(w(a,b)));
+k2(c,a,b,p):=(1/c)*(sin(b)+p*sin(w(a,b)));
+
+/* turning angles */
+u1(p,a,b):=2*carg(%e^(-%i*a)+p^-1*%e^(-%i*w(a,b)));
+u2(p,a,b):=2*carg(%e^(%i*b)+p*%e^(%i*w(a,b)));
+
+/* join points */
+
+g(a,b):=(a-b)/2.0;
+Xj(c,a,b,p):=(c*(p^2-1)/(p^2+2*p*cos(g(a,b))+1));
+Yj(c,a,b,p):=2*c*p*sin(g(a,b))/(p^2+2*p*cos(g(a,b))+1)
+
+/*example*/
+
+fa:0.0;
+fb:%pi/2.0,numer;
+c:1.0;
+p:1.0;
+ka:k1(c,fa,fb,p);
+kb:k2(c,fa,fb,p);
+1/ka;
+1/kb;
+ua:u1(p,fa,fb);
+ub:u2(p,fa,fb);
+XXj:Xj(c,fa,fb,p);
+YYj:Yj(c,fa,fb,p);
+
+print("arc 1:")$
+print("Start point:(",-c,",",0,")")$
+print("End point:(",XXj,",",YYj,")")$
+print("Radius:",1/ka)$
+print("   ")$
+print("arc 2:")$
+print("Start point:(",XXj,",",YYj,")")$
+print("End point:(",c,",",0,")")$
+print("Radius:",1/kb)$
+
+
