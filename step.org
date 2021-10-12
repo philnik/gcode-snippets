@@ -25,17 +25,17 @@
 
 * git functions
 
+git clone https://philnik@bitbucket.org/philnik/linuxcnc.git
+
 git clone git@bitbucket.org:philnik/cnc.git
+
 git clone https://philnik@bitbucket.org/philnik/cnc.git
 
 git remote add origin https://username@your.bitbucket.domain:7999/yourproject/repo.git 
 
-git remote add bitbucket  https://philnik@bitbucket.org:7999/philnik/cnc.git
+git remote add origin  https://philnik@bitbucket.org/philnik/linuxcnc.git
 
 git push -u origin master
-
-
-
 
 * quicklisp functions
 
@@ -57,6 +57,10 @@ git push -u origin master
 #+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both :cache yes
   (defconstant *pi* 3.141592653589793d0)
   (defconstant *2pi* 6.283185307179586d0)
+
+(defun x-of (point) (nth 0 point))
+(defun y-of (point) (nth 1 point))
+(defun z-of (point) (nth 2 point))
 
   (defun rad-to-deg (a)
     (* (/ 180.0d0 *pi*) a))
@@ -99,8 +103,6 @@ git push -u origin master
                  )))
       (list '(0.0d0 0.0d0) (list (cos angle) (sin angle)))
       ))
-
-
 
   (defun angle-vector (v)
     (let* ((p1 (nth 0 v))
@@ -200,10 +202,6 @@ git push -u origin master
            (p2 (nth 1 v)))
       (list p2 p1)
       ))
-
-    (defun x-of (point) (nth 0 point))
-    (defun y-of (point) (nth 1 point))
-    (defun z-of (point) (nth 2 point))
 
 #+END_SRC
 
@@ -307,12 +305,6 @@ git push -u origin master
 | point2:          |                         0.0000 |                       -20.0000 |
 | direction-angle: |                        -1.5708 |                                |
 | direction-angle: | ((0.0d0 10.0) (30.0d0 10.0d0)) |                                |
-
-
-
-
-
-
 
 ** test divide step
 
