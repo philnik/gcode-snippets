@@ -1,0 +1,145 @@
+# -*- mode:org; epa-file-encrypt-to: ("f.nikolakopoulos@gmail.com") -*-
+#+STARTUP: indent
+#+STARTUP: hidestars
+#+OPTIONS: html-link-use-abs-url:nil html-postamble:auto html-preamble:t html-scripts:t
+#+OPTIONS: html-style:t html5-fancy:t tex:t
+#+CREATOR: <a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.4.50.1 (<a href="http://orgmode.org">Org</a> mode 8.2.6)
+#+HTML_CONTAINER: div
+#+HTML_DOCTYPE: xhtml-strict
+#+HTML_HEAD:
+#+HTML_HEAD_EXTRA:
+#+HTML_LINK_HOME:
+#+HTML_LINK_UP:
+#+HTML_MATHJAX:
+#+INFOJS_OPT:
+#+LATEX_HEADER:
+#+LATEX_CLASS: article
+#+LATEX_CLASS_OPTIONS: [a4paper]
+#+LATEX_HEADER: \usepackage[cm-default]{fontspec}                                         
+#+LATEX_HEADER: \usepackage{xunicode}                                                     
+#+LATEX_HEADER: \usepackage{xltxtra}                                                      
+#+LATEX_HEADER: \usepackage{xgreek}                                                                                 
+#+LATEX_HEADER: \setmainfont[Mapping=tex-text]{Times New Roman}
+#+SETUPFILE:   /home/quill/public_html/org-html-themes/org/theme-readtheorg-local.setup
+
+* Drill-array-on-divide-circle
+#+name: drill-array-on-divide-circle
+#+BEGIN_SRC lisp :results output file :file test-divide.ngc
+  (setq z-list '(30.0 16.0 15.0 12.0 7.5 5.0 2.0  0.0 0.0 2.5 14  16.0 30.0 ))
+  (setq radius 10.0) 
+  (setq f- 1600.0)
+  (setq output-stream *STANDARD-OUTPUT*)
+
+  (setq center '(0.0d0 0.0d0))
+  (setq divide-radius 100.0)
+  (setq no-of-points 16) 
+  (setq point-array (divide-circle center divide-radius no-of-points))
+
+  (prologue 12000 output-stream) 
+  (drill-array point-array z-list f- f+ output-stream)
+  (epilogue output-stream)
+#+END_SRC
+
+#+RESULTS: drill-array-on-divide-circle
+[[file:test-divide.ngc]]
+
+* Drill array on rectangle
+We take the values from the following table:
+#+tblname: my-table
+|   x |   y |
+|-----+-----|
+| 0.0 | 0.0 |
+| 1.0 | 1.0 |
+| 2.0 | 2.0 |
+
+#+name: test-drill-array
+#+BEGIN_SRC lisp :results output :var point-array=my-table
+    (setq z-list '(10.0 7.5 5.0 2.0 0.0 0.0  2.5  7.5  12.0))
+    (setq radius 10.0) 
+    (setq f- 600.0)
+    (setq output-stream *STANDARD-OUTPUT*)
+
+    (helical-drill-array point-array z-list radius f- f- output-stream)
+#+END_SRC
+
+* Trochoidal-circle-external-610
+  
+#+NAME: test-trochoidal-circle-610
+#+BEGIN_SRC lisp :tangle yes :results output file :file trochoidal-circle-610--3.0mm-diameter-external.ngc :comments both :cache yes
+  (setq output-stream *STANDARD-OUTPUT*)
+                    ;;;linear step
+  (setq l-step 10.0d0)
+  (setq zi 0.0)
+  (setq f- 900)
+  (setq center '(0.0 0.0))
+  (setq tool-diameter 3.175d0)
+  (setq internal-radius (/ 610.0 2.0d0))
+                          ;;;most internal radius of the path
+
+  (setq trochoidal-width 4.5)
+  (setq z-list-in '(50.0 18.0 16.0 15.0 12.0 8.0 5.0 0.0 0.0))
+
+  (external-trochoidal-circle l-step zi f- center tool-diameter internal-radius trochoidal-width z-list-in output-stream)
+
+#+END_SRC
+
+#+RESULTS[40cc094f5c1473133d5f40d83231a9f85d803646]: test-trochoidal-circle-610
+[[file:trochoidal-circle-610--3.0mm-diameter-external.ngc]]
+
+#+RESULTS: test-trochoidal-circle
+[[file:trochoidal-circle.ngc]]
+
+* Trochoidal-circle-internal-500
+  
+#+NAME: test-trochoidal-internal-circle-500
+#+BEGIN_SRC lisp :tangle yes :results output file :file trochoidal-circle-500-diameter-internal.ng :comments both :cache yes
+  (setq output-stream *STANDARD-OUTPUT*)
+  (setq l-step 2.0d0)
+  (setq zi 7.5)
+  (setq f- 900)
+  (setq center '(0.0 0.0))
+
+  (setq internal-radius (/ 498 2.0d0))
+  (setq tool-diameter 3.175)
+  (setq trochoidal-width 4.5)
+  (setq z-list-in '(50.0 18.0 16.0 15.0 12.0 8.0 5.0 0.0 0.0))
+
+  (internal-trochoidal-circle l-step zi f- center tool-diameter internal-radius trochoidal-width z-list-in output-stream)
+
+#+END_SRC
+
+
+#+RESULTS: test-trochoidal-internal-circle-500
+[[file:trochoidal-circle-500-diameter-internal.ngc]]
+
+| x                 |  247.413 |   |
+| r-tool            |   1.5875 |   |
+| internal radius   | 249.0005 |   |
+|-------------------+----------+---|
+| internal diameter |      496 |   |
+| internal radius   |     248. |   |
+| x                 |  242.413 |   |
+| passes            |   1.5875 |   |
+|                   | 240.8255 |   |
+#+TBLFM: @3$2=@1+@2::@5$2=@4/2.0::@8$2=@6-@7
+
+* Trochoidal-circle-internal-496
+  
+#+NAME: test-trochoidal-internal-circle-496
+#+BEGIN_SRC lisp :tangle yes :results output file :file trochoidal-circle-496-diameter-internal.ngc :comments both :cache yes
+(setq output-stream *STANDARD-OUTPUT*)
+                    ;;;linear step
+(setq l-step 1.5d0)
+(setq zi 0.0)
+(setq f- 900)
+(setq center '(0.0 0.0))
+(setq internal-radius (/ 494 2.0d0))
+(setq tool-diameter 3.175)
+(setq trochoidal-width 4.0)
+
+(internal-trochoidal-circle l-step zi f- center tool-diameter internal-radius trochoidal-width z-list-in output-stream)
+
+#+END_SRC
+
+#+RESULTS: test-trochoidal-internal-circle-496
+[[file:trochoidal-circle-496-diameter-internal.ngc]]
