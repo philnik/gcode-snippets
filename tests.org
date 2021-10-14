@@ -213,8 +213,6 @@
   (setq point '(0.0d0 0.0d0 0.0d0))
   (setq output-stream *STANDARD-OUTPUT*)
   (helical-drill point z-list radius f- f+ *STANDARD-OUTPUT*)
-  (helical-drill point z-list 2.0 f- f+ *STANDARD-OUTPUT*)
-
 #+END_SRC
 
 #+RESULTS: test-helical-drill-point
@@ -236,113 +234,36 @@ G02   X -10.000   Y   0.000   Z   5.000  R  10.000  F600.0
 G02   X  10.000   Y   0.000   Z   7.500  R  10.000  F600.0 
 G02   X -10.000   Y   0.000   Z  10.000  R  10.000  F600.0 
 G1   X   0.000   Y   0.000   Z  12.000   F600.0 
-
-(helical drilling point: X   0.000 Y   0.000)
-G0   X   2.000   Y   0.000   Z  12.000   
-G02   X  -2.000   Y   0.000   Z   9.000  R   2.000  F600.0 
-G02   X   2.000   Y   0.000   Z   7.500  R   2.000  F600.0 
-G02   X  -2.000   Y   0.000   Z   5.000  R   2.000  F600.0 
-G02   X   2.000   Y   0.000   Z   3.000  R   2.000  F600.0 
-G02   X  -2.000   Y   0.000   Z   2.000  R   2.000  F600.0 
-G02   X   2.000   Y   0.000   Z   1.000  R   2.000  F600.0 
-G02   X  -2.000   Y   0.000   Z   0.000  R   2.000  F600.0 
-G02   X   2.000   Y   0.000   Z   0.000  R   2.000  F600.0 
-G02   X  -2.000   Y   0.000   Z   1.500  R   2.000  F600.0 
-G02   X   2.000   Y   0.000   Z   2.500  R   2.000  F600.0 
-G02   X  -2.000   Y   0.000   Z   5.000  R   2.000  F600.0 
-G02   X   2.000   Y   0.000   Z   7.500  R   2.000  F600.0 
-G02   X  -2.000   Y   0.000   Z  10.000  R   2.000  F600.0 
-G1   X   0.000   Y   0.000   Z  12.000   F600.0 
 #+end_example
 
+  
+** test divide circle
 
+#+name: test-divide-circle-2
+#+BEGIN_SRC lisp :results output raw
+        (setq center '(0.0 0.0))
+        (setq radius 280.0d0)
+        (setq trochoidal-width 10.0)
+        (setq no-of-points 8)
 
-** test drill array
+    (setq couple (point-couples center radius trochoidal-width no-of-points))
 
-We take the values from the following table:
-#+tblname: my-table
-|   x |   y |
-|-----+-----|
-| 0.0 | 0.0 |
-| 1.0 | 1.0 |
-| 2.0 | 2.0 |
+    (dotimes (i no-of-points)
+      (let* ((i (pop couple))
+             (in (car i))
+             (out (cadr i)))
+        (format t "| ~8,3F |  ~8,3F | | ~8,3F |  ~8,3F |  ~%" (x-of in) (y-of in) (x-of out) (y-of out))))
+  #+END_SRC
 
-
-#+name: test-drill-array
-#+BEGIN_SRC lisp :results output :var point-array=my-table
-    (setq z-list '(10.0 7.5 5.0 2.0 0.0 0.0  2.5  7.5  12.0))
-    (setq radius 10.0) 
-    (setq f- 600.0)
-    (setq output-stream *STANDARD-OUTPUT*)
-
-    (helical-drill-array point-array z-list radius f- f- output-stream)
-#+END_SRC
-
-#+RESULTS: test-drill-array
-#+begin_example
-
-(helical drilling point: X   0.000 Y   0.000)
-G0   X  10.000   Y   0.000   Z  10.000   
-G02   X -10.000   Y   0.000   Z   7.500  R  10.000  F600.0 
-G02   X  10.000   Y   0.000   Z   5.000  R  10.000  F600.0 
-G02   X -10.000   Y   0.000   Z   2.000  R  10.000  F600.0 
-G02   X  10.000   Y   0.000   Z   0.000  R  10.000  F600.0 
-G02   X -10.000   Y   0.000   Z   0.000  R  10.000  F600.0 
-G02   X  10.000   Y   0.000   Z   2.500  R  10.000  F600.0 
-G02   X -10.000   Y   0.000   Z   7.500  R  10.000  F600.0 
-G1   X   0.000   Y   0.000   Z  12.000   F600.0 
-
-(helical drilling point: X   1.000 Y   1.000)
-G0   X  11.000   Y   1.000   Z  10.000   
-G02   X  -9.000   Y   1.000   Z   7.500  R  10.000  F600.0 
-G02   X  11.000   Y   1.000   Z   5.000  R  10.000  F600.0 
-G02   X  -9.000   Y   1.000   Z   2.000  R  10.000  F600.0 
-G02   X  11.000   Y   1.000   Z   0.000  R  10.000  F600.0 
-G02   X  -9.000   Y   1.000   Z   0.000  R  10.000  F600.0 
-G02   X  11.000   Y   1.000   Z   2.500  R  10.000  F600.0 
-G02   X  -9.000   Y   1.000   Z   7.500  R  10.000  F600.0 
-G1   X   1.000   Y   1.000   Z  12.000   F600.0 
-
-(helical drilling point: X   2.000 Y   2.000)
-G0   X  12.000   Y   2.000   Z  10.000   
-G02   X  -8.000   Y   2.000   Z   7.500  R  10.000  F600.0 
-G02   X  12.000   Y   2.000   Z   5.000  R  10.000  F600.0 
-G02   X  -8.000   Y   2.000   Z   2.000  R  10.000  F600.0 
-G02   X  12.000   Y   2.000   Z   0.000  R  10.000  F600.0 
-G02   X  -8.000   Y   2.000   Z   0.000  R  10.000  F600.0 
-G02   X  12.000   Y   2.000   Z   2.500  R  10.000  F600.0 
-G02   X  -8.000   Y   2.000   Z   7.500  R  10.000  F600.0 
-G1   X   2.000   Y   2.000   Z  12.000   F600.0 
-#+end_example
-
-
-
-
-** drill-array-on-divide-circle
-
-#+name: drill-array-on-divide-circle
-#+BEGIN_SRC lisp :results output file :file test-helical-drill-on-circle.ngc
-  (setq z-list '(30.0 16.0 15.0 12.0 7.5 5.0 2.0  0.0 0.0 2.5 7.0 15.0 18.0  ))
-  (setq tool-diameter 3.175)
-  (setq external-diameter 10.0)
-  (setq radius (/ (- external-diameter tool-diameter)2.0d0))
-  (setq f- 600.0)
-  (setq output-stream *STANDARD-OUTPUT*)
-
-  (setq center '(0.0d0 0.0d0))
-  (setq divide-radius 300.0)
-  (setq no-of-points 4) 
-  (setq point-array (divide-circle center divide-radius no-of-points))
-
-  (prologue 2800 output-stream) 
-  (helical-drill-array point-array z-list radius f- f- output-stream)
-  (epilogue output-stream)
-#+END_SRC
-
-#+RESULTS: drill-array-on-divide-circle
-[[file:test-divide.ngc]]
-
-
+  #+RESULTS: test-divide-circle-2
+  |  280.000 |   -0.000 |   |  290.000 |   -0.000 |
+  |  197.990 | -197.990 |   |  205.061 | -205.061 |
+  |   -0.000 | -280.000 |   |   -0.000 | -290.000 |
+  | -197.990 | -197.990 |   | -205.061 | -205.061 |
+  | -280.000 |    0.000 |   | -290.000 |    0.000 |
+  | -197.990 |  197.990 |   | -205.061 |  205.061 |
+  |    0.000 |  280.000 |   |    0.000 |  290.000 |
+  |  197.990 |  197.990 |   |  205.061 |  205.061 |
 
 
 ** test drill function
@@ -355,67 +276,6 @@ G1   X   2.000   Y   2.000   Z  12.000   F600.0
   (setq output-stream *STANDARD-OUTPUT*)
   (drill-point point z-list f- f+ *STANDARD-OUTPUT*)
 #+END_SRC
-
-
-
-** test drill array
-
-We take the values from the following table:
-#+tblname: my-table
-|   x |   y |
-|-----+-----|
-| 0.0 | 2.0 |
-| 1.0 | 3.0 |
-| 100 | 200 |
-|   1 |  10 |
-|   2 |   2 |
-
-#+name: test-drill-array-
-#+BEGIN_SRC lisp :results output :var point-array=my-table
-    (setq z-list '(10.0 7.5 5.0 2.0  0.0 0.0  2.5  7.5  12.0))
-    (setq f- 600.0)
-    (setq output-stream *STANDARD-OUTPUT*)
-
-    (drill-array point-array z-list f- f+ output-stream)
-#+END_SRC
-
-#+RESULTS: test-drill-array-
-#+begin_example
-
-(drilling point: X   0.000 Y   0.000)
-G0   X   0.000   Y   0.000   Z  10.000   
-G1   X   0.000   Y   0.000   Z   7.500   F600.0 
-G1   X   0.000   Y   0.000   Z   5.000   F600.0 
-G1   X   0.000   Y   0.000   Z   2.000   F600.0 
-G1   X   0.000   Y   0.000   Z   0.000   F600.0 
-G1   X   0.000   Y   0.000   Z   0.000   F600.0 
-G1   X   0.000   Y   0.000   Z   2.500   F600.0 
-G1   X   0.000   Y   0.000   Z   7.500   F600.0 
-G0   X   0.000   Y   0.000   Z  12.000   
-
-(drilling point: X   1.000 Y   1.000)
-G0   X   1.000   Y   1.000   Z  10.000   
-G1   X   1.000   Y   1.000   Z   7.500   F600.0 
-G1   X   1.000   Y   1.000   Z   5.000   F600.0 
-G1   X   1.000   Y   1.000   Z   2.000   F600.0 
-G1   X   1.000   Y   1.000   Z   0.000   F600.0 
-G1   X   1.000   Y   1.000   Z   0.000   F600.0 
-G1   X   1.000   Y   1.000   Z   2.500   F600.0 
-G1   X   1.000   Y   1.000   Z   7.500   F600.0 
-G0   X   1.000   Y   1.000   Z  12.000   
-
-(drilling point: X   2.000 Y   2.000)
-G0   X   2.000   Y   2.000   Z  10.000   
-G1   X   2.000   Y   2.000   Z   7.500   F600.0 
-G1   X   2.000   Y   2.000   Z   5.000   F600.0 
-G1   X   2.000   Y   2.000   Z   2.000   F600.0 
-G1   X   2.000   Y   2.000   Z   0.000   F600.0 
-G1   X   2.000   Y   2.000   Z   0.000   F600.0 
-G1   X   2.000   Y   2.000   Z   2.500   F600.0 
-G1   X   2.000   Y   2.000   Z   7.500   F600.0 
-G0   X   2.000   Y   2.000   Z  12.000   
-#+end_example
-
 
 
 
@@ -490,123 +350,4 @@ We plan to test the trochoidal move on a line across x
 
 
 
-
-* test trochoidal
-
-    
-** test-trochoidal-circle-external-610
-  
-#+NAME: test-trochoidal-circle-610
-#+BEGIN_SRC lisp :tangle yes :results output file :file trochoidal-circle-610--3.0mm-diameter-external.ngc :comments both :cache yes
-  (setq output-stream *STANDARD-OUTPUT*)
-                    ;;;linear step
-  (setq l-step 10.0d0)
-  (setq zi 0.0)
-  (setq f- 900)
-  (setq center '(0.0 0.0))
-  (setq tool-diameter 3.175d0)
-  (setq internal-radius (/ 610.0 2.0d0))
-                          ;;;most internal radius of the path
-
-  (setq trochoidal-width 4.5)
-  (setq z-list-in '(50.0 18.0 16.0 15.0 12.0 8.0 5.0 0.0 0.0))
-
-  (external-trochoidal-circle l-step zi f- center tool-diameter internal-radius trochoidal-width z-list-in output-stream)
-
-#+END_SRC
-
-#+RESULTS[40cc094f5c1473133d5f40d83231a9f85d803646]: test-trochoidal-circle-610
-[[file:trochoidal-circle-610--3.0mm-diameter-external.ngc]]
-
-#+RESULTS: test-trochoidal-circle
-[[file:trochoidal-circle.ngc]]
-
-
-
-| x                 |   307.087 |        |
-| r-tool            |    1.5875 |        |
-| internal radius   |  305.4995 |        |
-| internal diameter |   610.999 |        |
-| length            | 1918.5369 | mm     |
-| feed              |       300 | mm/min |
-| passes            |         2 |        |
-|                   | 12.790246 | min    |
-#+TBLFM: @2$2=3.175/2.0::@3$2=@1-@2::@4$2=2*@3::@5$2=@4*3.14::@8$2=@5*@7/@6
-
-|   |  460 |
-|   |  600 |
-|   | 2120 |
-|   |      |
-#+TBLFM: @1$2=560-100::@2$2=700-100::@3$2=2*@1+2*@2
-
-
-
-
-
-** test-trochoidal-circle-internal-500
-  
-#+NAME: test-trochoidal-internal-circle-500
-#+BEGIN_SRC lisp :tangle yes :results output file :file trochoidal-circle-500-diameter-internal.ng :comments both :cache yes
-  (setq output-stream *STANDARD-OUTPUT*)
-  (setq l-step 2.0d0)
-  (setq zi 7.5)
-  (setq f- 900)
-  (setq center '(0.0 0.0))
-
-  (setq internal-radius (/ 498 2.0d0))
-  (setq tool-diameter 3.175)
-  (setq trochoidal-width 4.5)
-  (setq z-list-in '(50.0 18.0 16.0 15.0 12.0 8.0 5.0 0.0 0.0))
-
-  (internal-trochoidal-circle l-step zi f- center tool-diameter internal-radius trochoidal-width z-list-in output-stream)
-
-#+END_SRC
-
-
-#+RESULTS: test-trochoidal-internal-circle-500
-[[file:trochoidal-circle-500-diameter-internal.ngc]]
-
-| x                 |  247.413 |   |
-| r-tool            |   1.5875 |   |
-| internal radius   | 249.0005 |   |
-|-------------------+----------+---|
-| internal diameter |      496 |   |
-| internal radius   |     248. |   |
-| x                 |  242.413 |   |
-| passes            |   1.5875 |   |
-|                   | 240.8255 |   |
-#+TBLFM: @3$2=@1+@2::@5$2=@4/2.0::@8$2=@6-@7
-
-** test-trochoidal-circle-internal-496
-  
-#+NAME: test-trochoidal-internal-circle-496
-#+BEGIN_SRC lisp :tangle yes :results output file :file trochoidal-circle-496-diameter-internal.ngc :comments both :cache yes
-(setq output-stream *STANDARD-OUTPUT*)
-                    ;;;linear step
-(setq l-step 1.5d0)
-(setq zi 0.0)
-(setq f- 900)
-(setq center '(0.0 0.0))
-(setq internal-radius (/ 494 2.0d0))
-(setq tool-diameter 3.175)
-(setq trochoidal-width 4.0)
-
-(internal-trochoidal-circle l-step zi f- center tool-diameter internal-radius trochoidal-width z-list-in output-stream)
-
-#+END_SRC
-
-#+RESULTS: test-trochoidal-internal-circle-496
-[[file:trochoidal-circle-496-diameter-internal.ngc]]
-
-
-| x                 |  247.413 |   |
-| r-tool            |   1.5875 |   |
-| internal radius   | 249.0005 |   |
-|-------------------+----------+---|
-| internal diameter |      496 |   |
-| internal radius   |     248. |   |
-| x                 |  242.413 |   |
-| passes            |   1.5875 |   |
-|                   | 240.8255 |   |
-#+TBLFM: @3$2=@1+@2::@5$2=@4/2.0::@8$2=@6-@7
 
