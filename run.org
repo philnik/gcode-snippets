@@ -21,7 +21,7 @@
 #+LATEX_HEADER: \usepackage{xgreek}                                                                                 
 #+LATEX_HEADER: \setmainfont[Mapping=tex-text]{Times New Roman}
 #+SETUPFILE:   /home/quill/public_html/org-html-themes/org/theme-readtheorg-local.setup
-
+   
 * Drill-array-on-divide-circle
 #+name: drill-array-on-divide-circle
 #+BEGIN_SRC lisp :results output file :file test-divide.ngc
@@ -36,7 +36,7 @@
   (setq point-array (divide-circle center divide-radius no-of-points))
 
   (prologue 12000 output-stream) 
-  (drill-array point-array z-list f- f+ output-stream)
+  (drill-array point-array z-list f- f- output-stream)
   (epilogue output-stream)
 #+END_SRC
 
@@ -62,6 +62,43 @@ We take the values from the following table:
     (helical-drill-array point-array z-list radius f- f- output-stream)
 #+END_SRC
 
+#+RESULTS: test-drill-array
+#+begin_example
+
+(helical drilling point: X   0.000 Y   0.000)
+G0   X  10.000   Y   0.000   Z  10.000   
+G02   X -10.000   Y   0.000   Z   7.500  R  10.000  F600.0 
+G02   X  10.000   Y   0.000   Z   5.000  R  10.000  F600.0 
+G02   X -10.000   Y   0.000   Z   2.000  R  10.000  F600.0 
+G02   X  10.000   Y   0.000   Z   0.000  R  10.000  F600.0 
+G02   X -10.000   Y   0.000   Z   0.000  R  10.000  F600.0 
+G02   X  10.000   Y   0.000   Z   2.500  R  10.000  F600.0 
+G02   X -10.000   Y   0.000   Z   7.500  R  10.000  F600.0 
+G1   X   0.000   Y   0.000   Z  12.000   F600.0 
+
+(helical drilling point: X   1.000 Y   1.000)
+G0   X  11.000   Y   1.000   Z  10.000   
+G02   X  -9.000   Y   1.000   Z   7.500  R  10.000  F600.0 
+G02   X  11.000   Y   1.000   Z   5.000  R  10.000  F600.0 
+G02   X  -9.000   Y   1.000   Z   2.000  R  10.000  F600.0 
+G02   X  11.000   Y   1.000   Z   0.000  R  10.000  F600.0 
+G02   X  -9.000   Y   1.000   Z   0.000  R  10.000  F600.0 
+G02   X  11.000   Y   1.000   Z   2.500  R  10.000  F600.0 
+G02   X  -9.000   Y   1.000   Z   7.500  R  10.000  F600.0 
+G1   X   1.000   Y   1.000   Z  12.000   F600.0 
+
+(helical drilling point: X   2.000 Y   2.000)
+G0   X  12.000   Y   2.000   Z  10.000   
+G02   X  -8.000   Y   2.000   Z   7.500  R  10.000  F600.0 
+G02   X  12.000   Y   2.000   Z   5.000  R  10.000  F600.0 
+G02   X  -8.000   Y   2.000   Z   2.000  R  10.000  F600.0 
+G02   X  12.000   Y   2.000   Z   0.000  R  10.000  F600.0 
+G02   X  -8.000   Y   2.000   Z   0.000  R  10.000  F600.0 
+G02   X  12.000   Y   2.000   Z   2.500  R  10.000  F600.0 
+G02   X  -8.000   Y   2.000   Z   7.500  R  10.000  F600.0 
+G1   X   2.000   Y   2.000   Z  12.000   F600.0 
+#+end_example
+
 * Trochoidal-circle-external-610
   
 #+NAME: test-trochoidal-circle-610
@@ -75,19 +112,98 @@ We take the values from the following table:
   (setq tool-diameter 3.175d0)
   (setq internal-radius (/ 610.0 2.0d0))
                           ;;;most internal radius of the path
-
   (setq trochoidal-width 4.5)
   (setq z-list-in '(50.0 18.0 16.0 15.0 12.0 8.0 5.0 0.0 0.0))
-
   (external-trochoidal-circle l-step zi f- center tool-diameter internal-radius trochoidal-width z-list-in output-stream)
+#+END_SRC
+
+
+
+
+* Trochoidal-circle-external-array-610
+  
+#+NAME: test-trochoidal-circle-array-610
+#+BEGIN_SRC lisp :tangle yes :results output file :file trochoidal-circle-array-610-3.0mm-diameter-external.ngc :comments both :cache yes
+  (setq output-stream *STANDARD-OUTPUT*)
+                    ;;;linear step
+  (setq l-step 2.0d0)
+  (setq zi 0.0)
+  (setq f- 900)
+  (setq center-array (list '(0.0 0.0) '(100 0.0) '(100.0 100.0) '(100.0 0.0)))
+  (setq tool-diameter 3.175d0)
+  (setq internal-radius (/ 100.0 2.0d0))
+                          ;;;most internal radius of the path
+  (setq trochoidal-width 4.5)
+  (setq z-list-in '(50.0 18.0 16.0 15.0 12.0 8.0 5.0 0.0 0.0))
+  (external-trochoidal-circle-array l-step zi f- center-array tool-diameter internal-radius trochoidal-width z-list-in output-stream)
 
 #+END_SRC
 
-#+RESULTS[40cc094f5c1473133d5f40d83231a9f85d803646]: test-trochoidal-circle-610
-[[file:trochoidal-circle-610--3.0mm-diameter-external.ngc]]
 
-#+RESULTS: test-trochoidal-circle
-[[file:trochoidal-circle.ngc]]
+
+* Trochoidal-circle-external-array-610
+  
+#+NAME: test-trochoidal-circle-array-610-data
+#+BEGIN_SRC lisp :tangle yes :results output raw :comments both :cache yes
+(setq output-stream *STANDARD-OUTPUT*)
+                    ;;;linear step
+(setq l-step 2.0d0)
+(setq zi 0.0)
+(setq f- 900)
+(setq center-array (list '(0.0 0.0) '(100 0.0) '(100.0 100.0) '(100.0 0.0)))
+(setq tool-diameter 3.175d0)
+(setq internal-radius (/ 100.0 2.0d0))
+(setq trochoidal-width 4.5)
+(setq external-radius (+ internal-radius trochoidal-width))
+
+(setq z-list-in '(50.0 18.0 16.0 15.0 12.0 8.0 5.0 0.0 0.0))
+
+(format t "|l-step|~f| | mm|~%" l-step)
+(format t "|zi |~f|  |mm|~%" zi)
+(format t "|f- |~f| | mm/min|~%" f-)
+(format t "|----|~%")
+(loop for center in center-array
+      do (format t "|center:|~f|~f |mm x mm|~%" (car center) (cadr center)))
+(format t "|----|~%")
+(format t "|tool-diameter |~f| | mm|~%" tool-diameter)
+(format t "|trochoidal-width|~f|| mm| ~%" trochoidal-width)
+(format t "|internal-radius|~f| | mm |~%" internal-radius)
+(format t "|external-radius|~f| | mm|~%" external-radius)
+(format t "|----|~%")
+(format t "|internal-cutting-radius|~f| | mm |~%" (- internal-radius (/ tool-diameter 2.0)))
+(format t "|external-cutting-radius|~f| | mm|~%" (+ external-radius (/ tool-diameter 2.0)))
+(format t "|internal-cutting-daimeter|~f| | mm |~%" (* 2.0 (- internal-radius (/ tool-diameter 2.0))))
+(format t "|external-cutting-diameter|~f| | mm|~%" (* 2.0(+ external-radius (/ tool-diameter 2.0))))
+(format t "|----|~%")
+
+
+#+END_SRC
+
+#+RESULTS[c1938b14366ef7e6abfca14540cfc371e0e8d30b]: test-trochoidal-circle-array-610-data
+| l-step                    |     2.0 |       | mm      |
+| zi                        |     0.0 |       | mm      |
+| f-                        |   900.0 |       | mm/min  |
+|---------------------------+---------+-------+---------|
+| center:                   |     0.0 |   0.0 | mm x mm |
+| center:                   |   100.0 |   0.0 | mm x mm |
+| center:                   |   100.0 | 100.0 | mm x mm |
+| center:                   |   100.0 |   0.0 | mm x mm |
+|---------------------------+---------+-------+---------|
+| tool-diameter             |   3.175 |       | mm      |
+| trochoidal-width          |     4.5 |       | mm      |
+| internal-radius           |    50.0 |       | mm      |
+| external-radius           |    54.5 |       | mm      |
+|---------------------------+---------+-------+---------|
+| internal-cutting-radius   | 48.4125 |       | mm      |
+| external-cutting-radius   | 56.0875 |       | mm      |
+| internal-cutting-daimeter |  96.825 |       | mm      |
+| external-cutting-diameter | 112.175 |       | mm      |
+|---------------------------+---------+-------+---------|
+
+#+NAME: test-trochoidal-circle-array-610-data
+#+BEGIN_SRC lisp :tangle yes :results output file :file trochoidal-circle-array-610-3.0mm-diameter-external.ngc :comments both :cache yes
+  (external-trochoidal-circle-array l-step zi f- center-array tool-diameter internal-radius trochoidal-width z-list-in output-stream)
+#+END_SRC
 
 * Trochoidal-circle-internal-500
   
@@ -95,11 +211,11 @@ We take the values from the following table:
 #+BEGIN_SRC lisp :tangle yes :results output file :file trochoidal-circle-500-diameter-internal.ng :comments both :cache yes
   (setq output-stream *STANDARD-OUTPUT*)
   (setq l-step 2.0d0)
-  (setq zi 7.5)
+  (setq zi 0.0)
   (setq f- 900)
   (setq center '(0.0 0.0))
 
-  (setq internal-radius (/ 498 2.0d0))
+  (setq internal-radius (/ 496 2.0d0))
   (setq tool-diameter 3.175)
   (setq trochoidal-width 4.5)
   (setq z-list-in '(50.0 18.0 16.0 15.0 12.0 8.0 5.0 0.0 0.0))
@@ -108,38 +224,28 @@ We take the values from the following table:
 
 #+END_SRC
 
+#+RESULTS[222ecd476c0e42a1f06bb25d357716aaa2ad6720]: test-trochoidal-internal-circle-500
+[[file:trochoidal-circle-500-diameter-internal.ng]]
 
-#+RESULTS: test-trochoidal-internal-circle-500
-[[file:trochoidal-circle-500-diameter-internal.ngc]]
-
-| x                 |  247.413 |   |
-| r-tool            |   1.5875 |   |
-| internal radius   | 249.0005 |   |
-|-------------------+----------+---|
-| internal diameter |      496 |   |
-| internal radius   |     248. |   |
-| x                 |  242.413 |   |
-| passes            |   1.5875 |   |
-|                   | 240.8255 |   |
-#+TBLFM: @3$2=@1+@2::@5$2=@4/2.0::@8$2=@6-@7
 
 * Trochoidal-circle-internal-496
-  
-#+NAME: test-trochoidal-internal-circle-496
-#+BEGIN_SRC lisp :tangle yes :results output file :file trochoidal-circle-496-diameter-internal.ngc :comments both :cache yes
-(setq output-stream *STANDARD-OUTPUT*)
-                    ;;;linear step
-(setq l-step 1.5d0)
-(setq zi 0.0)
-(setq f- 900)
-(setq center '(0.0 0.0))
-(setq internal-radius (/ 494 2.0d0))
-(setq tool-diameter 3.175)
-(setq trochoidal-width 4.0)
 
-(internal-trochoidal-circle l-step zi f- center tool-diameter internal-radius trochoidal-width z-list-in output-stream)
+#+NAME: test-trochoidal-internal-circle-496
+#+BEGIN_SRC lisp :tangle yes :results output file :file trochoidal-circle-496-diameter-internal.ng :comments both :cache yes :session step
+  (setq output-stream *STANDARD-OUTPUT*)
+  (setq l-step 2.0d0)
+  (setq zi 0.0)
+  (setq f- 900)
+  (setq center '(0.0 0.0))
+
+  (setq internal-radius (/ 495 2.0d0))
+  (setq tool-diameter 3.175)
+  (setq trochoidal-width 4.5)
+  (setq z-list-in '(50.0 18.0 16.0 15.0 12.0 8.0 5.0 0.0 0.0))
+
+  (internal-trochoidal-circle l-step zi f- center tool-diameter internal-radius trochoidal-width z-list-in output-stream)
 
 #+END_SRC
 
-#+RESULTS: test-trochoidal-internal-circle-496
-[[file:trochoidal-circle-496-diameter-internal.ngc]]
+#+RESULTS[4a9abd43523f61620b0f54d74445fb50a0c7d751]: test-trochoidal-internal-circle-496
+[[file:trochoidal-circle-496-diameter-internal.ng]]
