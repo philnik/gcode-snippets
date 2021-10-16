@@ -22,6 +22,26 @@
 #+LATEX_HEADER: \setmainfont[Mapping=tex-text]{Times New Roman}
 #+SETUPFILE:   /home/quill/public_html/org-html-themes/org/theme-readtheorg-local.setup
 
+* install maxima
+(setf *default-pathname-defaults* (truename "/usr/local/src/maxima-code/"))
+(load "configure.lisp")
+(configure)
+(quit)
+(setf *default-pathname-defaults* (truename "/usr/local/src/maxima-code/src/"))
+
+(load "maxima-build.lisp")
+(maxima-compile)
+
+(quit)
+
+* load maxima at startup
+
+#+BEGIN_SRC lisp :exports none
+(setf *default-pathname-defaults* (truename "/usr/local/src/maxima-code/src/"))
+(load "maxima-build.lisp")
+(maxima-load)
+(cl-user::run)
+#+END_SRC
 
 * git functions
 
@@ -37,9 +57,15 @@ git remote add origin  https://philnik@bitbucket.org/philnik/linuxcnc.git
 
 git push -u origin master
 
+
+* integrate maxima to lisp
+
+** TODO run slime on maxima
+
+** TODO compile maxima source code
+
+
 * quicklisp functions
-
-
 #+name: quicklisp-functions
 #+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both
     ;; (load "/home/quill/quicklisp/setup.lisp")
@@ -51,7 +77,7 @@ git push -u origin master
 #+RESULTS: quicklisp-functions
 : NIL
 
-* math-functions
+* math functions
 
 #+name: math-functions
 #+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both :cache yes
@@ -68,6 +94,16 @@ git push -u origin master
   (defun deg-to-rad (a)
     (/ a (/ 180.0d0 *pi*)))
 
+#+END_SRC
+
+#+RESULTS[e7a6c136cfa9ea7db7b92ccdefb7600b7f8aba3d]: math-functions
+: DEG-TO-RAD
+
+
+* vector functions
+
+#+name: vector-functions
+#+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both :cache yes
   (defun no-of-points-from-arc-radius (steps radius)
     "we get the no-of-points to divide circle"
     (let* ((divide (/ (* *2pi* radius) steps))
@@ -75,7 +111,6 @@ git push -u origin master
                   ;;;turn to integer and find the closest to make 4-quarters
       (* (round (/ divide 8.0))8))
     )
-
   (defun length-vector (v)
     (let* ((p1 (nth 0 v))
            (p2 (nth 1 v))
@@ -191,8 +226,6 @@ git push -u origin master
 	   (dvector (vector-scale normal-vrotate distance))
 	   )
       (progn
-;	(print-vector-data dvector)
-;	(print-vector-data normal-vrotate)
 	(vector-transform-by-vector v dvector)
 	)))
 
@@ -204,11 +237,85 @@ git push -u origin master
 
 #+END_SRC
 
-#+RESULTS[dbac9486d0d582f119c034d8658f16103c3a4904]: math-functions
+
+* arcs
+
+
+** Descriptions of the problem
+
+*** Arc definition
+We will can define a 2d arc in more than one ways
+
+1. center - start point, end point
+2. radius - start point, end point
+
+   We choose to define internally by (2)
+
+*** Arc offset
+   To calculate arc offset
+- offset outside we just increase radius and keep offset start angle and end angle
+- offset inside
+  - offset distance < radius
+    treat it like outside
+  - offset distance > radius
+    we return a point, moving the mid of the arc through center at offset distance
+
+*** Intersection of 2 circles
+Intersection of 2 circles is defined by:
+
+*** Find the center of an arc
+To find center of an arc
+We search for a point that has equal distance from the 2 points. We can form the point by intersecting 2 circles
+
+
+
+
+**** There are some ways to implement this, analytical and numerical.
+
+***** Couple maxima with lisp
+Maxima is for symbolic calculations
+[[~/org/maxima.org][maxima-examples]]
+
+
+***** Numerical solutions
+Numerical solutions of solving the problem 
+
+** Arc functions  
+#+name: arc-functions
+#+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both :cache yes
+(setq arc-3points  (list '(0.0d0 0.0d0) '(0.0d0 1.0d0) '(1.0d0 0.0d0)))
+(setq arc-by-radius  (list 100.0 '(0.0d0 1.0d0) '(1.0d0 0.0d0)))
+
+(defun radius-arc (arc-cen-2p)  ;; untested
+  "we will calculate radius of an arc"
+  "actually this radius is the distance from first point to each of the points"
+  (let* ((center (nth 0 arc-cen-2p))
+	 (start-point (nth 1 arc-cen-2p))
+	 (end-point (nth 2 arc-cen-2p))
+	 (v1 (list center start-point))
+	 (v2 (list center end-point))
+	 )
+    (if ((- (length v1) (length v2)) 0.0)
+	(format t "error can not form arc from points and center")
+	(length v1)
+	)))
+    
+(defun center-arc (arc-rad)
+)  
+
+(defun offset-arc (arc)
+  )
+
+#+END_SRC
+
+#+RESULTS[dcc9b6abccd4008b406304ae1bb41fc70db3d278]: arc-functions
+: OFFSET-ARC
+
+#+RESULTS[f96ca535f3afa9934c3d576646a026cc6aaf5fbc]: vector-functions
 : VECTOR-REVERSE
 
-* stream-patches
-#+name: stream-patches
+* streams
+#+name: streams
 #+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both
   (defun prologue (spindle output-stream)
     (format output-stream "(prologue)~% M3~% M5~% M9~% S~d ~% ~% (end of prologue)~%" spindle)
@@ -217,6 +324,9 @@ git push -u origin master
     (format output-stream "~%  (epilogue) M3~% M5~% M30~% ~% %% ~% (end of program)~% %%")
     )
 #+END_SRC
+
+#+RESULTS: streams
+: EPILOGUE
 
 #+RESULTS: stream-patches
 : EPILOGUE
@@ -350,8 +460,6 @@ Divide a circle on points
 #+END_SRC
 
 #+RESULTS: helical-drill-array
-
-
 
 * simple-drill
 
