@@ -36,14 +36,19 @@
 
 * load maxima at startup
 
-#+BEGIN_SRC lisp :exports none
+It does not work like source block.
+I have to copy the code to slime.
+
+//#+BEGIN_SRC lisp :exports none
 (setf *default-pathname-defaults* (truename "/usr/local/src/maxima-code/src/"))
 (load "maxima-build.lisp")
 (maxima-load)
 (cl-user::run)
-#+END_SRC
+//#+END_SRC
 
 * git functions
+
+I try to work on git between machines
 
 git clone https://philnik@bitbucket.org/philnik/linuxcnc.git
 
@@ -80,7 +85,7 @@ git push -u origin master
 * math functions
 
 #+name: math-functions
-#+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both :cache yes
+#+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both :cache yes :session step
 (defconstant *pi* 3.141592653589793d0)
 (defconstant *2pi* 6.283185307179586d0)
 
@@ -96,14 +101,14 @@ git push -u origin master
 
 #+END_SRC
 
-#+RESULTS[e7a6c136cfa9ea7db7b92ccdefb7600b7f8aba3d]: math-functions
+#+RESULTS[b462758a241fc5035821bc7a07908ae1de52a979]: math-functions
 : DEG-TO-RAD
 
 
 * vector functions
 
 #+name: vector-functions
-#+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both :cache yes
+#+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both :cache yes :session step
   (defun no-of-points-from-arc-radius (steps radius)
     "we get the no-of-points to divide circle"
     (let* ((divide (/ (* *2pi* radius) steps))
@@ -282,7 +287,8 @@ Numerical solutions of solving the problem
 
 ** Arc functions  
 #+name: arc-functions
-#+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both :cache yes
+#+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both :cache yes :session step
+
 (setq arc-3points  (list '(0.0d0 0.0d0) '(0.0d0 1.0d0) '(1.0d0 0.0d0)))
 (setq arc-by-radius  (list 100.0 '(0.0d0 1.0d0) '(1.0d0 0.0d0)))
 
@@ -308,15 +314,16 @@ Numerical solutions of solving the problem
 
 #+END_SRC
 
-#+RESULTS[dcc9b6abccd4008b406304ae1bb41fc70db3d278]: arc-functions
+#+RESULTS[11c97187122a179ddbd2ddba411a885e402eac8a]: arc-functions
 : OFFSET-ARC
 
-#+RESULTS[f96ca535f3afa9934c3d576646a026cc6aaf5fbc]: vector-functions
+#+RESULTS[eeb345a5d3cc4cbb5960c3d5a46f33f208206a5b]: vector-functions
 : VECTOR-REVERSE
 
 * streams
 #+name: streams
-#+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both
+#+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both :cache yes :session step
+
   (defun prologue (spindle output-stream)
     (format output-stream "(prologue)~% M3~% M5~% M9~% S~d ~% ~% (end of prologue)~%" spindle)
     )
@@ -325,7 +332,7 @@ Numerical solutions of solving the problem
     )
 #+END_SRC
 
-#+RESULTS: streams
+#+RESULTS[6867e514f194e7a79db1b0245d9c66a0469a933e]: streams
 : EPILOGUE
 
 #+RESULTS: stream-patches
@@ -335,7 +342,7 @@ Numerical solutions of solving the problem
 * move-functions
 
 #+NAME: move-functions
-#+BEGIN_SRC lisp  :noweb yes :tangle step.lisp :comments both
+#+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both :session step
 
     (defun goto (point str)
       (format str "G0 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F ~35T ~%" (x-of point) (y-of point) (z-of point)))
@@ -367,7 +374,8 @@ Numerical solutions of solving the problem
 
   not used it is better to choose the points on an array
 #+NAME: step-function
-#+BEGIN_SRC lisp  :noweb yes :tangle step.lisp :comments both
+#+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both :cache yes :session step
+
   (defun step-over (z0 z1 step)
     (let* ((dz (- z1 z0))
            (no-steps(+ 0 (floor (/ dz step))))
@@ -383,7 +391,7 @@ Numerical solutions of solving the problem
     )
 #+END_SRC
 
-#+RESULTS: step-function
+#+RESULTS[56daf0f39f109252d6f330f6df497dba1beac47d]: step-function
 : STEP-OVER
 
 
@@ -392,8 +400,8 @@ Numerical solutions of solving the problem
 Divide a circle on points
 
 #+name: divide-circle
-#+BEGIN_SRC lisp :results value :noweb yes :tangle yes :comments both
-  (defun polar-to-rect (center radius angle)
+#+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both :cache yes :session step
+(defun polar-to-rect (center radius angle)
     (list
      (+ (x-of center) (* radius (cos angle)))
      (+ (y-of center) (* radius (sin angle)))
@@ -413,7 +421,7 @@ Divide a circle on points
         ))
   #+END_SRC
 
-  #+RESULTS: divide-circle
+  #+RESULTS[5e35995966d361566cd415fd1a43c093500443f5]: divide-circle
   : DIVIDE-CIRCLE
 
 
@@ -422,8 +430,7 @@ Divide a circle on points
 ** define helical-drill function
   
 #+NAME: helical-drill-at-point
-#+BEGIN_SRC lisp :tangle yes :results output :comments both
-
+#+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both :cache yes :session step
   (defun helical-drill (point z-list radius f- f+ output-stream)
             (let ((xi (x-of point))
                   (yi (y-of point))
@@ -446,29 +453,32 @@ Divide a circle on points
 
 #+END_SRC
 
-#+RESULTS: helical-drill-at-point
+#+RESULTS[ad93de6ee6c18bc0279c6e23850ed2820dd31af0]: helical-drill-at-point
+: HELICAL-DRILL
 
 
 ** define drill array
 
 #+name: helical-drill-array
-#+BEGIN_SRC lisp :results output :noweb yes :tangle yes :comments both
-  (defun helical-drill-array (point-array z-list radius f- f+ output-stream)
+#+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both :cache yes :session step
+
+(defun helical-drill-array (point-array z-list radius f- f+ output-stream)
     (loop for point in point-array
           do (helical-drill point z-list radius f- f+ output-stream)
           ))
 #+END_SRC
 
-#+RESULTS: helical-drill-array
+#+RESULTS[c6b20c1e9975cf34349ff0d67ff9d333d2b7b68a]: helical-drill-array
+: HELICAL-DRILL-ARRAY
 
 * simple-drill
 
 ** define simple drill function
   
 #+NAME: drill-at-point
-#+BEGIN_SRC lisp :tangle yes :results output
+#+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both :cache yes :session step
 
-  (defun drill-point (point z-list f- f+ output-stream)
+(defun drill-point (point z-list f- f+ output-stream)
     (let ((xi (x-of point))
           (yi (y-of point))
           (zstart (car z-list))
@@ -487,20 +497,23 @@ Divide a circle on points
                      )))))
 #+END_SRC
 
-#+RESULTS: drill-at-point
+#+RESULTS[4171b0cf25178a410bcf5a8c59e9ac7c271b8508]: drill-at-point
+: DRILL-POINT
 
 
 * define drill array
 
 #+name: drill-array
-#+BEGIN_SRC lisp :results output :noweb yes :tangle yes 
+#+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both :cache yes :session step
+
   (defun drill-array (point-array z-list f- f+ output-stream)
     (loop for point in point-array
           do (drill-point point z-list f- f+ output-stream)
           ))
 #+END_SRC
 
-#+RESULTS: drill-array
+#+RESULTS[4825d7802bdaa7f7dbf17a09e82ad9f5b5b99083]: drill-array
+: DRILL-ARRAY
 
 * trochoidal move
 
@@ -522,7 +535,7 @@ We make an array of internal and external point of arcs this one is for moving o
 We borrow from divide circle the points
 
 #+name: divide-circle-2
-#+BEGIN_SRC lisp :results output raw :tangle yes :noweb yes
+#+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both :cache yes :session step
   (defun point-couples (center radius trochoidal-width no-of-points)
     (let* ((internal-points (divide-circle center radius no-of-points))
            (external-points (divide-circle center (+ radius trochoidal-width) no-of-points))
@@ -530,13 +543,13 @@ We borrow from divide circle the points
       couples))
   #+END_SRC
 
-  #+RESULTS: divide-circle-2
+  #+RESULTS[1570b16cbd2801cebc592e8de1237bda06898036]: divide-circle-2
+  : POINT-COUPLES
 
 ** external-trochoidal-circle
   
 #+NAME: trochoidal-circle
-#+BEGIN_SRC lisp :tangle yes :noweb yes :comments both :cache yes
-
+#+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both :cache yes :session step
     (defun internal-trochoidal-circle (l-step zi f- center tool-diameter internal-radius trochoidal-width z-list-in output-stream)
       (progn
         (setq radius (- internal-radius trochoidal-width (/ tool-diameter 2.0))) 
@@ -608,8 +621,56 @@ We borrow from divide circle the points
      (helical-drill helical-start-center z-list-out (/ trochoidal-width 2.0) f- f- output-stream)
      (epilogue output-stream)
      ))
+
+  (defun external-trochoidal-circle-array (l-step zi f- center-array tool-diameter internal-radius trochoidal-width z-list-in output-stream)
+    (progn
+     (setq radius (+ internal-radius (/ tool-diameter 2.0))) 
+     (setq no-of-points (no-of-points-from-arc-radius l-step radius))
+
+     (setq z-list-out (reverse z-list-in))
+
+     (prologue 10000 output-stream)
+
+     (loop for center in center-array
+	   do (progn
+		(setq couple (point-couples center radius trochoidal-width no-of-points))
+		(setf start-point (append (caar couple) (list zi)))
+		
+		(setq helical-start-center
+		      (let* ((point-min (caar couple))
+			     (point-max (cadar couple))
+			     (x (* 0.5 (+ (x-of point-min) (x-of point-max))))
+			     (y (* 0.5 (+ (y-of point-min) (y-of point-max))))
+			     )
+			(list x y zi)
+			))
+		(helical-drill helical-start-center z-list-in (/ trochoidal-width 2.0) f- f- output-stream)
+		(format output-stream "~% ~% (start trochoid)~%")
+		(dotimes (i (+ 1 no-of-points))
+		  (let* ((pair (pop couple))
+			 (in-point (append (car pair) (list zi)))
+			 (out-point (append (cadr pair) (list zi)))
+			 (trochoidal-radius (/ trochoidal-width 2.0))
+			 )
+         ;;  (linear-move in-point  f- output-stream)
+		    (cw-move-R in-point radius  f- output-stream)
+		    (ccw-move-R out-point trochoidal-radius f- output-stream)
+		    (ccw-move-R in-point trochoidal-radius  f- output-stream)
+         ))
+		(format output-stream "~% ~% (end trochoid)~%")
+		(helical-drill helical-start-center z-list-out (/ trochoidal-width 2.0) f- f- output-stream)
+		))
+     (epilogue output-stream)
+     ))
+
+
+
 #+END_SRC
 
-#+RESULTS[5e3f7cc01028ccf8e891b9ce90996c299cb8d8a8]: trochoidal-circle
-: EXTERNAL-TROCHOIDAL-CIRCLE
+#+RESULTS[f0a556bad64a7313ae3286eef55e0bd10342232b]: trochoidal-circle
+: EXTERNAL-TROCHOIDAL-CIRCLE-ARRAY
+
+  
+
+
 
