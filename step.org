@@ -174,6 +174,11 @@ git push -u origin master
       (list (* scale-factor px) (* scale-factor py))
       ))
 
+(defun middle-point (point-min point-max)
+  (let ((x (* 0.5 (+ (x-of point-min) (x-of point-max))))
+        (y (* 0.5 (+ (y-of point-min) (y-of point-max)))))
+    (list x y)))
+
   (defun vector-scale (v scale-factor)
     (let* ((p1 (nth 0 v))
            (p2 (nth 1 v))
@@ -244,7 +249,6 @@ git push -u origin master
 
 
 * arcs
-
 
 ** Descriptions of the problem
 
@@ -317,7 +321,7 @@ Numerical solutions of solving the problem
 #+RESULTS[11c97187122a179ddbd2ddba411a885e402eac8a]: arc-functions
 : OFFSET-ARC
 
-#+RESULTS[eeb345a5d3cc4cbb5960c3d5a46f33f208206a5b]: vector-functions
+#+RESULTS[b1f576d5c3140095cf1b9e46c3c93952a3945d2c]: vector-functions
 : VECTOR-REVERSE
 
 * streams
@@ -325,10 +329,10 @@ Numerical solutions of solving the problem
 #+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both :cache yes :session step
 
   (defun prologue (spindle output-stream)
-    (format output-stream "(prologue)~% M3~% M5~% M9~% S~d ~% ~% (end of prologue)~%" spindle)
+    (format output-stream "(prologue)~% S~d M03 ~% ~% (end of prologue)~%" spindle)
     )
   (defun epilogue (output-stream)
-    (format output-stream "~%  (epilogue) M3~% M5~% M30~% ~% %% ~% (end of program)~% %%")
+    (format output-stream "~%  (epilogue) M05~% M30~% ~% %% ~% (end of program)~% %%")
     )
 #+END_SRC
 
@@ -545,7 +549,7 @@ We borrow from divide circle the points
 
   #+RESULTS[1570b16cbd2801cebc592e8de1237bda06898036]: divide-circle-2
   : POINT-COUPLES
-
+ 
 ** external-trochoidal-circle
   
 #+NAME: trochoidal-circle
@@ -667,10 +671,179 @@ We borrow from divide circle the points
 
 #+END_SRC
 
+#+RESULTS[2468c0cac2ddcd6bc8bbfd45fa653d0bd26fb3ee]: trochoidal-circle
+: EXTERNAL-TROCHOIDAL-CIRCLE-ARRAY
+
+  
+
+
+
+
+
+
+
+** trochoidal-circle
+  
+#+NAME: trochoidal-circle-refactor
+#+HEADER: :tangle trochoidal.lisp :noweb yes
+#+HEADER: :results value
+#+HEADER: :comments both :cache yes :session step
+#+BEGIN_SRC lisp
+
+(defun trochoidal-data (l-step zi f- center tool-diameter radius trochoidal-width z-list-in output-stream)
+  (progn 
+    (format t "|l-step|~f| | mm|~%" l-step)
+    (format t "|zi |~f|  |mm|~%" zi)
+    (format t "|f- |~f| | mm/min|~%" f-)
+    (format t "|----|~%")
+    (loop for center in center-array
+	  do (format t "|center:|~f|~f |mm x mm|~%" (car center) (cadr center)))
+    (format t "|----|~%")
+    (format t "|tool-diameter |~f| | mm|~%" tool-diameter)
+    (format t "|trochoidal-width|~f|| mm| ~%" trochoidal-width)
+    (format t "|internal-radius|~f| | mm |~%" internal-radius)
+    (format t "|external-radius|~f| | mm|~%" external-radius)
+    (format t "|----|~%")
+    (format t "|internal-cutting-radius|~f| | mm |~%" (- internal-radius (/ tool-diameter 2.0)))
+    (format t "|external-cutting-radius|~f| | mm|~%" (+ external-radius (/ tool-diameter 2.0)))
+    (format t "|internal-cutting-daimeter|~f| | mm |~%" (* 2.0 (- internal-radius (/ tool-diameter 2.0))))
+    (format t "|external-cutting-diameter|~f| | mm|~%" (* 2.0(+ external-radius (/ tool-diameter 2.0))))
+    (format t "|----|~%")
+  )
+  )
+
+(defun trochoidal-circle (l-step zi f- center tool-diameter radius trochoidal-width z-list-in output-stream)
+  (progn
+    (setq no-of-points (no-of-points-from-arc-radius l-step radius))
+    (setq couple (point-couples center radius trochoidal-width no-of-points))
+    (setq z-list-out (reverse z-list-in))
+    (setq trochoidal-radius (/ trochoidal-width 2.0))
+    (setf start-point (append (caar couple) (list zi)))
+    (setq helical-start-center
+          (let* ((point-min (caar couple))
+                 (point-max (cadar couple))
+                 (x (* 0.5 (+ (x-of point-min) (x-of point-max))))
+                 (y (* 0.5 (+ (y-of point-min) (y-of point-max))))
+                 )
+            (list x y zi)
+            ))
+
+    (format output-stream "~% ~% (helical drilling)~%")
+    (helical-drill helical-start-center z-list-in trochoidal-radius  f- f- output-stream)
+
+    (format output-stream "~% ~% (start trochoid circle)~%")
+
+    (dotimes (i (+ 1 no-of-points))
+      (let* ((pair (pop couple))
+             (in-point (append (car pair) (list zi)))
+             (out-point (append (cadr pair) (list zi)))
+             )
+	(cw-move-R in-point radius  f- output-stream)
+        (ccw-move-R out-point trochoidal-radius f- output-stream)
+        (ccw-move-R in-point trochoidal-radius  f- output-stream)
+        ))
+    
+    (format output-stream "~% ~% (end trochoid)~%")
+    (helical-drill helical-start-center z-list-out (/ trochoidal-width 2.0) f- f- output-stream)
+    (epilogue output-stream)
+    ))
+
+(defun external-trochoidal-circle (l-step zi f- center tool-diameter internal-radius trochoidal-width z-list-in output-stream)
+  (progn
+    (setq radius (+ internal-radius (/ tool-diameter 2.0))) 
+    (setq no-of-points (no-of-points-from-arc-radius l-step radius))
+    (setq couple (point-couples center radius trochoidal-width no-of-points))
+    (setq z-list-out (reverse z-list-in))
+
+    (prologue 10000 output-stream)
+    (setf start-point (append (caar couple) (list zi)))
+
+    (setq helical-start-center
+          (let* ((point-min (caar couple))
+                 (point-max (cadar couple))
+                 (x (* 0.5 (+ (x-of point-min) (x-of point-max))))
+                 (y (* 0.5 (+ (y-of point-min) (y-of point-max))))
+                 )
+            (list x y zi)
+            ))
+    (helical-drill helical-start-center z-list-in (/ trochoidal-width 2.0) f- f- output-stream)
+    (format output-stream "~% ~% (start trochoid)~%")
+    (dotimes (i (+ 1 no-of-points))
+      (let* ((pair (pop couple))
+             (in-point (append (car pair) (list zi)))
+             (out-point (append (cadr pair) (list zi)))
+             (trochoidal-radius (/ trochoidal-width 2.0))
+             )
+        ;;  (linear-move in-point  f- output-stream)
+        (cw-move-R in-point radius  f- output-stream)
+        (ccw-move-R out-point trochoidal-radius f- output-stream)
+        (ccw-move-R in-point trochoidal-radius  f- output-stream)
+        ))
+    (format output-stream "~% ~% (end trochoid)~%")
+    (helical-drill helical-start-center z-list-out (/ trochoidal-width 2.0) f- f- output-stream)
+    (epilogue output-stream)
+    ))
+
+(defun external-trochoidal-circle-array (l-step zi f- center-array tool-diameter internal-radius trochoidal-width z-list-in output-stream)
+  (progn
+    (setq radius (+ internal-radius (/ tool-diameter 2.0))) 
+    (setq no-of-points (no-of-points-from-arc-radius l-step radius))
+
+    (setq z-list-out (reverse z-list-in))
+
+    (prologue 10000 output-stream)
+
+    (loop for center in center-array
+	  do (progn
+	       (setq couple (point-couples center radius trochoidal-width no-of-points))
+	       (setf start-point (append (caar couple) (list zi)))
+	       
+	       (setq helical-start-center
+		     (let* ((point-min (caar couple))
+			    (point-max (cadar couple))
+			    (x (* 0.5 (+ (x-of point-min) (x-of point-max))))
+			    (y (* 0.5 (+ (y-of point-min) (y-of point-max))))
+			    )
+		       (list x y zi)
+		       ))
+	       (helical-drill helical-start-center z-list-in (/ trochoidal-width 2.0) f- f- output-stream)
+	       (format output-stream "~% ~% (start trochoid)~%")
+	       (dotimes (i (+ 1 no-of-points))
+		 (let* ((pair (pop couple))
+			(in-point (append (car pair) (list zi)))
+			(out-point (append (cadr pair) (list zi)))
+			(trochoidal-radius (/ trochoidal-width 2.0))
+			)
+		   ;;  (linear-move in-point  f- output-stream)
+		   (cw-move-R in-point radius  f- output-stream)
+		   (ccw-move-R out-point trochoidal-radius f- output-stream)
+		   (ccw-move-R in-point trochoidal-radius  f- output-stream)
+		   ))
+	       (format output-stream "~% ~% (end trochoid)~%")
+	       (helical-drill helical-start-center z-list-out (/ trochoidal-width 2.0) f- f- output-stream)
+	       ))
+    (epilogue output-stream)
+    ))
+
+
+
+#+END_SRC
+
+#+RESULTS[720a667f5440727e7c5c2bfa1f18822c5e2fcbe4]: trochoidal-circle-refactor
+: EXTERNAL-TROCHOIDAL-CIRCLE-ARRAY
+
 #+RESULTS[f0a556bad64a7313ae3286eef55e0bd10342232b]: trochoidal-circle
 : EXTERNAL-TROCHOIDAL-CIRCLE-ARRAY
 
   
 
+
+* calculate D-shape
+
+| trochoidal-width | 0.825 |
+| tool-diameter    | 3.175 |
+|                  |    4. |
+|                  |       |
+#+TBLFM: @3$2=@1+@2
 
 
