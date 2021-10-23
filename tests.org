@@ -125,38 +125,25 @@
 
 * test divide function
 
+
 #+NAME: test-divide-step
 #+BEGIN_SRC lisp :results output 
-  (setq steps 1.2)
-  (setq radius 305.0)
 
-  (dotimes (i 10)
-    (let* ((steps (/ (+ i 1.0) 0.05d0))
-           (points(no-of-points-from-arc-radius steps radius))
-           (step-buffer 0.0d0)
-           (dstep (- steps (/ (* *2pi* radius) points)))
-           )
-      (if (/= steps step-buffer)
-          (progn
-            (format t "|~8,4F | ~d | ~d | ~8,4F | ~%" steps points (mod points 4) dstep)
-            (setq step-buffer steps)
-            ))
-      ))
+(setq zsafe 50.0)
+(setq zstart 15.0)
+(setq zend 0.0)
+(setq zstep 3.0)
+
+
+(format t "~a" (helical-z-list zsafe zstart zend zstep))
+
+
+
+
 #+END_SRC
 
 #+RESULTS: test-divide-step
-#+begin_example
-| 20.0000 | 96 | 0 |   0.0378 | 
-| 40.0000 | 48 | 0 |   0.0756 | 
-| 60.0000 | 32 | 0 |   0.1134 | 
-| 80.0000 | 24 | 0 |   0.1512 | 
-|100.0000 | 16 | 0 | -19.7732 | 
-|120.0000 | 16 | 0 |   0.2268 | 
-|140.0000 | 16 | 0 |  20.2268 | 
-|160.0000 | 8 | 0 | -79.5464 | 
-|180.0000 | 8 | 0 | -59.5464 | 
-|200.0000 | 8 | 0 | -39.5464 | 
-#+end_example
+: (50.0 15.0 12.0 9.0 6.0 3.0 0.0 0.0 3.0 9.0 15.0 50.0)
 
 
 * test step function

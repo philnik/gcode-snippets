@@ -88,9 +88,15 @@ G0   X  -0.000   Y-100.000   Z  30.000
 
 
 ** Helical-drill-array-on-divide-circle
-  #+name: drill-array-on-divide-circle
-#+BEGIN_SRC lisp :results output ### file :file test-divide.ngc
-(setq z-list '(30.0  0.0  16.0 30.0 ))
+#+name: helical-drill-array-on-divide-circle
+#+BEGIN_SRC lisp :results output 
+
+(setq zsafe 25.0)
+(setq zstart 15.0)
+(setq zend 0.0)
+(setq zstep 6.0)
+		   
+(setq z-list (helical-z-list zsafe zstart zend zstep))
 (setq radius 10.0) 
 (setq f- 1600.0)
 (setq output-stream *STANDARD-OUTPUT*)
@@ -99,14 +105,59 @@ G0   X  -0.000   Y-100.000   Z  30.000
 (setq divide-radius 100.0)
 (setq no-of-points 4) 
 (setq point-array (divide-circle center divide-radius no-of-points))
-
-(prologue 12000 output-stream) 
-(helical-drill-array point-array z-list radius f- f- output-stream)
-  (epilogue output-stream)
+;;(prologue 12000 output-stream) 
+(helical-drill-array point-array zsafe zstart zend radius f- output-stream))
+(epilogue output-stream)
 #+END_SRC
 
-#+RESULTS: drill-array-on-divide-circle
-[[file:test-divide.ngc]]
+#+RESULTS: helical-drill-array-on-divide-circle
+#+begin_example
+
+(helical drilling point: X 100.000 Y   0.000)
+G0   X 100.000   Y   0.000   Z  25.000   
+G0   X 110.000   Y   0.000   Z  15.000   
+G02   X  90.000   Y   0.000   Z  12.000  R  10.000  F1600.0 
+G02   X 110.000   Y   0.000   Z   6.000  R  10.000  F1600.0 
+G02   X  90.000   Y   0.000   Z   0.000  R  10.000  F1600.0 
+G02   X 110.000   Y   0.000   Z   0.000  R  10.000  F1600.0 
+G02   X  90.000   Y   0.000   Z   3.000  R  10.000  F1600.0 
+G02   X 110.000   Y   0.000   Z  15.000  R  10.000  F1600.0 
+G0   X 100.000   Y   0.000   Z  25.000   
+
+(helical drilling point: X   0.000 Y 100.000)
+G0   X   0.000   Y 100.000   Z  25.000   
+G0   X  10.000   Y 100.000   Z  15.000   
+G02   X -10.000   Y 100.000   Z  12.000  R  10.000  F1600.0 
+G02   X  10.000   Y 100.000   Z   6.000  R  10.000  F1600.0 
+G02   X -10.000   Y 100.000   Z   0.000  R  10.000  F1600.0 
+G02   X  10.000   Y 100.000   Z   0.000  R  10.000  F1600.0 
+G02   X -10.000   Y 100.000   Z   3.000  R  10.000  F1600.0 
+G02   X  10.000   Y 100.000   Z  15.000  R  10.000  F1600.0 
+G0   X   0.000   Y 100.000   Z  25.000   
+
+(helical drilling point: X-100.000 Y   0.000)
+G0   X-100.000   Y   0.000   Z  25.000   
+G0   X -90.000   Y   0.000   Z  15.000   
+G02   X-110.000   Y   0.000   Z  12.000  R  10.000  F1600.0 
+G02   X -90.000   Y   0.000   Z   6.000  R  10.000  F1600.0 
+G02   X-110.000   Y   0.000   Z   0.000  R  10.000  F1600.0 
+G02   X -90.000   Y   0.000   Z   0.000  R  10.000  F1600.0 
+G02   X-110.000   Y   0.000   Z   3.000  R  10.000  F1600.0 
+G02   X -90.000   Y   0.000   Z  15.000  R  10.000  F1600.0 
+G0   X-100.000   Y   0.000   Z  25.000   
+
+(helical drilling point: X  -0.000 Y-100.000)
+G0   X  -0.000   Y-100.000   Z  25.000   
+G0   X  10.000   Y-100.000   Z  15.000   
+G02   X -10.000   Y-100.000   Z  12.000  R  10.000  F1600.0 
+G02   X  10.000   Y-100.000   Z   6.000  R  10.000  F1600.0 
+G02   X -10.000   Y-100.000   Z   0.000  R  10.000  F1600.0 
+G02   X  10.000   Y-100.000   Z   0.000  R  10.000  F1600.0 
+G02   X -10.000   Y-100.000   Z   3.000  R  10.000  F1600.0 
+G02   X  10.000   Y-100.000   Z  15.000  R  10.000  F1600.0 
+G0   X  -0.000   Y-100.000   Z  25.000   
+#+end_example
+
 
 ** Drill array on rectangle
 We take the values from the following table:
