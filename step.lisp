@@ -246,17 +246,18 @@
      (+ (y-of center) (* radius (sin angle)))
      ))
 
-    (defun divide-circle (center radius no-of-points)
-    ;;center: center of circle
-    ;;radius: radius we move on
-    ;;no-of-points: number of points
+(defun divide-circle (center radius no-of-points)
+  "divide circles to points, starts from 0deg moving clockwise
+`center' center of the circle
+`radius' radius of the points
+`no-of-points' number of points"
       (let ((angle (/ *2pi* no-of-points))
             (point-array '()))
 
         (dotimes (n (+ 1 no-of-points))
           (push (polar-to-rect center radius (* n angle)) point-array)
           )
-      point-array
+      (reverse point-array)
         ))
 ;; divide-circle ends here
 
