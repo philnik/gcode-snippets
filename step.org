@@ -329,10 +329,10 @@ Numerical solutions of solving the problem
 #+BEGIN_SRC lisp :noweb yes :tangle step.lisp :comments both :cache yes :session step
 
   (defun prologue (spindle output-stream)
-    (format output-stream "(prologue)~% S~d M03 ~% ~% (end of prologue)~%" spindle)
+    (format output-stream "(prologue)~% M3~% M5~% M9~% S~d ~% ~% (end of prologue)~%" spindle)
     )
   (defun epilogue (output-stream)
-    (format output-stream "~%  (epilogue) M05~% M30~% ~% %% ~% (end of program)~% %%")
+    (format output-stream "~%  (epilogue) M3~% M5~% M30~% ~% %% ~% (end of program)~% %%")
     )
 #+END_SRC
 

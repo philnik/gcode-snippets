@@ -310,15 +310,6 @@ We plan to test the trochoidal move on a line across x
   (epilogue output-stream)
 #+END_SRC
 
-
-#+RESULTS: test-trochoidal-line
-[[file:test-divide.ngc]]
-
-#+RESULTS: tests
-[[file:test-divide.ngc]]
-
-
-  
 ** test divide circle
 
 #+name: test-divide-circle-2
@@ -346,6 +337,32 @@ We plan to test the trochoidal move on a line across x
   | -197.990 |  197.990 |   | -205.061 |  205.061 |
   |    0.000 |  280.000 |   |    0.000 |  290.000 |
   |  197.990 |  197.990 |   |  205.061 |  205.061 |
+
+
+
+
+* test input table
+
+We plan to input the data from an org-mode table
+
+
+
+* pass variables between src blocks
+
+#+BEGIN_SRC lisp
+(setq i 1)
+#+END_SRC
+
+#+RESULTS:
+: 1
+
+#+BEGIN_SRC lisp
+
+(print i)
+#+END_SRC
+
+#+RESULTS:
+: 1
 
 
 

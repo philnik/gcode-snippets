@@ -1,92 +1,110 @@
 
-0.lsp,1429
-(defconstant *pi* 3,2
-(defconstant *2pi* 4,35
-(defparameter center 7,72
-(defparameter holes-count 9,122
-(defparameter bridges-length 11,153
-(defparameter Rout 12,209
-(defparameter no-bridges 14,275
-(defun x-of 17,305
-(defun y-of 18,340
-(defun z-of 19,375
-(defun rad-to-deg 22,412
-(defun deg-to-rad 25,459
-(defun arc-length-to-rad 28,506
-(defun polar-to-rect-rad 31,583
-(defun polar-to-rect-deg 42,871
-(defun test-polar-to-rect 49,1064
-(defun cut-circle-radius 61,1376
-(defun bridge-angles 94,2556
-(defun print-bridge-angles 110,2990
-(defun outer-circle 125,3556
-(defun inner-circle 129,3723
-(defparameter Z0 135,3891
-(defparameter ZSafe 136,3924
-(defparameter Zstart 137,3963
-(defparameter R0 139,4004
-(defparameter Rout 140,4064
-(defparameter Rslot 141,4138
-(defparameter Rin 142,4228
-(defparameter h 143,4300
-(defparameter f-drill-up 147,4351
-(defparameter f-drill-down 148,4404
-(defparameter hole-diameter 150,4458
-(defparameter fcut 152,4523
-(defparameter tool-diameter-3175 154,4592
-(defparameter tool-diameter-8 156,4688
-(defparameter *stream* 159,4767
-(defun holes-center 165,4858
-(defparameter current-point 177,5194
-(defun goto 179,5239
-(defun linear-move 182,5367
-(defun clockwise-move-ij 185,5510
-(defun clockwise-move-R 188,5687
-(defun point+ 192,5844
-(defun point* 195,5907
-(defun helical-drill 198,5969
-(defun hellical-drill-cycle 241,7848
-(defun drill-cycle 255,8214
+flange-structure.lisp,1279
+(defconstant *pi* 1,0
+(defconstant *2pi* 2,39
+(defparameter center 3,79
+(defparameter holes-count 4,126
+(defparameter Z0 5,156
+(defparameter ZSafe 6,189
+(defparameter Zstart 7,228
+(defparameter R0 8,268
+(defparameter f-drill-up 9,341
+(defparameter f-drill-down 10,394
+(defparameter d1 11,447
+(defparameter r1 12,513
+(defparameter fcut 13,573
+(defparameter file_1 14,640
+(defparameter *stream* 15,729
+(defstruct cut-data18,773
+(defun set-file-name 47,2036
+(defun x-of 53,2157
+(defun y-of 54,2192
+(defun z-of 55,2227
+(defun add-vector-point 57,2263
+(defun s+ 60,2338
+(defun rad-to-deg 63,2388
+(defun deg-to-rad 66,2435
+(defun holes-center 69,2482
+(defun goto 85,2908
+(defun linear-move 88,3036
+(defun clockwise-move-ij 91,3179
+(defun clockwise-move-R 94,3356
+(defun error-message 97,3512
+(defun drill-circle 105,3663
+(defun drilling-cycle 160,5282
+(defparameter center 191,6057
+(defparameter holes-count 192,6104
+(defparameter Z0 193,6134
+(defparameter ZSafe 194,6167
+(defparameter Zstart 195,6206
+(defparameter R0 196,6246
+(defparameter f-drill-up 197,6319
+(defparameter f-drill-down 198,6372
+(defparameter d1 199,6425
+(defparameter r1 200,6491
+(defparameter fcut 201,6551
+(defparameter file_1 202,6618
+(defparameter *stream* 203,6707
 
-1.lsp,844
-(defparameter holes-count 3,2
-(defparameter bridges-length 5,33
-(defparameter Rout 6,89
-(defparameter no-bridges 8,155
-(defstruct 3d-point10,184
-(defun 3dp 13,214
-(defun 3dpoint-+ 16,268
-(defparameter Z0 24,442
-(defparameter ZSafe 25,478
-(defparameter Zstart 26,518
-(defparameter center 30,562
-(defparameter R0 32,607
-(defparameter f-drill-up 34,668
-(defparameter f-drill-down 35,721
-(defparameter r1 36,774
-(defparameter fcut 37,820
-(defparameter d1 38,888
-(defparameter *stream* 39,956
-(defun x-of 41,999
-(defun y-of 42,1039
-(defun z-of 43,1079
-(defun holes-center 48,1167
-(defparameter current-point 60,1501
-(defun goto 62,1549
-(defun linear-move 66,1678
-(defun clockwise-move-ij 70,1822
-(defun clockwise-move-R 73,1999
-(defun add-vector-point 76,2155
-(defun drill-circle 79,2229
-(defun drilling-cycle 109,3524
+step.lisp,924
+(defconstant *pi* 15,375
+(defconstant *2pi* 16,414
+(defun x-of 18,455
+(defun y-of 19,490
+(defun z-of 20,525
+(defun no-of-points-from-arc-radius 34,802
+(defun middle-point 99,2541
+(defun vector-rotate 116,3099
+(defun vector-transform-to-zero 130,3512
+(defun vector-transform-by-vector 141,3813
+(defun vector-reverse 164,4471
+(defun radius-arc 178,4843
+(defun center-arc 192,5304
+(defun offset-arc 195,5337
+(defun prologue 203,5463
+(defun goto 216,5856
+(defun linear-move 219,5984
+(defun clockwise-move-ij 222,6127
+(defun clockwise-move-R 225,6304
+(defun cw-move-R 228,6461
+(defun ccw-move-R 236,6751
+(defun counter-clockwise-move-R 244,7048
+(defun step-over 257,7352
+(defun polar-to-rect 279,7829
+(defun helical-drill 304,8532
+(defun helical-drill-array 330,9566
+(defun drill-point 341,9907
+(defun drill-array 365,10687
+(defun point-couples 379,11150
+(defun internal-trochoidal-circle 391,11620
 
-1.lsp~,36
-(defparameter d1 3.175d0)d025,629
+trochoidal.lisp,113
+(defun trochoidal-data-gcode-prologue 9,269
+(defun trochoidal-circle 35,1480
+(defun trochoidal-circle 86,3545
 
-calc.mac~,0
-
-calc.mac,0
-
-#calc.mac#,0
-
-0.lsp~,0
+works.lisp,674
+(defparameter center 5,4
+(defparameter holes-count 7,50
+(defparameter Z0 9,80
+(defparameter ZSafe 10,113
+(defparameter Zstart 11,152
+(defparameter R0 13,193
+(defparameter f-drill-up 15,254
+(defparameter f-drill-down 16,307
+(defparameter d1 18,361
+(defparameter r1 19,427
+(defparameter fcut 21,490
+(defparameter *stream* 25,560
+(defun x-of 28,604
+(defun y-of 29,639
+(defun z-of 30,674
+(defun holes-center 35,757
+(defparameter current-point 47,1093
+(defun goto 49,1138
+(defun linear-move 53,1267
+(defun clockwise-move-ij 57,1411
+(defun clockwise-move-R 61,1589
+(defun add-vector-point 65,1746
+(defun drill-circle 70,1821
+(defun drilling-cycle 102,3118
