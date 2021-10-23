@@ -1,17 +1,4 @@
-;; quicklisp functions
-;; #+name: quicklisp-functions
 
-;; [[file:step.org::quicklisp-functions][quicklisp-functions]]
-;; (load "/home/quill/quicklisp/setup.lisp")
-    ;; (ql:quickload :computable-reals)
-    ;; (use-package :computable-reals)
-;; quicklisp-functions ends here
-
-;; math functions
-
-;; #+name: math-functions
-
-;; [[file:step.org::math-functions][math-functions]]
 (defconstant *pi* 3.141592653589793d0)
 (defconstant *2pi* 6.283185307179586d0)
 
