@@ -22,6 +22,30 @@
 #+LATEX_HEADER: \setmainfont[Mapping=tex-text]{Times New Roman}
 #+SETUPFILE:   /home/quill/public_html/org-html-themes/org/theme-readtheorg-local.setup
 
+
+* Modal codes CNC
+| M00 | Program stop                                   |
+| M01 | Optional program stop                          |
+| M02 | End of program                                 |
+| M03 | Spindle start forward CW                       |
+| M04 | Spindle start reverse CCW                      |
+| M05 | Spindle stop                                   |
+| M06 | Tool change                                    |
+| M07 | Coolant ON – Mist coolant/Coolant thru spindle |
+| M08 | Coolant ON – Flood coolant                     |
+| M09 | Coolant OFF                                    |
+| M19 | Spindle orientation                            |
+| M28 | Return to origin                               |
+| M29 | Rigid tap                                      |
+| M30 | End of program (Reset)                         |
+| M41 | Low gear select                                |
+| M42 | High gear select                               |
+| M94 | Cancel mirrorimage                             |
+| M95 | Mirrorimage of X axis                          |
+| M96 | Mirrorimage of Y axis                          |
+| M98 | Subprogram call                                |
+| M99 | End of subprogram                              |
+
 * install maxima
 (setf *default-pathname-defaults* (truename "/usr/local/src/maxima-code/"))
 (load "configure.lisp")
