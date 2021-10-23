@@ -222,19 +222,34 @@
 
 
 ;; [step-function]
-(defun step-over (z0 z1 step)
-    (let* ((dz (- z1 z0))
+(defun z-step-list (zstart zend step)
+  "step-over splits a z-height on steps
+`zstart' start z
+`zend' bottom z
+`step' z step"
+    (let* ((dz (- zstart zend))
            (no-steps(+ 0 (floor (/ dz step))))
            (result '())
            )
-      (push z1 result)
+      (push zstart result)
       (dotimes (n no-steps)
         (push (- (car result) step) result)
         )
-      (if (/= z0 (car result))
-          (push z0 result))
-      result)
-    )
+      (if (/= zend (car result))
+          (push zend result))
+       result)
+  )
+
+(defun helical-z-list (zsafe zstart zend zstep)
+  "helical-z-list creates the list of heights for helical drilling
+`zsafe' top z
+`start' helical start here
+`end' helical ends here
+`zstep' z step each helical"
+  (let ((steps-down (z-step-list zend zstart (- 0.0 zstep)))
+	(steps-up (z-step-list zstart zend (* 2.0 zstep))))
+    (append (list zsafe) steps-down steps-up (list zsafe))))
+
 ;; step-function ends here
 
 
