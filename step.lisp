@@ -254,19 +254,22 @@
       (let ((angle (/ *2pi* no-of-points))
             (point-array '()))
 
-        (dotimes (n (+ 1 no-of-points))
+        (dotimes (n  no-of-points)
           (push (polar-to-rect center radius (* n angle)) point-array)
           )
       (reverse point-array)
         ))
 ;; divide-circle ends here
 
-;; define helical-drill function
-  
-;; #+NAME: helical-drill-at-point
-
-;; [[file:step.org::helical-drill-at-point][helical-drill-at-point]]
+;; [helical-drill-at-point]
 (defun helical-drill (point z-list radius f- f+ output-stream)
+  "helical drill make an helical drill at point
+`point' point to drill
+`z-list' list of step points
+`radius' helica radius
+`f-' feedrate
+`f+' feedrate
+`output-stream' where to write"
             (let ((xi (x-of point))
                   (yi (y-of point))
                   (zstart (car z-list))
@@ -287,182 +290,71 @@
             )
 ;; helical-drill-at-point ends here
 
-;; define drill array
 
-;; #+name: helical-drill-array
-
-;; [[file:step.org::helical-drill-array][helical-drill-array]]
+;; [helical-drill-array]
 (defun helical-drill-array (point-array z-list radius f- f+ output-stream)
-    (loop for point in point-array
-          do (helical-drill point z-list radius f- f+ output-stream)
-          ))
+"helical-drill-array: we drill on an array of points
+`point' point to drill
+`z-list' list of step points
+`radius' helica radius
+`f-' feedrate
+`f+' feedrate
+`output-stream' where to write"
+(loop for point in point-array
+      do (helical-drill point z-list radius f- f+ output-stream)
+      ))
+
 ;; helical-drill-array ends here
 
-;; define simple drill function
-  
-;; #+NAME: drill-at-point
-
-;; [[file:step.org::drill-at-point][drill-at-point]]
-(defun drill-point (point z-list f- f+ output-stream)
-    (let ((xi (x-of point))
-          (yi (y-of point))
-          (zstart (car z-list))
-          (zend (car (last z-list))))
-
-      (format output-stream "~%(drilling point: X~8,3F Y~8,3F)~%" (x-of point) (y-of point))
-
-      (goto (list xi yi (pop z-list)) output-stream)
-
-      (loop while z-list
-            do (progn
-                 (linear-move (list xi yi (pop z-list)) f- output-stream)
-                 (if (cdr z-list)
-                     (linear-move (list xi yi (pop z-list)) f- output-stream)
-                     (goto (list xi yi (pop z-list)) output-stream)
-                     )))))
+;; drill function
+;; [drill-at-point]
+(defun drill-point (point zsafe zstart zend f- f+ output-stream)
+  "drill-point drilling a point
+`point' point to drill z-ommited
+`zsafe' safe Z
+`zstart' start Z
+`zend' Z end
+`f-'  feedrate
+`f+' feedrate not used
+`output-stream' where to write)"
+  (let* ((xi (x-of point))
+         (yi (y-of point))
+	 (point-safe (list xi yi zsafe))
+	 (point-start (list xi yi zstart))
+	 (point-end (list xi yi zend)))
+	 
+    (format output-stream "~%(drilling point: X~8,3F Y~8,3F)~%" xi yi)
+    (goto point-safe output-stream)
+    (goto point-start output-stream)
+    (linear-move point-end f- output-stream)
+    (goto point-safe output-stream)
+    ))
 ;; drill-at-point ends here
 
-;; define drill array
-
-;; #+name: drill-array
-
-;; [[file:step.org::drill-array][drill-array]]
-(defun drill-array (point-array z-list f- f+ output-stream)
-    (loop for point in point-array
-          do (drill-point point z-list f- f+ output-stream)
-          ))
+;; [drill-array]
+(defun drill-point-array (point-array zsafe zstart zend f- f+ output-stream)
+  "drill-point-array simple drilling an array of points
+`point-array' point-array to drill z-ommited
+`zsafe' safe Z
+`zstart' start Z
+`zend' Z end
+`f-'  feedrate
+`f+' feedrate not used
+`output-stream' where to write)"
+  (loop for point in point-array
+        do (drill-point point zsafe zstart zend f- f+ output-stream)
+        ))
 ;; drill-array ends here
 
-;; divide-circle-2
-;; We work on trochoidal
-;; We make an array of internal and external point of arcs this one is for moving on circle path.
-;; We borrow from divide circle the points
-
-;; #+name: divide-circle-2
-
-;; [[file:step.org::divide-circle-2][divide-circle-2]]
+;; [point-couples]
 (defun point-couples (center radius trochoidal-width no-of-points)
+  "point couples returns offset pairs internal-external of circle points
+`center' center of circle
+`radius' radius of circle
+`trochoidal-width' distance between internal external points
+`no-of-points' number of points"
     (let* ((internal-points (divide-circle center radius no-of-points))
            (external-points (divide-circle center (+ radius trochoidal-width) no-of-points))
            (couples (mapcar #'list internal-points external-points)))
       couples))
-;; divide-circle-2 ends here
 
-;; external-trochoidal-circle
-  
-;; #+NAME: trochoidal-circle
-
-;; [[file:step.org::trochoidal-circle][trochoidal-circle]]
-(defun internal-trochoidal-circle (l-step zi f- center tool-diameter internal-radius trochoidal-width z-list-in output-stream)
-      (progn
-        (setq radius (- internal-radius trochoidal-width (/ tool-diameter 2.0))) 
-          (setq no-of-points (no-of-points-from-arc-radius l-step radius))
-          (setq couple (point-couples center radius trochoidal-width no-of-points))
-          (setq z-list-out (reverse z-list-in))
-
-          (prologue 10000 output-stream)
-          (setf start-point (append (caar couple) (list zi)))
-          (setq helical-start-center
-                    (let* ((point-min (caar couple))
-                             (point-max (cadar couple))
-                             (x (* 0.5 (+ (x-of point-min) (x-of point-max))))
-                             (y (* 0.5 (+ (y-of point-min) (y-of point-max))))
-                             )
-                        (list x y zi)
-                        ))
-          (helical-drill helical-start-center z-list-in (/ trochoidal-width 2.0) f- f- output-stream)
-          (format output-stream "~% ~% (start trochoid)~%")
-                              (dotimes (i (+ 1 no-of-points))
-                                (let* ((pair (pop couple))
-                                       (in-point (append (car pair) (list zi)))
-                                       (out-point (append (cadr pair) (list zi)))
-                                       (trochoidal-radius (/ trochoidal-width 2.0))
-                                       )
-
-                                  (cw-move-R in-point radius  f- output-stream)
-                                  (ccw-move-R out-point trochoidal-radius f- output-stream)
-                                  (ccw-move-R in-point trochoidal-radius  f- output-stream)
-                                  ))
-
-          (format output-stream "~% ~% (end trochoid)~%")
-          (helical-drill helical-start-center z-list-out (/ trochoidal-width 2.0) f- f- output-stream)
-          (epilogue output-stream)
-          ))
-
-  (defun external-trochoidal-circle (l-step zi f- center tool-diameter internal-radius trochoidal-width z-list-in output-stream)
-    (progn
-     (setq radius (+ internal-radius (/ tool-diameter 2.0))) 
-     (setq no-of-points (no-of-points-from-arc-radius l-step radius))
-     (setq couple (point-couples center radius trochoidal-width no-of-points))
-     (setq z-list-out (reverse z-list-in))
-
-     (prologue 10000 output-stream)
-     (setf start-point (append (caar couple) (list zi)))
-
-     (setq helical-start-center
-           (let* ((point-min (caar couple))
-                  (point-max (cadar couple))
-                  (x (* 0.5 (+ (x-of point-min) (x-of point-max))))
-                  (y (* 0.5 (+ (y-of point-min) (y-of point-max))))
-                  )
-             (list x y zi)
-             ))
-     (helical-drill helical-start-center z-list-in (/ trochoidal-width 2.0) f- f- output-stream)
-     (format output-stream "~% ~% (start trochoid)~%")
-     (dotimes (i (+ 1 no-of-points))
-       (let* ((pair (pop couple))
-              (in-point (append (car pair) (list zi)))
-              (out-point (append (cadr pair) (list zi)))
-              (trochoidal-radius (/ trochoidal-width 2.0))
-              )
-         ;;  (linear-move in-point  f- output-stream)
-         (cw-move-R in-point radius  f- output-stream)
-         (ccw-move-R out-point trochoidal-radius f- output-stream)
-         (ccw-move-R in-point trochoidal-radius  f- output-stream)
-         ))
-     (format output-stream "~% ~% (end trochoid)~%")
-     (helical-drill helical-start-center z-list-out (/ trochoidal-width 2.0) f- f- output-stream)
-     (epilogue output-stream)
-     ))
-
-  (defun external-trochoidal-circle-array (l-step zi f- center-array tool-diameter internal-radius trochoidal-width z-list-in output-stream)
-    (progn
-     (setq radius (+ internal-radius (/ tool-diameter 2.0))) 
-     (setq no-of-points (no-of-points-from-arc-radius l-step radius))
-
-     (setq z-list-out (reverse z-list-in))
-
-     (prologue 10000 output-stream)
-
-     (loop for center in center-array
-	   do (progn
-		(setq couple (point-couples center radius trochoidal-width no-of-points))
-		(setf start-point (append (caar couple) (list zi)))
-		
-		(setq helical-start-center
-		      (let* ((point-min (caar couple))
-			     (point-max (cadar couple))
-			     (x (* 0.5 (+ (x-of point-min) (x-of point-max))))
-			     (y (* 0.5 (+ (y-of point-min) (y-of point-max))))
-			     )
-			(list x y zi)
-			))
-		(helical-drill helical-start-center z-list-in (/ trochoidal-width 2.0) f- f- output-stream)
-		(format output-stream "~% ~% (start trochoid)~%")
-		(dotimes (i (+ 1 no-of-points))
-		  (let* ((pair (pop couple))
-			 (in-point (append (car pair) (list zi)))
-			 (out-point (append (cadr pair) (list zi)))
-			 (trochoidal-radius (/ trochoidal-width 2.0))
-			 )
-         ;;  (linear-move in-point  f- output-stream)
-		    (cw-move-R in-point radius  f- output-stream)
-		    (ccw-move-R out-point trochoidal-radius f- output-stream)
-		    (ccw-move-R in-point trochoidal-radius  f- output-stream)
-         ))
-		(format output-stream "~% ~% (end trochoid)~%")
-		(helical-drill helical-start-center z-list-out (/ trochoidal-width 2.0) f- f- output-stream)
-		))
-     (epilogue output-stream)
-     ))
-;; trochoidal-circle ends here
