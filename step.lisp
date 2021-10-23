@@ -149,10 +149,6 @@
            (p2 (nth 1 v)))
       (list p2 p1)
       ))
-;; vector-functions ends here
-
-;; Arc functions  
-;; #+name: arc-functions
 
 ;; [[file:step.org::arc-functions][arc-functions]]
 (setq arc-3points  (list '(0.0d0 0.0d0) '(0.0d0 1.0d0) '(1.0d0 0.0d0)))
@@ -189,11 +185,6 @@
   (defun epilogue (output-stream)
     (format output-stream "~%  (epilogue) M3~% M5~% M30~% ~% %% ~% (end of program)~% %%")
     )
-;; streams ends here
-
-;; move-functions
-
-;; #+NAME: move-functions
 
 ;; [[file:step.org::move-functions][move-functions]]
 (defun goto (point str)
