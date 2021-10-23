@@ -173,20 +173,16 @@
 
 (defun offset-arc (arc)
   )
-;; arc-functions ends here
-
-;; streams
-;; #+name: streams
 
 ;; [[file:step.org::streams][streams]]
 (defun prologue (spindle output-stream)
-    (format output-stream "(prologue)~% M3~% M5~% M9~% S~d ~% ~% (end of prologue)~%" spindle)
+    (format output-stream "(prologue)~% M03 S~d ~% ~% (end of prologue)~%" spindle)
     )
   (defun epilogue (output-stream)
-    (format output-stream "~%  (epilogue) M3~% M5~% M30~% ~% %% ~% (end of program)~% %%")
+    (format output-stream "~%  (epilogue) ~% M05~% M30~% ~% (end of program)~% %%")
     )
 
-;; [[file:step.org::move-functions][move-functions]]
+;; [move-functions]
 (defun goto (point str)
   (format str "G0 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F ~35T ~%" (x-of point) (y-of point) (z-of point)))
 
@@ -224,10 +220,8 @@
 
 ;; Step function
 
-;;   not used it is better to choose the points on an array
-;; #+NAME: step-function
 
-;; [[file:step.org::step-function][step-function]]
+;; [step-function]
 (defun step-over (z0 z1 step)
     (let* ((dz (- z1 z0))
            (no-steps(+ 0 (floor (/ dz step))))
@@ -243,13 +237,9 @@
     )
 ;; step-function ends here
 
-;; divide circle
 
 ;; Divide a circle on points
-
-;; #+name: divide-circle
-
-;; [[file:step.org::divide-circle][divide-circle]]
+;; [divide-circle]
 (defun polar-to-rect (center radius angle)
     (list
      (+ (x-of center) (* radius (cos angle)))
