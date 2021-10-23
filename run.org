@@ -86,7 +86,6 @@ G0   X  -0.000   Y-100.000   Z  30.000
  %%
 #+end_example
 
-
 ** Helical-drill-array-on-divide-circle
 #+name: helical-drill-array-on-divide-circle
 #+BEGIN_SRC lisp :results output 
