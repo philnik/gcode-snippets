@@ -11,13 +11,9 @@
 
   (defun deg-to-rad (a)
     (/ a (/ 180.0d0 *pi*)))
-;; math-functions ends here
-
-;; vector functions
 
 ;; #+name: vector-functions
 
-;; [[file:step.org::vector-functions][vector-functions]]
 (defun no-of-points-from-arc-radius (steps radius)
     "we get the no-of-points to divide circle"
     (let* ((divide (/ (* *2pi* radius) steps))
