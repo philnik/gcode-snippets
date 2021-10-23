@@ -88,12 +88,12 @@ G0   X  -0.000   Y-100.000   Z  30.000
 
 ** Helical-drill-array-on-divide-circle
 #+name: helical-drill-array-on-divide-circle
-#+BEGIN_SRC lisp :results output 
+#+BEGIN_SRC lisp :results output file :file ~/test-drill-2.ngc
 
 (setq zsafe 25.0)
 (setq zstart 15.0)
 (setq zend 0.0)
-(setq zstep 6.0)
+(setq zstep 2.0)
 		   
 (setq z-list (helical-z-list zsafe zstart zend zstep))
 (setq radius 10.0) 
@@ -102,60 +102,15 @@ G0   X  -0.000   Y-100.000   Z  30.000
 
 (setq center '(0.0d0 0.0d0))
 (setq divide-radius 100.0)
-(setq no-of-points 4) 
+(setq no-of-points 20) 
 (setq point-array (divide-circle center divide-radius no-of-points))
-;;(prologue 12000 output-stream) 
-(helical-drill-array point-array zsafe zstart zend radius f- output-stream))
+(prologue 12000 output-stream) 
+(helical-drill-array point-array zsafe zstart zend zstep radius f- output-stream)
 (epilogue output-stream)
 #+END_SRC
 
 #+RESULTS: helical-drill-array-on-divide-circle
-#+begin_example
-
-(helical drilling point: X 100.000 Y   0.000)
-G0   X 100.000   Y   0.000   Z  25.000   
-G0   X 110.000   Y   0.000   Z  15.000   
-G02   X  90.000   Y   0.000   Z  12.000  R  10.000  F1600.0 
-G02   X 110.000   Y   0.000   Z   6.000  R  10.000  F1600.0 
-G02   X  90.000   Y   0.000   Z   0.000  R  10.000  F1600.0 
-G02   X 110.000   Y   0.000   Z   0.000  R  10.000  F1600.0 
-G02   X  90.000   Y   0.000   Z   3.000  R  10.000  F1600.0 
-G02   X 110.000   Y   0.000   Z  15.000  R  10.000  F1600.0 
-G0   X 100.000   Y   0.000   Z  25.000   
-
-(helical drilling point: X   0.000 Y 100.000)
-G0   X   0.000   Y 100.000   Z  25.000   
-G0   X  10.000   Y 100.000   Z  15.000   
-G02   X -10.000   Y 100.000   Z  12.000  R  10.000  F1600.0 
-G02   X  10.000   Y 100.000   Z   6.000  R  10.000  F1600.0 
-G02   X -10.000   Y 100.000   Z   0.000  R  10.000  F1600.0 
-G02   X  10.000   Y 100.000   Z   0.000  R  10.000  F1600.0 
-G02   X -10.000   Y 100.000   Z   3.000  R  10.000  F1600.0 
-G02   X  10.000   Y 100.000   Z  15.000  R  10.000  F1600.0 
-G0   X   0.000   Y 100.000   Z  25.000   
-
-(helical drilling point: X-100.000 Y   0.000)
-G0   X-100.000   Y   0.000   Z  25.000   
-G0   X -90.000   Y   0.000   Z  15.000   
-G02   X-110.000   Y   0.000   Z  12.000  R  10.000  F1600.0 
-G02   X -90.000   Y   0.000   Z   6.000  R  10.000  F1600.0 
-G02   X-110.000   Y   0.000   Z   0.000  R  10.000  F1600.0 
-G02   X -90.000   Y   0.000   Z   0.000  R  10.000  F1600.0 
-G02   X-110.000   Y   0.000   Z   3.000  R  10.000  F1600.0 
-G02   X -90.000   Y   0.000   Z  15.000  R  10.000  F1600.0 
-G0   X-100.000   Y   0.000   Z  25.000   
-
-(helical drilling point: X  -0.000 Y-100.000)
-G0   X  -0.000   Y-100.000   Z  25.000   
-G0   X  10.000   Y-100.000   Z  15.000   
-G02   X -10.000   Y-100.000   Z  12.000  R  10.000  F1600.0 
-G02   X  10.000   Y-100.000   Z   6.000  R  10.000  F1600.0 
-G02   X -10.000   Y-100.000   Z   0.000  R  10.000  F1600.0 
-G02   X  10.000   Y-100.000   Z   0.000  R  10.000  F1600.0 
-G02   X -10.000   Y-100.000   Z   3.000  R  10.000  F1600.0 
-G02   X  10.000   Y-100.000   Z  15.000  R  10.000  F1600.0 
-G0   X  -0.000   Y-100.000   Z  25.000   
-#+end_example
+[[file:~/test-drill-2.ngc]]
 
 
 ** Drill array on rectangle
@@ -330,41 +285,33 @@ G1   X   2.000   Y   2.000   Z  12.000   F600.0
 
 
 ** trochoidal-circle
-** Trochoidal-circle-internal-500
+** Trochoidal-circle-by-diameters
 
-#+NAME: test-trochoidal-circle
-#+BEGIN_SRC lisp :tangle yes :results output file :file patoura-8mm-drum-scrubber.ngc
+#+NAME: t
+#+BEGIN_SRC lisp :tangle yes :results output file :file ~/test1.ngc
 (setq output-stream *STANDARD-OUTPUT*)
-(setq l-step 3.00d0)
-(setq zi 0.0)
-(setq f- 900)
+(setq xystep 8.00d0)
+(setq zstep 4.0)
+(setq zsafe 20.0)
+(setq zstart 12.0)
+(setq zend 0.0)
+(setq fz 2000)
+(setq fxy 6000)
 (setq center '(0.0 0.0))
-
-
 (setq tool-diameter 3.175)
-(setq diameter-inside 580.0)
-(setq diameter-outside 596.0)
-
-;;;
-(setq radius (/(+ diameter-inside tool-diameter)2.0))
-
-(setq radius (/(+ diameter-inside tool-diameter)2.0))
-
-(setq trochoidal-width (- (/(- diameter-outside diameter-inside)2.0) tool-diameter))
-
-(setq z-list-in '(50.0 18.0 16.0 15.0 12.0 8.0 5.0 0.0 0.0))
-
-(trochoidal-data-gcode-prologue l-step zi f- center  tool-diameter radius trochoidal-width z-list-in output-stream)
+(setq internal-diameter 100.0)
+(setq external-diameter 116.0)
 
 (prologue 8000 output-stream)
-(trochoidal-circle l-step zi f- center tool-diameter radius trochoidal-width z-list-in output-stream)
+(trochoidal-circle xystep zstep zsafe zstart zend fz fxy center tool-diameter internal-diameter external-diameter output-stream)
 (epilogue output-stream) 
 
 
 #+END_SRC
 
-#+RESULTS: test-trochoidal-circle
-[[file:patoura-8mm-drum-scrubber.ngc]]
+#+RESULTS: t
+[[file:~/test1.ngc]]
+
 
 
 

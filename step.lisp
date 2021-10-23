@@ -156,14 +156,13 @@
 
 (defun radius-arc (arc-cen-2p)  ;; untested
   "we will calculate radius of an arc"
-  "actually this radius is the distance from first point to each of the points"
   (let* ((center (nth 0 arc-cen-2p))
 	 (start-point (nth 1 arc-cen-2p))
 	 (end-point (nth 2 arc-cen-2p))
 	 (v1 (list center start-point))
 	 (v2 (list center end-point))
 	 )
-    (if ((- (length v1) (length v2)) 0.0)
+    (if (> (- (length v1) (length v2)) 0.0)
 	(format t "error can not form arc from points and center")
 	(length v1)
 	)))
@@ -277,50 +276,52 @@
 ;; divide-circle ends here
 
 ;; [helical-drill-at-point]
-(defun helical-drill (point zsafe zstart zend radius f output-stream)
+(defun helical-drill (point zsafe zstart zend zstep radius f output-stream)
   "helical drill make an helical drill at point
 `point' point to helical drill
 `zsafe' top z point
-`zstart' we start helica at this z point
-`zend' we end helica at this z point
+`zstart' start helica at this z point
+`zend' end helica at this z point
+`zstep' step at this point 
 `radius' helica radius
 `f' feedrate
 `output-stream' where to write"
-            (let ((xi (x-of point))
-                  (yi (y-of point))
-		  )
-	      (setf z-list (helical-z-list zsafe zstart zend zstep))
+  (let ((xi (x-of point))
+        (yi (y-of point))
+	(z-list (helical-z-list zsafe zstart zend zstep))
+	)
 
-              (format output-stream "~%(helical drilling point: X~8,3F Y~8,3F)~%" (x-of point) (y-of point))
+    (format output-stream "~%(helical drilling point: X~8,3F Y~8,3F)~%" (x-of point) (y-of point))
 
-              (goto (list xi yi (pop z-list)) output-stream)
-              (goto (list (+ xi radius ) yi (pop z-list)) output-stream)
+    (goto (list xi yi (pop z-list)) output-stream)
+    (goto (list (+ xi radius ) yi (pop z-list)) output-stream)
 
-              (loop while (cddr z-list)
-                    do (progn
-                         (clockwise-move-R (list (- xi radius ) yi (pop z-list) ) radius f output-stream)
-                         (clockwise-move-R (list (+ xi radius ) yi (pop z-list) ) radius f output-stream)
-                         ))
-;	      (clockwise-move-R (list (- xi radius ) yi (pop z-list) ) radius f output-stream)
-              (goto (list xi yi zsafe) output-stream)
-              ))
+    (loop while (cddr z-list)
+          do (progn
+               (clockwise-move-R (list (- xi radius ) yi (pop z-list) ) radius f output-stream)
+               (clockwise-move-R (list (+ xi radius ) yi (pop z-list) ) radius f output-stream)
+               ))
+					;	      (clockwise-move-R (list (- xi radius ) yi (pop z-list) ) radius f output-stream)
+    (goto (list xi yi zsafe) output-stream)
+    ))
             
 ;; helical-drill-at-point ends here
 
 
 ;; [helical-drill-array]
-(defun helical-drill-array (point-array zsafe zstart zend radius f output-stream)
-"helical-drill-array: we drill on an array of points
+(defun helical-drill-array (point-array zsafe zstart zend zstep radius f output-stream)
+  "helical-drill-array: we drill on an array of points
 `point-array' list of points to drill
 `zsafe' z safe
 `zstart' z start
 `zend' z end
+`zstep' step at this point 
 `radius' helica radius
 `f' feedrate
 `output-stream' where to write"
-(loop for point in point-array
-      do (helical-drill point zsafe zstart zend radius f output-stream)
-      ))
+  (loop for point in point-array
+	do (helical-drill point zsafe zstart zend zstep radius f output-stream)
+	))
 
 ;; helical-drill-array ends here
 
@@ -340,7 +341,7 @@
 	 (point-safe (list xi yi zsafe))
 	 (point-start (list xi yi zstart))
 	 (point-end (list xi yi zend)))
-	 
+    
     (format output-stream "~%(drilling point: X~8,3F Y~8,3F)~%" xi yi)
     (goto point-safe output-stream)
     (goto point-start output-stream)

@@ -23,6 +23,22 @@
 #+SETUPFILE:   /home/quill/public_html/org-html-themes/org/theme-readtheorg-local.setup
 
 
+* test-list
+
+#+NAME: test append
+#+BEGIN_SRC lisp :results output 
+
+(setq l '( 1 2 3 4))
+(setq z 10)
+(setq start-point (append l `(,z)))
+(setq lst (last start-point))
+(format t "~a" lst)
+#+END_SRC
+#+RESULTS: test append
+: (10)
+
+
+
 * test math functions
 
 #+NAME: test-math-functions-0
@@ -134,11 +150,7 @@
 (setq zend 0.0)
 (setq zstep 3.0)
 
-
 (format t "~a" (helical-z-list zsafe zstart zend zstep))
-
-
-
 
 #+END_SRC
 
