@@ -96,12 +96,12 @@ G0   X  -0.000   Y-100.000   Z  30.000
 (setq zstep 2.0)
 		   
 (setq z-list (helical-z-list zsafe zstart zend zstep))
-(setq radius 10.0) 
+(setq radius 5.0) 
 (setq f- 1600.0)
 (setq output-stream *STANDARD-OUTPUT*)
 
 (setq center '(0.0d0 0.0d0))
-(setq divide-radius 100.0)
+(setq divide-radius 500.0)
 (setq no-of-points 20) 
 (setq point-array (divide-circle center divide-radius no-of-points))
 (prologue 12000 output-stream) 
@@ -290,7 +290,7 @@ G1   X   2.000   Y   2.000   Z  12.000   F600.0
 #+NAME: t
 #+BEGIN_SRC lisp :tangle yes :results output file :file ~/test1.ngc
 (setq output-stream *STANDARD-OUTPUT*)
-(setq xystep 45.00d0)
+(setq xystep 8.00d0)
 (setq zstep 4.0)
 (setq zsafe 50.0)
 (setq zstart 12.0)
@@ -299,8 +299,8 @@ G1   X   2.000   Y   2.000   Z  12.000   F600.0
 (setq fxy 6000)
 (setq center '(0.0 0.0))
 (setq tool-diameter 4.0)
-(setq internal-diameter 100.0)
-(setq external-diameter 200.0)
+(setq internal-diameter 50.0)
+(setq external-diameter 70.0)
 
 (prologue 8000 output-stream)
 (external-trochoidal-circle xystep zstep zsafe zstart zend fz fxy center tool-diameter internal-diameter external-diameter output-stream)

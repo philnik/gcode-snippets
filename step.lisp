@@ -19,7 +19,7 @@
     (let* ((divide (/ (* *2pi* radius) steps))
            )
                   ;;;turn to integer and find the closest to make 4-quarters
-      (* (round (/ divide 8.0))8))
+      (* (round (/ divide 1.0))1))
     )
   (defun length-vector (v)
     (let* ((p1 (nth 0 v))
@@ -179,7 +179,7 @@
     )
   (defun epilogue (output-stream)
     (format output-stream "~%  (epilogue) ~% M05~% M30~% ~% (end of program)~% %%")
-    )
+)
 
 ;; [move-functions]
 (defun goto (point str)
