@@ -290,20 +290,20 @@ G1   X   2.000   Y   2.000   Z  12.000   F600.0
 #+NAME: t
 #+BEGIN_SRC lisp :tangle yes :results output file :file ~/test1.ngc
 (setq output-stream *STANDARD-OUTPUT*)
-(setq xystep 8.00d0)
+(setq xystep 45.00d0)
 (setq zstep 4.0)
-(setq zsafe 20.0)
+(setq zsafe 50.0)
 (setq zstart 12.0)
 (setq zend 0.0)
 (setq fz 2000)
 (setq fxy 6000)
 (setq center '(0.0 0.0))
-(setq tool-diameter 3.175)
+(setq tool-diameter 4.0)
 (setq internal-diameter 100.0)
-(setq external-diameter 116.0)
+(setq external-diameter 200.0)
 
 (prologue 8000 output-stream)
-(trochoidal-circle xystep zstep zsafe zstart zend fz fxy center tool-diameter internal-diameter external-diameter output-stream)
+(external-trochoidal-circle xystep zstep zsafe zstart zend fz fxy center tool-diameter internal-diameter external-diameter output-stream)
 (epilogue output-stream) 
 
 
