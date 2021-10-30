@@ -41,6 +41,67 @@
 
 * test math functions
 
+** test-vector-rotate
+
+#+NAME: test-vector-rotate
+#+BEGIN_SRC lisp :results output raw
+(setq point0 '(000.0d0 00.0))
+(setq radius 100.0d0)
+(setq n 8)
+(dotimes (i n)
+    (let* ((angle  (* (/ (* 2.0d0 *pi*) n) i))
+	   (end-point (list (* radius (cos angle)) (* radius (sin angle))))
+	   (vector (list point0 end-point))
+	   (nvector (normal-vector vector))
+	   )
+;      (format t "|vector:| ~8,4F | ~8,4F| ~8,4F | ~8,4F |~%" (x-of point0) (y-of point0) (x-of end-point) (y-of end-point))
+
+	      (format t "|-|-|-|-|~%")
+      
+      (format t "|normal vector:| ~8,4F | ~8,4F| ~8,4F | ~8,4F |~%"
+	      (x-of (car nvector))
+	      (y-of (car nvector))
+	      (x-of (cadr nvector))
+	      (y-of (cadr nvector)))
+      (format t "|angle-vector:| ~8,4F | ~8,4F | ~8,4F  | ~8,4F  |~%"
+	      (angle-vector nvector)
+	      (* (/ 180.0d0 *PI*)(angle-vector nvector))
+	      (angle-vector vector)
+	      (* (/ 180.0d0 *PI*)(angle-vector vector))
+
+      )))
+
+#+END_SRC
+
+#+RESULTS: test-vector-rotate
+|----------------+---------+----------+---------+----------|
+| normal vector: |  0.0000 |   0.0000 |  1.0000 |   0.0000 |
+| angle-vector:  |  0.0000 |   0.0000 |  0.0000 |   0.0000 |
+|----------------+---------+----------+---------+----------|
+| normal vector: |  0.0000 |   0.0000 |  0.7071 |   0.7071 |
+| angle-vector:  |  0.7854 |  45.0000 |  0.7854 |  45.0000 |
+|----------------+---------+----------+---------+----------|
+| normal vector: |  0.0000 |   0.0000 |  0.0000 |   1.0000 |
+| angle-vector:  |  1.5708 |  90.0000 |  1.5708 |  90.0000 |
+|----------------+---------+----------+---------+----------|
+| normal vector: |  0.0000 |   0.0000 | -0.7071 |   0.7071 |
+| angle-vector:  | -0.7854 | -45.0000 | -0.7854 | -45.0000 |
+|----------------+---------+----------+---------+----------|
+| normal vector: |  0.0000 |   0.0000 | -1.0000 |   0.0000 |
+| angle-vector:  | -0.0000 |  -0.0000 | -0.0000 |  -0.0000 |
+|----------------+---------+----------+---------+----------|
+| normal vector: |  0.0000 |   0.0000 | -0.7071 |  -0.7071 |
+| angle-vector:  |  0.7854 |  45.0000 |  0.7854 |  45.0000 |
+|----------------+---------+----------+---------+----------|
+| normal vector: |  0.0000 |   0.0000 | -0.0000 |  -1.0000 |
+| angle-vector:  |  1.5708 |  90.0000 |  1.5708 |  90.0000 |
+|----------------+---------+----------+---------+----------|
+| normal vector: |  0.0000 |   0.0000 |  0.7071 |  -0.7071 |
+| angle-vector:  | -0.7854 | -45.0000 | -0.7854 | -45.0000 |
+
+
+** test-math-0
+
 #+NAME: test-math-functions-0
 #+BEGIN_SRC lisp :results output raw
 
