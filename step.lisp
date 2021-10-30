@@ -32,7 +32,7 @@
       (sqrt (+ (expt (- p2x p1x) 2.0d0) (expt (- p2y p1y) 2.0d0)))
       ))
 
-  (defun normal-vector (v)
+  (defun normal-vector-2 (v)
     (let* ((p1 (nth 0 v))
            (p2 (nth 1 v))
            (p1x (x-of p1))
@@ -48,6 +48,22 @@
                  )))
       (list '(0.0d0 0.0d0) (list (cos angle) (sin angle)))
       ))
+
+  (defun normal-vector (v)
+    (let* ((p1 (nth 0 v))
+           (p2 (nth 1 v))
+           (p1x (x-of p1))
+           (p1y (y-of p1))
+           (p2x (x-of p2))
+           (p2y (y-of p2))
+	   (l (sqrt (+ (expt (- p2y p1y)2.0d0)(expt (- p2x p1x)2.0d0))))
+	   (vec
+             (if (= p1x p2x)
+		 (if (> p2y p1y)
+                     (list 1.0d0 0.0)
+		     (list -1.0d0 0.0d0))
+		 (list (/ (- p2x p1x) l) (/ (- p2y p1y)l)))))
+      (list '(0.0d0 0.0d0) vec)))
 
   (defun angle-vector (v)
     (let* ((p1 (nth 0 v))
@@ -84,6 +100,9 @@
         (y (* 0.5 (+ (y-of point-min) (y-of point-max)))))
     (list x y)))
 
+(defun middle-vector (v)
+  (middle-point (nth 0 v) (nth 1 v)))
+
   (defun vector-scale (v scale-factor)
     (let* ((p1 (nth 0 v))
            (p2 (nth 1 v))
@@ -109,6 +128,9 @@
       (list p1 (list (+ p1x (* length (cos new-angle))) (+ p1y (* length (sin new-angle)))))
       ))
 
+(defun vector-rotate-deg (v b-angle-deg)
+  (vector-rotate v (* (/ *pi* 180.0) b-angle-deg))
+      )
 
 (defun vector-transform-to-zero (v)
     (let* ((p1 (nth 0 v))
@@ -274,6 +296,27 @@
       (reverse point-array)
         ))
 ;; divide-circle ends here
+
+(defun divide-line (vector no-of-points)
+  "divides a line to points
+`vector' descibes start-point->end-point of line
+`no-of-points' number of points"
+  (let* ((l (length-vector vector))
+	 (step (/ l no-of-points))
+	 (start-point (car vector))
+	 (end-point (cadr vector))
+         (point-array '()))
+
+        (dotimes (n  no-of-points)
+          (push (polar-to-rect center radius (* n angle)) point-array)
+          )
+      (reverse point-array)
+        ))
+;; divide-circle ends here
+
+
+
+
 
 ;; [helical-drill-at-point]
 (defun helical-drill (point zsafe zstart zend zstep radius f output-stream)

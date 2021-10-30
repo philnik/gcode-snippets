@@ -859,9 +859,6 @@ We borrow from divide circle the points
 #+RESULTS[f0a556bad64a7313ae3286eef55e0bd10342232b]: trochoidal-circle
 : EXTERNAL-TROCHOIDAL-CIRCLE-ARRAY
 
-  
-
-
 * calculate D-shape
 
 | trochoidal-width | 0.825 |
