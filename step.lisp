@@ -12,6 +12,16 @@
   (defun deg-to-rad (a)
     (/ a (/ 180.0d0 *pi*)))
 
+
+(defun atan2 (y x)
+  (cond ((> x 0.0d0) (atan (/ y x)))
+	((and (< x 0.0d0) (>= y 0.0d0)) (+ (atan (/ y x)) *pi*))
+	((and (< x 0.0d0) (< y 0.0d0))  (- (atan (/ y x)) *pi*))
+	((and (= x 0.0d0) (> y 0.0d0))  (* 0.5 *pi*))
+	((and (= x 0.0d0) (< y 0.0d0))  (* -0.5 *pi*))
+	(t "error")
+	))
+
 ;; #+name: vector-functions
 
 (defun no-of-points-from-arc-radius (steps radius)
