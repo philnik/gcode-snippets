@@ -290,20 +290,21 @@ G1   X   2.000   Y   2.000   Z  12.000   F600.0
 #+NAME: t
 #+BEGIN_SRC lisp :tangle yes :results output file :file ~/test1.ngc
 (setq output-stream (open "/home/quill/test-D.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
-(setq xystep 4.00d0)
+(setq xystep 3.00d0)
 (setq zstep 4.0)
 (setq zsafe 50.0)
 (setq zstart 12.0)
 (setq zend 0.0)
 (setq fz 2000)
-(setq fxy 6000)
+(setq fxy 2000)
 (setq center '(0.0 0.0))
-(setq tool-diameter 4.0)
-(setq internal-diameter 50.0)
-(setq external-diameter 100.0)
+(setq tool-diameter 3.175)
+(setq internal-diameter 580.0)
+(setq external-diameter 596.0)
 
 (prologue 8000 output-stream)
-(external-D-trochoidal-circle xystep zstep zsafe zstart zend fz fxy center tool-diameter internal-diameter external-diameter output-stream)
+(external-D-trochoidal-circle
+ xystep zstep zsafe zstart zend fz fxy center tool-diameter internal-diameter external-diameter output-stream 1.0d0)
 (epilogue output-stream) 
 
 (close output-stream)
@@ -311,6 +312,37 @@ G1   X   2.000   Y   2.000   Z  12.000   F600.0
 #+END_SRC
 
 #+RESULTS: t
+[[file:~/test1.ngc]]
+
+
+
+
+
+#+NAME: line
+#+BEGIN_SRC lisp :tangle yes :results output file :file ~/test1.ngc
+(setq output-stream (open "/home/quill/test-line.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
+(setq xystep 3.00d0)
+(setq zstep 4.0)
+(setq zsafe 50.0)
+(setq zstart 12.0)
+(setq zend 0.0)
+(setq fz 2000)
+(setq fxy 2000)
+(setq tool-diameter 3.175)
+(setq trochoidal-width 80.0)
+(setq v (list '(0.0d0 0.0d0) '(100.0d0 0.0d0)))
+
+(prologue 8000 output-stream)
+
+(external-trochoidal-line xystep zstep zsafe zstart zend fz fxy tool-diameter v trochoidal-width output-stream)
+
+(epilogue output-stream) 
+
+(close output-stream)
+
+#+END_SRC
+
+#+RESULTS: line
 [[file:~/test1.ngc]]
 
 
