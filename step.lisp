@@ -12,7 +12,6 @@
   (defun deg-to-rad (a)
     (/ a (/ 180.0d0 *pi*)))
 
-
 (defun atan2 (y x)
   (cond ((> x 0.0d0) (atan (/ y x)))
 	((and (< x 0.0d0) (>= y 0.0d0)) (+ (atan (/ y x)) *pi*))
@@ -42,7 +41,9 @@
       (sqrt (+ (expt (- p2x p1x) 2.0d0) (expt (- p2y p1y) 2.0d0)))
       ))
 
-  (defun normal-vector-2 (v)
+(defun normal-vector-2 (v)
+  "normal-vector-2 normalize vector keeping start point
+`v' vector"
     (let* ((p1 (nth 0 v))
            (p2 (nth 1 v))
            (p1x (x-of p1))
@@ -54,12 +55,14 @@
                  (if (> p2y p1y)
                      (* *pi* 0.5d0)
                      (* *pi* -0.5d0))
-                 (atan (/ (- p2y p1y) (- p2x p1x)))
+                 (atan2 (- p2y p1y) (- p2x p1x))
                  )))
-      (list '(0.0d0 0.0d0) (list (cos angle) (sin angle)))
+      (list (list p1x p1y) (list (+ p1x (cos angle)) (+ p1y (sin angle))))
       ))
 
-  (defun normal-vector (v)
+(defun normal-vector (v)
+  "normal-vector normalize vector and transforms to zero
+`v' vector"
     (let* ((p1 (nth 0 v))
            (p2 (nth 1 v))
            (p1x (x-of p1))
@@ -86,8 +89,8 @@
           (if (> p2y p1y)
               (* *pi* 0.5d0)
               (* *pi* -0.5d0))
-          (atan (/ (- p2y p1y) (- p2x p1x))))
-      ))
+          (atan2 (- p2y p1y) (- p2x p1x))))
+      )
 
   (defun p+ (p1 p2)
     (let* ((p1x (x-of p1))
@@ -111,9 +114,15 @@
     (list x y)))
 
 (defun middle-vector (v)
+  "middle-vector: finds the middle point of start & end point of a vector
+`v' vector ( array of 2 points)
+"
   (middle-point (nth 0 v) (nth 1 v)))
 
-  (defun vector-scale (v scale-factor)
+(defun vector-scale (v scale-factor)
+"vector-scale scales a vector, holds start point scales length by scale-factor for new end-point
+`v' vector
+`scale-factor' length multiplier"
     (let* ((p1 (nth 0 v))
            (p2 (nth 1 v))
            (p1x (x-of p1))
@@ -122,7 +131,7 @@
            (p2y (y-of p2))
            (length (length-vector v))
            (angle (angle-vector v)))
-      (list p1 (list (+ p1x (* scale-factor (cos angle))) (+ p1y (* scale-factor (sin angle)))))
+      (list p1 (list (+ p1x (* scale-factor length (cos angle))) (+ p1y (* scale-factor length (sin angle)))))
       ))
 
 (defun vector-rotate (v b-angle)
@@ -181,10 +190,6 @@
            (p2 (nth 1 v)))
       (list p2 p1)
       ))
-
-;; [[file:step.org::arc-functions][arc-functions]]
-(setq arc-3points  (list '(0.0d0 0.0d0) '(0.0d0 1.0d0) '(1.0d0 0.0d0)))
-(setq arc-by-radius  (list 100.0 '(0.0d0 1.0d0) '(1.0d0 0.0d0)))
 
 (defun radius-arc (arc-cen-2p)  ;; untested
   "we will calculate radius of an arc"
@@ -245,12 +250,7 @@
 (defun counter-clockwise-move-R (point r f str)
   "G03 interpolations calls ccw-move-R"
   (ccw-move-R point r f str))
-
-
 ;; move-functions ends here
-
-;; Step function
-
 
 ;; [step-function]
 (defun z-step-list (zstart zend step)
@@ -282,8 +282,6 @@
     (append (list zsafe) steps-down steps-up (list zsafe))))
 
 ;; step-function ends here
-
-
 ;; Divide a circle on points
 ;; [divide-circle]
 (defun polar-to-rect (center radius angle)
@@ -307,24 +305,39 @@
         ))
 ;; divide-circle ends here
 
-(defun divide-line (vector no-of-points)
+;;;divide-line
+(defun divide-line (vector step-length)
   "divides a line to points
 `vector' descibes start-point->end-point of line
 `no-of-points' number of points"
   (let* ((l (length-vector vector))
-	 (step (/ l no-of-points))
-	 (start-point (car vector))
-	 (end-point (cadr vector))
+	 (no-of-points ( round (/ l step-length)))
+	 (step-round (/ l no-of-points))
+	 (nvector (normal-vector-2 vector))
          (point-array '()))
 
-        (dotimes (n  no-of-points)
-          (push (polar-to-rect center radius (* n angle)) point-array)
+    (dotimes (n  (+ 1 no-of-points))
+      (push (vector-scale nvector (* n step-round)) point-array)
           )
       (reverse point-array)
         ))
-;; divide-circle ends here
 
-
+(defun line-point-couples (v trochoidal-width step-length)
+  "line-point-couples returns couples on a straight line 
+`v' vector  
+`trochoidal-width' width of the trochoidal
+`step-length' couple distance"
+  (let* ((dv+ (vector-offset v (* trochoidal-width 0.5d0)))
+	 (dv- (vector-offset v (* trochoidal-width -0.5d0)))
+	 (dl+  (divide-line dv+ step-length))
+	 (dl-  (divide-line dv- step-length))
+	 (couples '()))
+    (dotimes (n (length dl+))
+      (let ((i (cadr (nth n dl+)))
+	    (j (cadr (nth n dl-))))
+	(push (list (list (car i) (cadr i)) (list (car j) (cadr j))) couples)
+	))
+    (reverse couples)))
 
 
 
@@ -357,9 +370,7 @@
 					;	      (clockwise-move-R (list (- xi radius ) yi (pop z-list) ) radius f output-stream)
     (goto (list xi yi zsafe) output-stream)
     ))
-            
 ;; helical-drill-at-point ends here
-
 
 ;; [helical-drill-array]
 (defun helical-drill-array (point-array zsafe zstart zend zstep radius f output-stream)
@@ -399,6 +410,7 @@
     (goto point-safe output-stream)
     (goto point-start output-stream)
     (linear-move point-end f- output-stream)
+    (linear-move point-start f+ output-stream)
     (goto point-safe output-stream)
     ))
 ;; drill-at-point ends here
