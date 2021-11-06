@@ -1,0 +1,427 @@
+#+STARTUP: indent
+#+STARTUP: hidestars
+#+OPTIONS: html-link-use-abs-url:nil html-postamble:auto html-preamble:t html-scripts:t
+#+OPTIONS: html-style:t html5-fancy:t tex:t
+#+OPTIONS: \n:t
+#+CREATOR: <a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.4.50.1 (<a href="http://orgmode.org">Org</a> mode 8.2.6)
+#+HTML_CONTAINER: div
+#+HTML_DOCTYPE: xhtml-strict
+#+HTML_HEAD:
+#+HTML_HEAD_EXTRA:
+#+HTML_LINK_HOME:
+#+HTML_LINK_UP:
+#+HTML_MATHJAX:
+#+INFOJS_OPT:
+#+LATEX_HEADER:
+#+LATEX_CLASS: article
+#+LATEX_CLASS_OPTIONS: [a4paper]
+#+LATEX_HEADER: \usepackage[cm-default]{fontspec}                                         
+#+LATEX_HEADER: \usepackage{xunicode}                                                     
+#+LATEX_HEADER: \usepackage{xltxtra}                                                      
+#+LATEX_HEADER: \usepackage{xgreek}                                                                                 
+#+LATEX_HEADER: \setmainfont[Mapping=tex-text]{Times New Roman}
+# #+SETUPFILE:   ~/public_html/org-html-themes/org/theme-readtheorg.setup
+#+SETUPFILE:   /home/quill/public_html/org-html-themes/org/theme-readtheorg-local.setup
+
+* cutting speed
+|               |     20-30 |           | m/min  |
+| cutting-speed |        20 |        30 | m/min  |
+|               | 333.33333 |      500. | mm/sec |
+|---------------+-----------+-----------+--------|
+| diameter      |     3.175 |     3.175 | mm     |
+| radius        |    1.5875 |    1.5875 | mm     |
+|               | 209.97375 | 314.96063 | /sec   |
+|               | 12598.425 | 18897.638 | rpm    |
+|               |           |           |        |
+#+TBLFM: @3$2..@3$3=@2*1e3/60.0::@5$2..@5$3=@-1/2.0::@6$2..@6$3=@3/@5::@7$2..@7$3=@6*60
+
+
+* feed per tooth
+| feed-per-tooth | 0.15-0.3 |        |          |
+|----------------+----------+--------+----------|
+| feed-per-tooth |     0.15 |    0.5 | mm/tooth |
+| teeth          |        2 |      2 | tooth    |
+| diameter       |    3.175 |        |          |
+| spindle        |    12000 |  12000 | rpm      |
+|----------------+----------+--------+----------|
+| cut speed      |    3600. | 12000. | mm.min   |
+|                |          |        |          |
+#+TBLFM: @6$2..@6$3=@5*@2*@3
+
+* σπασιμο εργαλείου
+|              |                  |        |
+|--------------+------------------+--------|
+| ημ/νια       | <2021-07-26 Δευ> |        |
+| διαμετρος    |            3.175 | mm     |
+| τύπος        |          1-flute |        |
+| προωση       |             1100 | mm/min |
+| στροφες      |            16500 | rpm    |
+| παχος φύλλου |               10 | mm     |
+| Υλικό:       |             HDPE |        |
+
+* επιτάχυνση
+  | ταχυτητα   | 1700 | $mm/sec$   |
+  | επιταχυνση | 1200 | $mm/sec^2$ |
+
+* υπολογισμός ταχύτητας
+  #+BEGIN_SRC maxima :results output verbatim
+	v:3500/60.0;
+	a:400;
+	t:1700.0/60/a,numer;
+	v1:a*t;
+	s:a*t^2;
+    print("v1=");
+    print(v1);
+
+  #+END_SRC
+
+  #+RESULTS:
+  : v1= 
+  : 28.33333333333333 
+
+
+  * υπολογισμός ταχύτητας 2
+
+  #+BEGIN_SRC maxima :results value scalar raw
+	v:3500/60.0;
+	a:400;
+	t:1700.0/60/a,numer;
+	v1:a*t;
+	s:a*t^2;
+    print("| v1 |", v1,"| mm/sec |");
+    print("|  s |", s ,"| mm     |");
+  #+END_SRC
+
+  
+  #+RESULTS:
+  | v1 | 28.33333333333333 | mm/sec |
+  | s  | 2.006944444444444 | mm     |
+
+  #+BEGIN_SRC maxima :results value raw
+	v:3500/60.0;
+	a:400;
+	t:1700.0/60/a,numer;
+	v1:a*t;
+	s:a*t^2;
+    print("v1 =",v1,"m/sec");
+  #+END_SRC
+
+  #+RESULTS:
+  v1 = 28.33333333333333 m/sec 
+  v1 = 28.33333333333333 m/sec 
+
+
+* Ζεύγη τόξων
+
+  #+name: biarc
+  #+BEGIN_SRC maxima :results value raw
+/* biarc from wikipedia */
+
+/* A:(-c,0) B(c,0)
+-%pi<a<%pi  -%pi<b<%pi
+u1=k1*L1   u2=k2*L2
+*/
+w(a,b):=(a+b)/2.0;
+k1(c,a,b,p):=-(1/c)*(sin(a)+(1/p)*sin(w(a,b)));
+k2(c,a,b,p):=(1/c)*(sin(b)+p*sin(w(a,b)));
+
+/* turning angles */
+u1(p,a,b):=2*carg(%e^(-%i*a)+p^-1*%e^(-%i*w(a,b)));
+u2(p,a,b):=2*carg(%e^(%i*b)+p*%e^(%i*w(a,b)));
+
+/* join points */
+
+g(a,b):=(a-b)/2.0;
+Xj(c,a,b,p):=(c*(p^2-1)/(p^2+2*p*cos(g(a,b))+1));
+Yj(c,a,b,p):=2*c*p*sin(g(a,b))/(p^2+2*p*cos(g(a,b))+1);
+
+/*example*/
+
+fa:0.0;
+fb:%pi/2.0,numer;
+c:1.0;
+p:1.0;
+ka:k1(c,fa,fb,p);
+kb:k2(c,fa,fb,p);
+1/ka;
+1/kb;
+ua:u1(p,fa,fb);
+ub:u2(p,fa,fb);
+XXj:Xj(c,fa,fb,p);
+YYj:Yj(c,fa,fb,p);
+
+print("arc 1:")$
+print("Start point: (",-c,",",0,")")$
+print("End point:(",XXj,",",YYj,")")$
+print("Radius:",1/ka)$
+print("   ")$
+print("arc 2:")$
+print("Start point:(",XXj,",",YYj,")")$
+print("End point:(",c,",",0,")")$
+print("Radius:",1/kb)$
+  #+END_SRC
+
+  #+RESULTS: biarc
+  arc 1: 
+  Start point: ( - 1.0 , 0 ) 
+  End point:( 0.0 , - 0.414213562373095 ) 
+  Radius: - 1.414213562373095 
+
+  arc 2: 
+  Start point:( 0.0 , - 0.414213562373095 ) 
+  End point:( 1.0 , 0 ) 
+  Radius: 0.585786437626905 
+
+* ταχύτητα κοπής
+
+
+FR = RPM x T x CL
+
+FR: feed rate mm/min
+RPM: speed
+T : No of teeth
+CL : chip load or feed / tooth
+
+| FR  |     900 | mm/min |
+| RPM |    8000 | rpm    |
+| T   |       2 | flutes |
+| CL  | 0.05625 |        |
+#+TBLFM: @4$2=@1/@2*@3
+
+** 1
+|    FR |   RPM | T |   CL | tool diameter | cutting speed |
+|-------+-------+---+------+---------------+---------------|
+| 1280. |  8000 | 2 | 0.08 |         3.175 |        79.756 |
+| 1600. | 10000 | 2 | 0.08 |           2.5 |          78.5 |
+| 1280. |  8000 | 2 | 0.08 |         3.175 |        79.756 |
+|  640. |  4000 | 2 | 0.08 |           4.0 |         50.24 |
+| 1800. |  3000 | 2 |  0.3 |           8.0 |         75.36 |
+#+TBLFM: $1=$2*$3*$4::$6=$2*3.14*$5*1e-3
+
+
+
+** 2
+|    FR |   RPM | T |   CL |
+|-------+-------+---+------|
+|  360. |  6000 | 1 | 0.06 |
+|  480. |  8000 | 1 | 0.06 |
+|  720. | 12000 | 1 | 0.06 |
+|  900. | 15000 | 1 | 0.06 |
+| 1440. | 24000 | 1 | 0.06 |
+#+TBLFM: $1=$2*$3*$4
+
+
+** 3
+
+
+* Cutting force
+
+** mat
+
+| Name                          | Polypropylene |
+| Phase at STP                  | solid         |
+| Density                       | 900 kg/m3     |
+| Ultimate Tensile Strength     | 27 MPa        |
+| Yield Strength                | N/A           |
+| Young’s Modulus of Elasticity | 1.3 GPa       |
+| Brinell Hardness              | 50 BHN        |
+| Melting Point                 | 337 °C        |
+| Thermal Conductivity          | 0.2 W/mK      |
+| Heat Capacity                 | 1700 J/g K    |
+| Price                         | 1.1 $/kg      |
+
+
+
+|      | elastic modulus | yield   | Ultimate |
+|      | [N/mm2]         | [N/mm2] | [N/mm2]  |
+|------+-----------------+---------+----------|
+| HDPE | 800             | 7       | 18       |
+|      |                 |         |          |
+
+** cutting force
+Ft = σ × A × Zc × Ef × Tf (2)
+
+Ft: cutting force
+
+σ: ultimate strength
+
+A: cross section of uncut chip
+
+Zc: number of teeth enganged
+
+Ef: Engangement Factor
+
+Tf: cutting tool wear factor
+
+
+| Ft  | σ       | A     | Zc | Ef | Tf |
+| [N] | [N/mm2] | [mm2] |    |    |    |
+|-----+---------+-------+----+----+----|
+| 81. | 18      | 4.5   |  1 |  1 |  1 |
+|     |         |       |    |    |    |
+#+TBLFM: @3$1=$2*$3*$4*$5*$6
+
+
+
+*** A
+
+A=DOC x CL
+
+A: cross section of uncut chip
+ap(DOC): depth of cut
+CL: chip load (feed per tooth)
+
+| A     | DOC  | CL   |
+| [mm2] | [mm] | [mm] |
+|-------+------+------|
+| 4.5   | 15   | 0.3  |
+|       |      |      |
+#+TBLFM: @3$1=$2*$3
+
+
+
+*** Zc [number of teeth engagned]
+
+Zc = Z × α ÷ 360° (4)
+
+Z: number of teeth cutter
+
+α: 180deg x radial WOC(W)/{cutter diameter D}
+
+|  Ζc | Z |   α |
+|-----+---+-----|
+|   1 | 2 | 180 |
+| 0.5 | 1 | 180 |
+#+TBLFM: $1=$2*$3/360
+
+*** Ef [Engangement factor]
+
+Ef=W/D
+
+| Ef | radial WOC(W) | D |
+|----+---------------+---|
+|  1 |             3 | 3 |
+
+
+*** Tf [Tool wear factor]
+
+|            | Axial DOC | Feed per tooth | Cutting tool wear factor |
+|            |      [mm] | [mm]           |                          |
+|------------+-----------+----------------+--------------------------|
+| Light      |   0.5-2.5 |                |                      1.1 |
+| Medium     |   2.5-5.0 |                |                      1.2 |
+| Heavy Duty |  5.0-10.0 |                |                      1.3 |
+
+
+
+
+
+
+** sources
+
+https://www.ctemag.com/news/articles/understanding-tangential-cutting-force-when-milling#
+
+
+
+    Home › Articles & Columns › Understanding tangential cutting force when milling
+
+Understanding tangential cutting force when milling
+Author 
+Edmund Isakov, Ph.D.
+Published May 1, 2012 - 11:15am
+Related Glossary Terms
+
+    cutting forcecutting speedfacemillfeedgang cutting (milling, slitting)hardnesslead anglemetalcutting (material cutting)metalworkingmillingmilling cutterstiffnesstensile strength
+
+The tangential cutting force, if end users know how to determine it, and the cutting speed, which is selected as one of several machining parameters, allow calculating the required machining power for an operation. Image courtesy of Sandvik Coromat.
+Image courtesy of Sandvik Coromat
+
+[Editor’s Note: This article was written in response to request by Matt Cawyer at Four State Industrial Supply Co. Inc., Carthage, Mo., who wrote the author seeking a formula to determine the torque required by a cutting tool when milling the titanium alloy Ti6Al4V.] 
+
+The tangential cutting force, if end users know how to determine it, and the cutting speed, which is selected as one of several machining parameters, allow calculating the required machining power for an operation. When the required machining power value is about the same as the milling machine’s rated power, milling productivity approaches its maximum.
+
+Torque (Ts) that is applied to the spindle, and therefore to the milling cutter, is generated by the tangential cutting force (Ft) and can be calculated by the formula:
+
+Ts = Ft × R (1)
+
+Where R is a radius of a milling cutter. (Formulas are referenced later by the number in parentheses.)
+
+The concept of calculating tangential cutting force when milling is based on the author’s analytical study of metalcutting principles and experimental study of milling cutters with positive-negative and double-positive geometries.
+
+This concept is based on relationships between the following parameters:
+
+    Ultimate tensile strength (σ) of metallic work materials vs. their hardness,
+    Cross-sectional area of the uncut chip (A), 
+    Number of teeth engaged with a workpiece (Zc),
+    Engagement factor of a workpiece material (Ef), and
+    Cutting tool wear factor (Tf).
+
+The following tangential cutting force formula was developed in accordance with these relationships: 
+
+Ft = σ × A × Zc × Ef × Tf (2)
+
+Because of the end user’s interest in milling a specific titanium alloy, the following information is provided about Ti6Al4V, an alpha-beta titanium alloy. It is used for making aircraft gas turbine discs and blades, airframe structural components and other applications requiring high strength at temperatures up to 600° F (315° C).
+
+The ultimate tensile strength of Ti6Al4V at its annealed condition is 137,000 psi (945 MPa in the metric system), having a hardness of 36 HRC.
+
+The shape of the uncut chip’s cross section depends on the cutting insert geometry and the milling cutter’s lead angle. Square, hexagonal or octagonal inserts have straight cutting edges and produce chips with a rectangular cross section when the milling cutter has a 0° lead angle or a parallelogram cross section when the milling cutter has a lead angle greater than 0°.
+
+The following formula is recommended for calculating the cross-sectional area of the uncut chip:
+
+A = ap × f (3)
+
+Where ap is the axial DOC and f is the feed per tooth, or chip load.
+
+The number of teeth engaged with a workpiece (Zc) depends on the number of teeth in the cutter (Z) and the engagement angle (α). The formula for calculating Zc is:
+
+Zc = Z × α ÷ 360° (4)
+
+The engagement angle depends on the radial WOC (W). If the radial WOC equals the milling cutter diameter (D), the engagement angle has a maximum value of 180°, and the number of engaged teeth is half the number of teeth in the cutter:
+
+Zc = Z × 180° ÷ 360º = 0.5 Z (5)
+
+If the engagement angle is less than 180°, it is calculated by formulas containing trigonometric functions. Detailed description of these formulas and supporting illustrations were published in the July 2010 issue of CTE (see “New Mill” by E. Isakov, p. 44). 
+
+Engagement Factors
+
+The engagement factor of a workpiece material (Ef) is a dimensionless coefficient included in formula (2) to correlate tangential cutting force with the ratio of the radial WOC to the cutter diameter (W ÷ D).
+
+Milling is more effective when sufficiently thick and uniform chips are produced. The W/D ratio affects uniformity of the chip thickness. When the radial WOC equals the cutter diameter (W ÷ D = 1), the chip being formed starts at zero thickness at the point of entry. It then increases to a maximum thickness at the centerline of the cutter and thins to zero at the point of exit. This type of cut produces a nonuniform chip, generates maximum friction at the cutting edge and, as a result, increases the chip’s resistance to being cut. Effective milling is obtained when the radial WOC is about two-thirds of the cutter diameter. Such a cut produces uniform and sufficiently thick chips, generates less friction at the cutting edge and decreases cutting resistance.
+
+
+* bending tool
+
+| material              |  carbide |       |
+| diameter              |        8 | mm    |
+| Modulus of Elasticity | 600*10^3 | N/mm2 |
+| I (moment)            |   200.96 | mm4   |
+| ultimate Strength     |      344 | N/mm2 |
+#+TBLFM: @4$2=(3.14/4)*(@2/2.0)^4
+
+db = F x L^3 / (3 x E x I )
+
+| deflection   | F  | L  | E        | I   |
+| mm           | N  | mm | N/mm2    | mm4 |
+|--------------+----+----+----------+-----|
+| 3.4722222e-3 | 80 | 25 | 600*10^3 | 200 |
+|              |    |    |          |     |
+#+TBLFM: @3$1=($2*$3^3)/(3*$4*$5)
+
+
+sx = Mz * y / Iz
+
+| stress  | Mz     | y    | Iz    |
+| [N/mm2] | [N*mm] | [mm] | [mm4] |
+|---------+--------+------+-------|
+| 30      | 2000   | 3    | 200   |
+#+TBLFM: @3$1=$2*$3/$4::@3$2=80*25
+
+
+
+** Power
+| P         |       w_r |  rpm | T       | F   | R    | P_machine |
+| [W]       |           |      | [N x m] | [N] | [m]  | [W]       |
+|-----------+-----------+------+---------+-----+------+-----------|
+| 716.56052 | 477.70701 | 3000 | 1.5     | 50  | 0.03 | 275       |
+|           |           |      |         |     |      |           |
+#+TBLFM: @3$1=$2*$4::@3$2=$3/6.28::@3$4=$5*$6::@3$7=2200*$3/24000
