@@ -312,11 +312,6 @@ Ef=W/D
 | Medium     |   2.5-5.0 |                |                      1.2 |
 | Heavy Duty |  5.0-10.0 |                |                      1.3 |
 
-
-
-
-
-
 ** sources
 
 https://www.ctemag.com/news/articles/understanding-tangential-cutting-force-when-milling#
@@ -417,7 +412,6 @@ sx = Mz * y / Iz
 #+TBLFM: @3$1=$2*$3/$4::@3$2=80*25
 
 
-
 ** Power
 | P         |       w_r |  rpm | T       | F   | R    | P_machine |
 | [W]       |           |      | [N x m] | [N] | [m]  | [W]       |
@@ -425,3 +419,183 @@ sx = Mz * y / Iz
 | 716.56052 | 477.70701 | 3000 | 1.5     | 50  | 0.03 | 275       |
 |           |           |      |         |     |      |           |
 #+TBLFM: @3$1=$2*$4::@3$2=$3/6.28::@3$4=$5*$6::@3$7=2200*$3/24000
+
+
+*** Power diagram
+
+#+TBLNAME: p_machine
+|   rpm | P_machine |
+|       |       [W] |
+|-------+-----------|
+|     0 |         0 |
+| 12000 |      1100 |
+| 24000 |      2200 |
+
+#+name: plot-power
+#+header: :file images/plot-power.png
+#+header: :exports results
+#+header: :results graphics
+#+begin_src gnuplot :var GPp_machine=p_machine
+reset
+set encoding utf8
+set size ratio 0.3
+set term png font "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf,10" enhanced
+set xlabel "Στροφές [rpm]"
+set ylabel "Ισχύς [W]"
+set yrange [0:2500]
+#      set logscale x 2
+#    set xtics (50,100,150,200,300,500,700,1000,1500,2200)
+set xrange [00:24000]
+set grid
+set key top left
+set title "Ισχύς μηχανής "
+plot GPp_machine using 1:2 with lines title "P_{machine}"
+ #+end_src
+
+ #+RESULTS: plot-power
+ [[file:images/plot-power.png]]
+
+
+
+#+name: solve-maxima
+#+header: :exports results
+#+begin_src maxima :results output
+(to-maxima);
+d:3.0;
+L:50.0;
+DOC:30.0;
+sc:344.0;
+sm:25.0;
+Wm:2200/24000.0;
+V:75000.0;
+
+CL1:2*%pi*d^3/(L*DOC)*(sc/sm),numer;
+CL2:Wm*V/(sm*DOC*%pi*d),numer;
+FR1:V/%pi/d*CL1,numer;
+FR2:V/%pi/d*CL2,numer;
+
+RPM1:V/d/%pi,numer;
+
+print("");
+print("tool strength");
+print("CL1=",CL1);
+print("FR1=",FR1);
+print("RPM1=",RPM1);
+
+print("");
+print("Machine power");
+print("CL2=",CL2);
+print("FR2=",FR2);
+#+end_src
+
+#+RESULTS: solve-maxima
+#+begin_example
+Type (to-maxima) to restart, ($quit) to quit Maxima.
+MAXIMA> 
+Returning to Maxima
+ 
+tool strength 
+CL1= 1.55621933688224 
+FR1= 12384.0 
+RPM1= 7957.747154594767 
+ 
+Machine power 
+CL2= 0.9726135411171382 
+FR2= 7739.812639345247 
+#+end_example
+
+
+| $FR$  | : | προωση  κοπής            | $[\frac{mm}{min}]$    |
+| $RPM$ | : | ταχύτητα   περιστροφής   | $[rpm]$               |
+| $T$   | : | αριθμός κοπτικών δοντίων | $[_ _ _ ]$         |
+| $CL$  | : | προωση ανα δοντί         | $[mm/{δόντι} ]$       |
+
+
+
+#+name: symbolic-solve-maxima
+#+header: :exports results :results output raw :tangle yes :session max
+#+begin_src maxima 
+texput("*"," \\times ",nary);
+texput("sc","s_{c}");
+texput("Ft","F_{t}");
+texput("Zc","Z_{c}");
+texput("Ef","E_{f}");
+texput("Tf","T_{f}");
+
+texput("Ft","F_{t}");
+texput("St","σ_{t}");
+
+
+texput("Fc","F_{c}");
+texput("Sc","σ_{c}");
+texput("Iy","I_{y}");
+
+eq1: FR=RPM*T*CL;
+tex(eq1);
+
+eq11:solve(eq1,[CL]);
+tex(eq11);
+
+eq2:solve(eq1,[T]);
+tex(eq2);
+
+eq3: V=RPM*d*%pi;
+tex(eq3);
+eq31: solve(eq3,RPM);
+tex(eq31);
+
+
+eq4: solve([eq1],[CL]);
+
+eq5: subst([eq31],eq1);
+
+tex(eq5);
+
+eq6: A=DOC*CL;
+
+tex(eq6);
+
+eq7: Ft=St*A*Zc*Ef*Tf;
+tex(eq7);
+
+eq71: Ft=St*DOC*CL*Zc*Ef*Tf;
+tex(eq71);
+
+eq8: Sc=M*y/Iy;
+
+tex(eq8);
+
+eq81: Sc=Fc*L*(d/2)/((%pi/4.0)*(d/2.0)^4);
+eq82: solve([eq81],[Fc]);
+tex(eq81);
+tex(eq82);
+
+eq9: Sc=Ft*L*(d/2)/((%pi/4.0)*(d/2.0)^4);
+eq91: subst([eq71],eq9);
+tex(eq91);
+
+eq92: subst([eq11],eq91);
+tex(eq92);
+
+eq93: solve([eq92],[RPM]);
+eq94: solve([eq92],[FR]);
+tex(eq93);
+tex(eq94);
+
+d:3.1;
+L:50.0;
+DOC:15.0;
+St:25.0;
+Sc:400.0;
+Zc:1;
+Tf:1;
+Ef:1;
+T:2;
+
+eq101: eq93,numer;
+eq102: eq94,numer;
+tex(eq101);
+tex(eq102);
+
+
+#+end_src
