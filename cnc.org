@@ -314,6 +314,8 @@ Ef=W/D
 
 ** sources
 
+https://second.wiki/wiki/spezifische_schnittkraft
+
 https://www.ctemag.com/news/articles/understanding-tangential-cutting-force-when-milling#
 
 
@@ -513,7 +515,7 @@ FR2= 7739.812639345247
 
 
 #+name: symbolic-solve-maxima
-#+header: :exports results :results output raw :tangle yes :session max
+#+header: :exports results :results output raw  :tangle yes
 #+begin_src maxima 
 texput("*"," \\times ",nary);
 texput("sc","s_{c}");
@@ -582,20 +584,56 @@ eq94: solve([eq92],[FR]);
 tex(eq93);
 tex(eq94);
 
-d:3.1;
-L:50.0;
-DOC:15.0;
+eq201: P=Ft*d/2.0*RPM/2.0/%pi;
+eq202: subst([eq71],eq201);
+eq203: subst([eq4],eq202);
+  tex(eq201);
+  tex(eq202);
+  tex(eq203);
+
+d:3.175;
+L:25.0;
 St:25.0;
-Sc:400.0;
+Sc:350.0;
 Zc:1;
 Tf:1;
-Ef:1;
-T:2;
+Ef:1.2;
+T:1;
 
 eq101: eq93,numer;
 eq102: eq94,numer;
 tex(eq101);
 tex(eq102);
+DOC:6;
+RPM:8000;
+print("DOC=",DOC);
+print("RPM=",RPM);
+eq103:eq94,numer;
+tex(eq103);
+eq203:eq202,numer;
+tex(eq203);
 
+DOC:10;
+RPM:8000;
+print("DOC=",DOC);
+print("RPM=",RPM);
+eq103:eq94,numer;
+FR:rhs(eq103[1]);
+print("FR=",FR);
+eq1030:eq103,numer;
+CL:rhs(eq1030[1]);
+eq203:eq202,numer;
+tex(eq203);
+
+
+DOC:12;
+RPM:8000;
+print("DOC=",DOC);
+print("RPM=",RPM);
+eq103:eq94,numer;
+tex(eq103);
+eq203:eq202,numer;
+tex(eq203);
 
 #+end_src
+
