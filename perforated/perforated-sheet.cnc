@@ -6,7 +6,7 @@
 
 #4=0.000 (x-of horizontal line)
 #5=0.000 (y-of horizontal line)
-#6=15.00 (step of horizontal line)
+#6=5.5 (step of horizontal line)
 
 
 O40 (run vertical lines)
@@ -32,8 +32,8 @@ M98P100L01
 M99
 
 O100 (helical drilling point)
-G0    X [#1+3.412]   Y [#2]   Z   8.000   
-G02   X [#1-3.412]   Y [#2]   Z   4.000  R   3.412  F[#3] 
+G0    X [#1+3.412]   Y [#2]   Z   9.000   
+G02   X [#1-3.412]   Y [#2]   Z   6.000  R   3.412  F[#3] 
 G02   X [#1+3.412]   Y [#2]   Z   0.000  R   3.412  F[#3]  
 G02   X [#1-3.412]   Y [#2]   Z   0.000  R   3.412  F[#3]  
 G02   X [#1-3.412]   Y [#2]   Z   4.000  R   3.412  F[#3]  
@@ -41,7 +41,7 @@ G02   X [#1+3.412]   Y [#2]   Z   8.000  R   3.412  F[#3]
 M99
 
 O200 (normal drilling point)
-G00   X [#1]   Y [#2]   Z 8.000   
+G00   X [#1]   Y [#2]   Z 9.000   
 G00   X [#1]   Y [#2]   Z 5.000
 G01   X [#1]   Y [#2]   Z 0.000 F[#3]  
 G00   Z 8.000

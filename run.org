@@ -116,11 +116,21 @@ G0   X  -0.000   Y-100.000   Z  30.000
 ** Drill array on rectangle
 We take the values from the following table:
 #+tblname: my-table
-|   x |   y |
-|-----+-----|
-| 0.0 | 0.0 |
-| 1.0 | 1.0 |
-| 2.0 | 2.0 |
+|      x |      y |
+|--------+--------|
+|   47.0 |   47.0 |
+| 213.66 |   47.0 |
+| 380.33 |   47.0 |
+|  547.0 |   47.0 |
+|  547.0 | 213.66 |
+|  547.0 | 213.66 |
+|  547.0 | 380.33 |
+|  547.0 |  547.0 |
+| 380.33 |  547.0 |
+| 213.66 |  547.0 |
+|   47.0 |  547.0 |
+
+
 
 #+name: test-drill-array
 #+BEGIN_SRC lisp :results output :var point-array=my-table
