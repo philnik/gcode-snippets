@@ -10,8 +10,8 @@
 #10=4.33 ( step in vertical line)
 #11=[4.33/2.0] ( half step)
 
-#7=53 ( no of holes in horizontal direction)
-#8=101 ( no of holes in vertical direction)
+#7=20 ( no of holes in horizontal direction)
+#8=20 ( no of holes in vertical direction)
 
 M98 P40 L01
 
@@ -38,13 +38,13 @@ M98P05L[#8-1]
 M99
 
 O10 (horizontal line forward)
-M98 P200 L01
+M98 P300 L01
 #1=[#1+#6]
 M99
 
 O05 (horizontal line backward)
 #1=[#1-#6]
-M98 P200 L01
+M98 P300 L01
 M99
 
 

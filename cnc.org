@@ -13,15 +13,28 @@
 #+HTML_MATHJAX:
 #+INFOJS_OPT:
 #+LATEX_HEADER:
-#+LATEX_CLASS: article
-#+LATEX_CLASS_OPTIONS: [a4paper]
-#+LATEX_HEADER: \usepackage[cm-default]{fontspec}                                         
-#+LATEX_HEADER: \usepackage{xunicode}                                                     
-#+LATEX_HEADER: \usepackage{xltxtra}                                                      
-#+LATEX_HEADER: \usepackage{xgreek}                                                                                 
-#+LATEX_HEADER: \setmainfont[Mapping=tex-text]{Times New Roman}
+
+#+LATEX_HEADER: \usepackage[usenames]{color}
+#+LATEX_HEADER: \usepackage{amsmath}
+#+LATEX_HEADER: \usepackage[mathscr]{eucal}
+#+LATEX_HEADER: \usepackage[utf8]{inputenc}
+#+LATEX_HEADER: \usepackage[T1]{fontenc}
+#+LATEX_HEADER: % Package fixltx2e omitted
+#+LATEX_HEADER: \usepackage{graphicx}
+#+LATEX_HEADER: % Package longtable omitted
+#+LATEX_HEADER: % Package float omitted
+#+LATEX_HEADER: % Package wrapfig omitted
+#+LATEX_HEADER: \usepackage[normalem]{ulem}
+#+LATEX_HEADER: \usepackage{textcomp}
+#+LATEX_HEADER: \usepackage{marvosym}
+#+LATEX_HEADER: \usepackage{wasysym}
+#+LATEX_HEADER: \usepackage{latexsym}
+#+LATEX_HEADER: \usepackage{amssymb}
+#+LATEX_HEADER: % Package amstext omitted
+#+LATEX_HEADER: % Package hyperref omitted
+
 # #+SETUPFILE:   ~/public_html/org-html-themes/org/theme-readtheorg.setup
-#+SETUPFILE:   /home/quill/public_html/org-html-themes/org/theme-readtheorg-local.setup
+# #+SETUPFILE:   /home/quill/public_html/org-html-themes/org/theme-readtheorg-local.setup
 
 * cutting speed
 |               |     20-30 |           | m/min  |
@@ -591,6 +604,8 @@ eq203: subst([eq4],eq202);
   tex(eq202);
   tex(eq203);
 
+
+fortran(eq203);
 d:3.175;
 L:25.0;
 St:25.0;
@@ -636,4 +651,108 @@ eq203:eq202,numer;
 tex(eq203);
 
 #+end_src
+#+RESULTS: symbolic-solve-maxima
+$${\it FR}={\it CL} \times {\it RPM} \times T$$
 
+$$\left[ {\it CL}={{{\it FR}}\over{{\it RPM} \times T}} \right] $$
+
+$$\left[ T={{{\it FR}}\over{{\it CL} \times {\it RPM}}} \right] $$
+
+$$V=\pi \times {\it RPM} \times d$$
+
+$$\left[ {\it RPM}={{V}\over{\pi \times d}} \right] $$
+
+$${\it FR}={{{\it CL} \times T \times V}\over{\pi \times d}}$$
+
+$$A={\it CL} \times {\it DOC}$$
+
+$$F_{t}=A \times E_{f} \times σ_{t} \times T_{f} \times Z_{c}$$
+
+$$F_{t}={\it CL} \times {\it DOC} \times E_{f} \times σ_{t} \times 
+ T_{f} \times Z_{c}$$
+ 
+$$σ_{c}={{M \times y}\over{I_{y}}}$$
+
+$$σ_{c}={{32.0 \times F_{c} \times L}\over{\pi \times d^3}}$$
+
+$$\left[ F_{c}={{\pi \times σ_{c} \times d^3}\over{32 \times L}}
+  \right] $$
+  
+$$σ_{c}={{32.0 \times {\it CL} \times {\it DOC} \times E_{f} \times 
+ L \times σ_{t} \times T_{f} \times Z_{c}}\over{\pi \times d^3}}$$
+ 
+$$σ_{c}={{32.0 \times {\it DOC} \times E_{f} \times {\it FR} \times 
+ L \times σ_{t} \times T_{f} \times Z_{c}}\over{\pi \times {\it RPM}
+  \times T \times d^3}}$$
+  
+$$\left[ {\it RPM}={{32 \times {\it DOC} \times E_{f} \times {\it FR}
+  \times L \times σ_{t} \times T_{f} \times Z_{c}}\over{\pi \times 
+ σ_{c} \times T \times d^3}} \right] $$
+ 
+$$\left[ {\it FR}={{\pi \times {\it RPM} \times σ_{c} \times T
+  \times d^3}\over{32 \times {\it DOC} \times E_{f} \times L \times 
+ σ_{t} \times T_{f} \times Z_{c}}} \right] $$
+ 
+$$P={{0.25 \times F_{t} \times {\it RPM} \times d}\over{\pi}}$$
+
+$$P={{0.25 \times {\it CL} \times {\it DOC} \times E_{f} \times 
+ {\it RPM} \times σ_{t} \times T_{f} \times Z_{c} \times d}\over{\pi
+ }}$$
+ 
+$$P={{0.25 \times {\it DOC} \times E_{f} \times {\it FR} \times 
+ σ_{t} \times T_{f} \times Z_{c} \times d}\over{\pi \times T}}$$
+ 
+      P = (2.5E-1*DOC*Ef*FR*St*Tf*Zc*d)/(%pi*T)
+      
+      
+$$\left[ {\it RPM}=0.6819650777896552 \times {\it DOC} \times 
+ {\it FR} \right] $$
+ 
+ 
+$$\left[ {\it FR}={{1.466350745174724 \times {\it RPM}}\over{
+ {\it DOC}}} \right] $$
+
+
+DOC= 6 
+RPM= 8000 
+$$\left[ {\it FR}=1955.134326899633 \right] $$
+$$P=363828.1999080727 \times {\it CL}$$
+DOC= 10 
+RPM= 8000 
+FR= 1173.080596139779 
+$$P=7.11333002734375 \times 10^{+8}$$
+DOC= 12 
+RPM= 8000 
+$$\left[ 1173.080596139779=977.5671634498167 \right] $$
+
+
+
+$$P=8.5359960328125 \times 10^{+8}$$
+
+
+
+\[
+e^{i\pi} = -1
+\]
+
+\[
+\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}
+\]
+
+
+#+BEGIN_SRC latex :tangle /tmp/example.tex
+\documentclass{article}
+
+\begin{document}
+
+\[
+e^{i\pi} = -1
+\]
+
+\[
+\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}
+\]
+
+\end{document}
+
+#+END_SRC
