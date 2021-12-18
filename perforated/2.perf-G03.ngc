@@ -2,7 +2,8 @@
 
 #1=0.000 (x-of helical hole)
 #2=0.000 (y-of helical hole)
-#3=4300.0 (helical feed rate)
+#3=6000.0 (rapid feed rate)
+#29=2000.0 (cutting feed rate)
 
 #4=0.000 (x-of horizontal line)
 #5=0.000 (y-of horizontal line)
@@ -12,8 +13,11 @@
 
 #7=20 ( no of holes in horizontal direction)
 #8=20 ( no of holes in vertical direction)
+      
+#31=22 ( z safe)
+#32=18 ( z start drilling)
 
-G0 x1y1z10
+G0 x1y1z [#31]
 
 M98 P40 L01
 
@@ -37,10 +41,10 @@ M98P10L[#8]
 
 #1=[#1-#6]
 
-G01   X [#1]   Y [#2]   Z 7.5000 F[#3/2]  
-G01   X [#1]   Y [#2]   Z 6.000 F[#3]  
-G01   X [#1]   Y [#2]   Z -4.000 F[#3/2.0]  
-G01   Z 7.500 F[#3]
+G01   X [#1]   Y [#2]   Z [#31] F[#29]  
+G01   X [#1]   Y [#2]   Z [#32] F[#3]  
+G01   X [#1]   Y [#2]   Z -4.000 F[#29]  
+G01   Z [#31] F[#3]
 
 
 
@@ -61,18 +65,27 @@ M98 P301 L01
 M99
 
 O300 (normal drilling point)
-G18 G03   X [#1]   Y [#2]   Z 7.5 R2.5 F[#3]  
-G01   X [#1]   Y [#2]   Z 6.000 F[#3]  
-G01   X [#1]   Y [#2]   Z -4.000 F[#3/2.0]  
-G01   Z 7.500 F[#3]
+G18 G03   X [#1]   Y [#2]   Z [#31] R2.5 F[#3]  
+G01   X [#1]   Y [#2]   Z [#32] F[#3]  
+G01   X [#1]   Y [#2]   Z 2.000 F[#29]
+G01   X [#1]   Y [#2]   Z -4.000 F[#3]  
+G01   Z [#31] F[#3]
+
 M99
 
 
 O301 (normal drilling point)
-G18 G02   X [#1]   Y [#2]   Z 7.500 R2.5 F[#3]  
-G01   X [#1]   Y [#2]   Z 6.000 F[#3]  
-G01   X [#1]   Y [#2]   Z -4.000 F[#3/2.0]  
-G01   Z 7.500 F[#3]
+
+G18 G02   X [#1]   Y [#2]   Z [#31] R2.5 F[#3]  
+G01   X [#1]   Y [#2]   Z [#32] F[#3]  
+G01   X [#1]   Y [#2]   Z 2.000 F[#29]
+G01   X [#1]   Y [#2]   Z -4.000 F[#3]  
+G01   Z [#31] F[#3]
+
+
+
+
+
 M99
 
 M30
