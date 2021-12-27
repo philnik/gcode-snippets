@@ -1,0 +1,94 @@
+#11=0.000 (hole x-center) (not-used x-center:0.0)
+#12=0.000 (hole y-center) (not-used y-center:0.0)
+#21=8000.0 (rapid feed rate)
+#22=3000.0 (cutting xy-feed rate)
+#23=5000.0 (z rate)
+
+#51=3.175 (tool diameter)
+#52=10.00 (hole diameter)
+#53=[#51/2.0-#52/2.0](helical path radius)
+
+#81=20  (number of holes)
+#82=[360.0/#81] (angle between holes)
+#83=0.0 (start angle)
+#84=[#83] (current angle)
+
+
+#90=280.0 (radius of placing the holes)
+
+#101=15.0 ( Z safe )
+#102=10.0 ( Z start)
+#103=0.0  ( Z end  )
+#104=2.0  ( Z down step )
+#105=2.0  ( Z up step )
+#106=[fix[[#102-#103]/[#104]]] (number of down steps)
+#107=[fix[[#102-#103]/[#105]]] (number of up steps)
+
+(move to center)
+
+G0 X[#11] Y[#12] Z[#101]
+
+M98P05L[#81]
+
+M30
+
+O05
+#111=[#90*cos[#84]]
+#112=[#90*sin[#84]]
+
+(call normal drilling cycle at Xi-111,Yi-112)
+M98P20L01
+
+(increase angle to next)
+#84=[#84+#82]
+M99
+
+O10 (normal drilling cycle)
+G00   X [#111]   Y [#112]   Z [#101]  
+G00   Z [#102]
+G01   Z [#103] F[#23]  
+G00   Z [#102] 
+M99
+
+O20 (helical drilling cycle)
+(move to center of drilling cycle)
+G00   X [#111]   Y [#112]   Z [#101]  
+
+G02 X[#111+#53] R[#53/2.0] Z[#101] F[#22]
+G02 X[#111-#53] R[#53] Z[#101-2] F[#22]
+
+G02 X[#111+#53] R[#53] Z12.0 F[#22]
+G02 X[#111-#53] R[#53] Z10.0 F[#22]
+
+G02 X[#111+#53] R[#53] Z8.0 F[#22]
+G02 X[#111-#53] R[#53] Z6.0 F[#22]
+
+G02 X[#111+#53] R[#53] Z4.0 F[#22]
+G02 X[#111-#53] R[#53] Z2.0 F[#22]
+
+G02 X[#111+#53] R[#53] Z0.0 F[#22]
+G02 X[#111-#53] R[#53] Z0.0 F[#22]
+G02 X[#111+#53] R[#53] Z0.0 F[#22]
+G02 X[#111-#53] R[#53] Z0.0 F[#22]
+
+G02 X[#111+#53] R[#53] Z2.0 F[#22]
+G02 X[#111-#53] R[#53] Z4.0 F[#22]
+
+G02 X[#111+#53] R[#53] Z6.0 F[#22]
+G02 X[#111-#53] R[#53] Z8.0 F[#22]
+
+G02 X[#111+#53] R[#53] Z10.0 F[#22]
+G02 X[#111-#53] R[#53] Z12.0 F[#22]
+
+G02 X[#111+#53] R[#53] Z[#101-1] F[#22]
+G02 X[#111-#53] R[#53] Z[#101] F[#22]
+
+M99
+
+
+
+
+
+M30
+
+%
