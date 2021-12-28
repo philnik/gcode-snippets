@@ -6,29 +6,43 @@
 ;; #+HEADER: :comments both :cache yes :session step
 
 ;; [[file:step.org::trochoidal-circle-refactor][trochoidal-circle-refactor]]
-(defun trochoidal-data-gcode-prologue (l-step zi f- center  tool-diameter radius trochoidal-width z-list-in output-stream)
+(defun trochoidal-data-gcode-prologue (xystep zstep zsafe zstart zend fz fxy center tool-diameter internal-diameter external-diameter output-stream)
+  "prints out data for trochoidal file
+`xystep' stepping of each circle
+`zstep' helical step
+`zsafe' zsafe
+`zstart' zstart
+`zend' zend
+`fz' helical z feedrate
+`fxy' xy feedrate
+`center' center of the circle
+`tool-diameter' tool diameter
+`internal-diameter' inside diameter
+`external-diameter' outside diameter
+`output-stream' where to output the g-code
+"
   (progn  
-    (format output-stream "(l-step: ~f  mm)~%" l-step)
-    (format output-stream "(Zcut: Z~f )~%" zi)
-    (format output-stream "(Z-list-in: ~{Z~a~^, ~})~%" z-list-in)
-    (format output-stream "(feedrate: ~f mm/min) ~%" f-)
+    (format output-stream "(xy-step [trochoidal step]: ~f  mm)~%" xystep)
+    (format output-stream "(trochoidal width: ~f  mm)~%" (* (- external-diameter internal-diameter) 0.5))
+    (format output-stream "~%")
+        
+    (format output-stream "(zsafe [ Safe height]: Z~f mm )~%" zsafe)
+    (format output-stream "(zstart [ Start helical movement from here]: Z~f mm )~%" zstart)
+    (format output-stream "(helical z feedrate: ~f mm/min) ~%" fz)
+    (format output-stream "(fxy feedrate: ~f mm/min) ~%" fxy)
     (format output-stream "~%")
 
-    (format output-stream "(Center: X~5$ mm  Y~5$)~%" (car center) (cadr center))
-
+    (format output-stream "(Center of the trochoidal circle: X~5$ mm  Y~5$)~%" (car center) (cadr center))
     (format output-stream "~%")
     
     (format output-stream "(tool-diameter: ~3$ mm) ~%" tool-diameter)
-    (format output-stream "(trochoidal-width: ~3$ mm) ~%" trochoidal-width)
+    (format output-stream "(internal diameter of trochoidal circle: ~3$ mm) ~%" internal-diameter)
+    (format output-stream "(external diameter of trochoidal circle: ~3$ mm) ~%" external-diameter)
 
+    
     (format output-stream "~%")
-    (format output-stream "(Internal cutting radius: ~3$ mm)~%" (- radius (/ tool-diameter 2.0)))
-    (format output-stream "(External cutting radius: ~3$ mm)~%" (+ radius trochoidal-width (/ tool-diameter 2.0)))
-
-    (format output-stream "~%")
-    (format output-stream "(Internal cutting diameter: ~3$ mm)~%" (* 2.0 (- radius (/ tool-diameter 2.0))))
-    (format output-stream "(External cutting diameter: ~3$ mm)~%" (* 2.0 (+ radius trochoidal-width (/ tool-diameter 2.0))))
-
+    (format output-stream "(Internal cutting radius: ~3$ mm)~%" (/ internal-diameter 2.0))
+    (format output-stream "(External cutting radius: ~3$ mm)~%" (/ external-diameter 2.0))
     (format output-stream "~%")
     ))
 
@@ -414,9 +428,6 @@
 		   (ccw-move-R out-point dradius fxy output-stream)
 		   )))
       
-      
-
-
       ;;;couple
       
       (format output-stream "~%(helical out: X~8,3F Y~8,3F)~%" (x-of end-point) (y-of end-point))

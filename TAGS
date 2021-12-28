@@ -1,87 +1,55 @@
 
-flange-structure.lisp,1279
-(defconstant *pi* 1,0
-(defconstant *2pi* 2,39
-(defparameter center 3,79
-(defparameter holes-count 4,126
-(defparameter Z0 5,156
-(defparameter ZSafe 6,189
-(defparameter Zstart 7,228
-(defparameter R0 8,268
-(defparameter f-drill-up 9,341
-(defparameter f-drill-down 10,394
-(defparameter d1 11,447
-(defparameter r1 12,513
-(defparameter fcut 13,573
-(defparameter file_1 14,640
-(defparameter *stream* 15,729
-(defstruct cut-data18,773
-(defun set-file-name 47,2036
-(defun x-of 53,2157
-(defun y-of 54,2192
-(defun z-of 55,2227
-(defun add-vector-point 57,2263
-(defun s+ 60,2338
-(defun rad-to-deg 63,2388
-(defun deg-to-rad 66,2435
-(defun holes-center 69,2482
-(defun goto 85,2908
-(defun linear-move 88,3036
-(defun clockwise-move-ij 91,3179
-(defun clockwise-move-R 94,3356
-(defun error-message 97,3512
-(defun drill-circle 105,3663
-(defun drilling-cycle 160,5282
-(defparameter center 191,6057
-(defparameter holes-count 192,6104
-(defparameter Z0 193,6134
-(defparameter ZSafe 194,6167
-(defparameter Zstart 195,6206
-(defparameter R0 196,6246
-(defparameter f-drill-up 197,6319
-(defparameter f-drill-down 198,6372
-(defparameter d1 199,6425
-(defparameter r1 200,6491
-(defparameter fcut 201,6551
-(defparameter file_1 202,6618
-(defparameter *stream* 203,6707
+step.lisp,1240
+(defconstant *pi* 2,1
+(defconstant *2pi* 3,40
+(defun x-of 5,81
+(defun y-of 6,116
+(defun z-of 7,151
+(defun rad-to-deg 9,187
+(defun deg-to-rad 12,236
+(defun atan2 15,287
+(defun no-of-points-from-arc-radius 26,601
+(defun normal-vector-2 44,1154
+(defun normal-vector 63,1718
+(defun middle-point 111,2944
+(defun middle-vector 116,3121
+(defun vector-scale 122,3293
+(defun vector-rotate 137,3828
+(defun vector-rotate-deg 150,4240
+(defun vector-transform-to-zero 154,4341
+(defun vector-transform-by-vector 165,4642
+(defun vector-reverse 188,5300
+(defun radius-arc 194,5408
+(defun center-arc 207,5791
+(defun offset-arc 210,5824
+(defun prologue 214,5892
+(defun goto 222,6163
+(defun linear-move 225,6291
+(defun clockwise-move-ij 228,6434
+(defun clockwise-move-R 231,6611
+(defun cw-move-R 234,6768
+(defun ccw-move-R 242,7058
+(defun counter-clockwise-move-R 250,7355
+(defun z-step-list 256,7521
+(defun helical-z-list 274,7955
+(defun polar-to-rect 287,8415
+(defun divide-circle 293,8569
+(defun divide-line 309,9050
+(defun line-point-couples 325,9534
+(defun helical-drill 345,10171
+(defun helical-drill-array 376,11303
+(defun drill-point 394,11808
+(defun drill-point-array 419,12541
+(defun point-couples 434,12993
 
-step.lisp,924
-(defconstant *pi* 15,375
-(defconstant *2pi* 16,414
-(defun x-of 18,455
-(defun y-of 19,490
-(defun z-of 20,525
-(defun no-of-points-from-arc-radius 34,802
-(defun middle-point 99,2541
-(defun vector-rotate 116,3099
-(defun vector-transform-to-zero 130,3512
-(defun vector-transform-by-vector 141,3813
-(defun vector-reverse 164,4471
-(defun radius-arc 178,4843
-(defun center-arc 192,5304
-(defun offset-arc 195,5337
-(defun prologue 203,5463
-(defun goto 216,5856
-(defun linear-move 219,5984
-(defun clockwise-move-ij 222,6127
-(defun clockwise-move-R 225,6304
-(defun cw-move-R 228,6461
-(defun ccw-move-R 236,6751
-(defun counter-clockwise-move-R 244,7048
-(defun step-over 257,7352
-(defun polar-to-rect 279,7829
-(defun helical-drill 304,8532
-(defun helical-drill-array 330,9566
-(defun drill-point 341,9907
-(defun drill-array 365,10687
-(defun point-couples 379,11150
-(defun internal-trochoidal-circle 391,11620
-
-trochoidal.lisp,113
+trochoidal.lisp,298
 (defun trochoidal-data-gcode-prologue 9,269
-(defun trochoidal-circle 35,1480
-(defun trochoidal-circle 86,3545
+(defmacro helical-move 41,1507
+(defun internal-trochoidal-circle 60,2440
+(defun external-trochoidal-circle 137,5262
+(defun external-D-trochoidal-circle 214,8149
+(defun external-trochoidal-line 291,11096
+(defun external-D-trochoidal-line 357,13332
 
 works.lisp,674
 (defparameter center 5,4
@@ -108,3 +76,5 @@ works.lisp,674
 (defun add-vector-point 65,1746
 (defun drill-circle 70,1821
 (defun drilling-cycle 102,3118
+
+run.lisp,0
