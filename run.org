@@ -24,27 +24,30 @@
 
 * Drill functions
 
-
 ** Simple-drill-array-on-divide-circle
 ### file :file test-divide.ngc
 
 #+name: simple-drill-array-on-divide-circle
-#+BEGIN_SRC lisp :results output 
-(setq f- 600.0)
-(setq zsafe 30.0)
-(setq zstart 12.0)
-(setq zend 0.0)
+#+BEGIN_SRC lisp :results output
+  (setq output-stream (open "/home/me/lispcnc/test-simple-drill-on-circle.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
+  (setq f- 600.0)
+  (setq zsafe 30.0)
+  (setq zstart 12.0)
+  (setq zend 0.0)
 
-(setq output-stream *STANDARD-OUTPUT*)
+  (setq output-stream *STANDARD-OUTPUT*)
 
-(setq center '(0.0d0 0.0d0))
-(setq divide-radius 100.0)
-(setq no-of-points 4) 
-(setq point-array (divide-circle center divide-radius no-of-points))
+  (setq center '(0.0d0 0.0d0))
+  (setq divide-radius 100.0)
+  (setq no-of-points 4) 
+  (setq point-array (divide-circle center divide-radius no-of-points))
 
-(prologue 2500 output-stream) 
-(drill-point-array point-array zsafe zstart zend f- f- output-stream)
-(epilogue output-stream)
+  (prologue 2500 output-stream) 
+  (drill-point-array point-array zsafe zstart zend f- f- output-stream)
+  (epilogue output-stream)
+
+  (close output-stream)
+
 #+END_SRC
 
 #+RESULTS: simple-drill-array-on-divide-circle
@@ -90,31 +93,38 @@ G0   X  -0.000   Y-100.000   Z  30.000
  %%
 #+end_example
 
+
 ** Helical-drill-array-on-divide-circle
 #+name: helical-drill-array-on-divide-circle
-#+BEGIN_SRC lisp :results output file :file ~/test-drill-2.ngc
+#+BEGIN_SRC lisp :results value
+  (setq output-stream (open "/home/me/lispcnc/test-helical-drill-on-circle.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
+  (setq zsafe 25.0)
+  (setq zstart 15.0)
+  (setq zend 0.0)
+  (setq zstep 2.0)
 
-(setq zsafe 25.0)
-(setq zstart 15.0)
-(setq zend 0.0)
-(setq zstep 2.0)
-		   
-(setq z-list (helical-z-list zsafe zstart zend zstep))
-(setq radius 5.0) 
-(setq f- 1600.0)
-(setq output-stream *STANDARD-OUTPUT*)
+  (setq z-list (helical-z-list zsafe zstart zend zstep))
 
-(setq center '(0.0d0 0.0d0))
-(setq divide-radius 500.0)
-(setq no-of-points 20) 
-(setq point-array (divide-circle center divide-radius no-of-points))
-(prologue 12000 output-stream) 
-(helical-drill-array point-array zsafe zstart zend zstep radius f- output-stream)
-(epilogue output-stream)
+  (setq hole-diameter 10.0d0)
+  (setq tool-diameter 3.175)
+  (setq path-radius (/ (- hole-diameter tool-diameter) 2.0))
+
+  (setq f- 1600.0)
+  (setq center '(0.0d0 0.0d0))
+  (setq divide-radius 500.0)
+  (setq no-of-points 20) 
+  (setq point-array (divide-circle center divide-radius no-of-points))
+  (prologue 12000 output-stream) 
+  (helical-drill-array point-array zsafe zstart zend zstep path-radius f- output-stream)
+  (epilogue output-stream)
+
+  (close output-stream)
+
 #+END_SRC
 
 #+RESULTS: helical-drill-array-on-divide-circle
-[[file:~/test-drill-2.ngc]]
+: T
+
 
 
 ** Drill array on rectangle
@@ -135,41 +145,29 @@ We take the values from the following table:
 |   47.0 |  547.0 |
 
 
-
 #+name: test-drill-array
-#+BEGIN_SRC lisp :results output :var point-array=my-table
-    (setq z-list '(10.0 0.0  2.5  7.5  12.0))
-    (setq radius 10.0) 
-    (setq f- 600.0)
-    (setq output-stream *STANDARD-OUTPUT*)
+#+BEGIN_SRC lisp :results value :var point-array=my-table
+  (setq output-stream (open "/home/me/lispcnc/test-helical-drill-on-array.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
+  (setq zsafe 25.0)
+  (setq zstart 15.0)
+  (setq zend 0.0)
+  (setq zstep 2.0)
 
-    (helical-drill-array point-array z-list radius f- f- output-stream)
+  (setq hole-diameter 10.0d0)
+  (setq tool-diameter 3.175)
+  (setq path-radius (/ (- hole-diameter tool-diameter) 2.0))
+  (setq f- 600.0)
+
+  (prologue 3000 output-stream) 
+  (helical-drill-array point-array zsafe zstart zend zstep  path-radius f- output-stream)
+  (epilogue output-stream)
+  (close output-stream)
+
+
 #+END_SRC
 
 #+RESULTS: test-drill-array
-#+begin_example
-
-(helical drilling point: X   0.000 Y   0.000)
-G0   X  10.000   Y   0.000   Z  10.000   
-G02   X -10.000   Y   0.000   Z   0.000  R  10.000  F600.0 
-G02   X  10.000   Y   0.000   Z   2.500  R  10.000  F600.0 
-G02   X -10.000   Y   0.000   Z   7.500  R  10.000  F600.0 
-G1   X   0.000   Y   0.000   Z  12.000   F600.0 
-
-(helical drilling point: X   1.000 Y   1.000)
-G0   X  11.000   Y   1.000   Z  10.000   
-G02   X  -9.000   Y   1.000   Z   0.000  R  10.000  F600.0 
-G02   X  11.000   Y   1.000   Z   2.500  R  10.000  F600.0 
-G02   X  -9.000   Y   1.000   Z   7.500  R  10.000  F600.0 
-G1   X   1.000   Y   1.000   Z  12.000   F600.0 
-
-(helical drilling point: X   2.000 Y   2.000)
-G0   X  12.000   Y   2.000   Z  10.000   
-G02   X  -8.000   Y   2.000   Z   0.000  R  10.000  F600.0 
-G02   X  12.000   Y   2.000   Z   2.500  R  10.000  F600.0 
-G02   X  -8.000   Y   2.000   Z   7.500  R  10.000  F600.0 
-G1   X   2.000   Y   2.000   Z  12.000   F600.0 
-#+end_example
+: T
 
 
 * Trochoidal cutting
