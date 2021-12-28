@@ -58,24 +58,28 @@
 G0   X 100.000   Y   0.000   Z  30.000   
 G0   X 100.000   Y   0.000   Z  12.000   
 G1   X 100.000   Y   0.000   Z   0.000   F600.0 
+G1   X 100.000   Y   0.000   Z  12.000   F600.0 
 G0   X 100.000   Y   0.000   Z  30.000   
 
 (drilling point: X   0.000 Y 100.000)
 G0   X   0.000   Y 100.000   Z  30.000   
 G0   X   0.000   Y 100.000   Z  12.000   
 G1   X   0.000   Y 100.000   Z   0.000   F600.0 
+G1   X   0.000   Y 100.000   Z  12.000   F600.0 
 G0   X   0.000   Y 100.000   Z  30.000   
 
 (drilling point: X-100.000 Y   0.000)
 G0   X-100.000   Y   0.000   Z  30.000   
 G0   X-100.000   Y   0.000   Z  12.000   
 G1   X-100.000   Y   0.000   Z   0.000   F600.0 
+G1   X-100.000   Y   0.000   Z  12.000   F600.0 
 G0   X-100.000   Y   0.000   Z  30.000   
 
 (drilling point: X  -0.000 Y-100.000)
 G0   X  -0.000   Y-100.000   Z  30.000   
 G0   X  -0.000   Y-100.000   Z  12.000   
 G1   X  -0.000   Y-100.000   Z   0.000   F600.0 
+G1   X  -0.000   Y-100.000   Z  12.000   F600.0 
 G0   X  -0.000   Y-100.000   Z  30.000   
 
   (epilogue) 
@@ -274,7 +278,7 @@ G1   X   2.000   Y   2.000   Z  12.000   F600.0
 ** Trochoidal-circle-internal-496
 
 #+NAME: test-trochoidal-internal-circle-496
-#+BEGIN_SRC lisp :tangle yes :results output file :file trochoidal-circle-496-diameter-internal.ng :comments both :cache yes :session step
+#+BEGIN_SRC lisp :tangle yes :results output file :file trochoidal-circle-496-diameter-internal.ngc :comments both :cache yes :session step
   (setq output-stream *STANDARD-OUTPUT*)
   (setq l-step 2.0d0)
   (setq zi 0.0)
@@ -294,43 +298,86 @@ G1   X   2.000   Y   2.000   Z  12.000   F600.0
 [[file:trochoidal-circle-496-diameter-internal.ng]]
 
 
-** trochoidal-circle
 ** Trochoidal-circle-by-diameters
 
-#+NAME: t
-#+BEGIN_SRC lisp :tangle yes :results output file :file ~/test1.ngc
-(setq output-stream (open "/home/quill/test-D.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
-(setq xystep 3.00d0)
-(setq zstep 4.0)
-(setq zsafe 50.0)
-(setq zstart 12.0)
-(setq zend 0.0)
-(setq fz 2000)
-(setq fxy 2000)
-(setq center '(0.0 0.0))
-(setq tool-diameter 3.175)
-(setq internal-diameter 580.0)
-(setq external-diameter 596.0)
+*** Trochoidal-circle-by-diameters-D-type
+#+NAME: D-type trochoidal 
+#+BEGIN_SRC lisp :tangle yes 
+  (setq output-stream (open "/home/me/lispcnc/test-D.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
+  (setq xystep 3.00d0)
+  (setq zstep 4.0)
+  (setq zsafe 50.0)
+  (setq zstart 12.0)
+  (setq zend 0.0)
+  (setq fz 2000)
+  (setq fxy 2000)
+  (setq center '(0.0 0.0))
+  (setq tool-diameter 3.175)
+  (setq internal-diameter 580.0)
+    (setq external-diameter 596.0)
 
-(prologue 8000 output-stream)
-(external-D-trochoidal-circle
- xystep zstep zsafe zstart zend fz fxy center tool-diameter internal-diameter external-diameter output-stream 1.0d0)
-(epilogue output-stream) 
+  ;  (prologue 8000 output-stream)
 
-(close output-stream)
+
+
+
+    (trochoidal-data-gcode-prologue
+     xystep zstep zsafe zstart zend fz fxy center tool-diameter internal-diameter external-diameter output-stream)
+
+    (external-D-trochoidal-circle
+     xystep zstep zsafe zstart zend fz fxy center tool-diameter internal-diameter external-diameter output-stream 1.0d0)
+    (epilogue output-stream) 
+
+    (close output-stream)
 
 #+END_SRC
 
+
+
+*** Trochoidal circle by diameters circle type
+#+NAME: trochoidal circle 
+#+BEGIN_SRC lisp :tangle yes 
+  (setq output-stream (open "/home/me/lispcnc/test-C.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
+  (setq xystep 9.00d0)
+  (setq zstep 3.0)
+  (setq zsafe 50.0)
+  (setq zstart 12.0)
+  (setq zend 0.0)
+  (setq fz 2000)
+  (setq fxy 2000)
+  (setq center '(0.0 0.0))
+  (setq tool-diameter 3.175)
+  (setq internal-diameter 560.0)
+  (setq external-diameter 596.0)
+
+  ;  (prologue 8000 output-stream)
+
+
+
+
+    (trochoidal-data-gcode-prologue
+     xystep zstep zsafe zstart zend fz fxy center tool-diameter internal-diameter external-diameter output-stream)
+
+    (external-trochoidal-circle
+     xystep zstep zsafe zstart zend fz fxy center tool-diameter internal-diameter external-diameter output-stream)
+    (epilogue output-stream) 
+
+    (close output-stream)
+
+#+END_SRC
+
+#+RESULTS: trochoidal circle
+: T
+
+
+
+
 #+RESULTS: t
-[[file:~/test1.ngc]]
-
-
-
-
+: T
 
 #+NAME: line
-#+BEGIN_SRC lisp :tangle yes :results output file :file ~/test1.ngc
-(setq output-stream (open "/home/quill/test-line.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
+#+BEGIN_SRC lisp :tangle yes 
+(setq output-stream (open "/home/me/t.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
 (setq xystep 3.00d0)
 (setq zstep 4.0)
 (setq zsafe 50.0)
@@ -353,7 +400,7 @@ G1   X   2.000   Y   2.000   Z  12.000   F600.0
 #+END_SRC
 
 #+RESULTS: line
-[[file:~/test1.ngc]]
+: T
 
 
 
