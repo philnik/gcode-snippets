@@ -6,10 +6,10 @@
 (defun y-of (point) (nth 1 point))
 (defun z-of (point) (nth 2 point))
 
-  (defun rad-to-deg (a)
-    (* (/ 180.0d0 *pi*) a))
+(defun rad-to-deg (a)
+  (* (/ 180.0d0 *pi*) a))
 
-  (defun deg-to-rad (a)
+(defun deg-to-rad (a)
     (/ a (/ 180.0d0 *pi*)))
 
 (defun atan2 (y x)
