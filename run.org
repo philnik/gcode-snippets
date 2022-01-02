@@ -28,7 +28,7 @@
 ### file :file test-divide.ngc
 
 #+name: simple-drill-array-on-divide-circle
-#+BEGIN_SRC lisp :results output
+#+BEGIN_SRC lisp :results output :tangle yes
   (setq output-stream (open "/home/me/lispcnc/test-simple-drill-on-circle.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
   (setq f- 600.0)
   (setq zsafe 30.0)
@@ -50,53 +50,10 @@
 
 #+END_SRC
 
-#+RESULTS: simple-drill-array-on-divide-circle
-#+begin_example
-(prologue)
- M03 S2500 
- 
- (end of prologue)
-
-(drilling point: X 100.000 Y   0.000)
-G0   X 100.000   Y   0.000   Z  30.000   
-G0   X 100.000   Y   0.000   Z  12.000   
-G1   X 100.000   Y   0.000   Z   0.000   F600.0 
-G1   X 100.000   Y   0.000   Z  12.000   F600.0 
-G0   X 100.000   Y   0.000   Z  30.000   
-
-(drilling point: X   0.000 Y 100.000)
-G0   X   0.000   Y 100.000   Z  30.000   
-G0   X   0.000   Y 100.000   Z  12.000   
-G1   X   0.000   Y 100.000   Z   0.000   F600.0 
-G1   X   0.000   Y 100.000   Z  12.000   F600.0 
-G0   X   0.000   Y 100.000   Z  30.000   
-
-(drilling point: X-100.000 Y   0.000)
-G0   X-100.000   Y   0.000   Z  30.000   
-G0   X-100.000   Y   0.000   Z  12.000   
-G1   X-100.000   Y   0.000   Z   0.000   F600.0 
-G1   X-100.000   Y   0.000   Z  12.000   F600.0 
-G0   X-100.000   Y   0.000   Z  30.000   
-
-(drilling point: X  -0.000 Y-100.000)
-G0   X  -0.000   Y-100.000   Z  30.000   
-G0   X  -0.000   Y-100.000   Z  12.000   
-G1   X  -0.000   Y-100.000   Z   0.000   F600.0 
-G1   X  -0.000   Y-100.000   Z  12.000   F600.0 
-G0   X  -0.000   Y-100.000   Z  30.000   
-
-  (epilogue) 
- M05
- M30
- 
- (end of program)
- %%
-#+end_example
-
 
 ** Helical-drill-array-on-divide-circle
 #+name: helical-drill-array-on-divide-circle
-#+BEGIN_SRC lisp :results value
+#+BEGIN_SRC lisp :results value :tangle yes
   (setq output-stream (open "/home/me/lispcnc/test-helical-drill-on-circle.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
   (setq zsafe 25.0)
   (setq zstart 15.0)
@@ -146,7 +103,7 @@ We take the values from the following table:
 
 
 #+name: test-drill-array
-#+BEGIN_SRC lisp :results value :var point-array=my-table
+#+BEGIN_SRC lisp :results value :var point-array=my-table :tangle yes
   (setq output-stream (open "/home/me/lispcnc/test-helical-drill-on-array.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
   (setq zsafe 25.0)
   (setq zstart 15.0)
