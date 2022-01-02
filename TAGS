@@ -1,55 +1,56 @@
 
-step.lisp,1240
+step.lisp,1270
 (defconstant *pi* 2,1
 (defconstant *2pi* 3,40
 (defun x-of 5,81
 (defun y-of 6,116
 (defun z-of 7,151
 (defun rad-to-deg 9,187
-(defun deg-to-rad 12,236
-(defun atan2 15,287
-(defun no-of-points-from-arc-radius 26,601
-(defun normal-vector-2 44,1154
-(defun normal-vector 63,1718
-(defun middle-point 111,2944
-(defun middle-vector 116,3121
-(defun vector-scale 122,3293
-(defun vector-rotate 137,3828
-(defun vector-rotate-deg 150,4240
-(defun vector-transform-to-zero 154,4341
-(defun vector-transform-by-vector 165,4642
-(defun vector-reverse 188,5300
-(defun radius-arc 194,5408
-(defun center-arc 207,5791
-(defun offset-arc 210,5824
-(defun prologue 214,5892
-(defun goto 222,6163
-(defun linear-move 225,6291
-(defun clockwise-move-ij 228,6434
-(defun clockwise-move-R 231,6611
-(defun cw-move-R 234,6768
-(defun ccw-move-R 242,7058
-(defun counter-clockwise-move-R 250,7355
-(defun z-step-list 256,7521
-(defun helical-z-list 274,7955
-(defun polar-to-rect 287,8415
-(defun divide-circle 293,8569
-(defun divide-line 309,9050
-(defun line-point-couples 325,9534
-(defun helical-drill 345,10171
-(defun helical-drill-array 376,11303
-(defun drill-point 394,11808
-(defun drill-point-array 419,12541
-(defun point-couples 434,12993
+(defun deg-to-rad 15,301
+(defun atan2 21,415
+(defun no-of-points-from-arc-radius 35,789
+(defun length-vector 44,1065
+(defun normal-vector-2 55,1340
+(defun normal-vector 74,1904
+(defun middle-point 122,3130
+(defun middle-vector 127,3307
+(defun vector-scale 133,3479
+(defun vector-rotate 148,4014
+(defun vector-rotate-deg 161,4426
+(defun vector-transform-to-zero 165,4527
+(defun vector-transform-by-vector 176,4828
+(defun vector-reverse 199,5486
+(defun radius-arc 205,5594
+(defun center-arc 218,5977
+(defun offset-arc 221,6010
+(defun prologue 225,6078
+(defun goto 233,6349
+(defun linear-move 236,6477
+(defun clockwise-move-ij 239,6620
+(defun clockwise-move-R 242,6797
+(defun cw-move-R 245,6954
+(defun ccw-move-R 253,7244
+(defun counter-clockwise-move-R 261,7541
+(defun z-step-list 267,7707
+(defun helical-z-list 285,8141
+(defun polar-to-rect 298,8601
+(defun divide-circle 304,8755
+(defun divide-line 320,9236
+(defun line-point-couples 336,9720
+(defun helical-drill 356,10357
+(defun helical-drill-array 387,11489
+(defun drill-point 405,11994
+(defun drill-point-array 430,12727
+(defun point-couples 445,13179
 
 trochoidal.lisp,298
 (defun trochoidal-data-gcode-prologue 9,269
-(defmacro helical-move 41,1507
-(defun internal-trochoidal-circle 60,2440
-(defun external-trochoidal-circle 137,5262
-(defun external-D-trochoidal-circle 214,8149
-(defun external-trochoidal-line 291,11096
-(defun external-D-trochoidal-line 357,13332
+(defmacro helical-move 49,2000
+(defun internal-trochoidal-circle 68,2933
+(defun external-trochoidal-circle 145,5755
+(defun external-D-trochoidal-circle 222,8642
+(defun external-trochoidal-line 299,11589
+(defun external-D-trochoidal-line 365,13825
 
 works.lisp,674
 (defparameter center 5,4
