@@ -7,12 +7,22 @@
 (defun z-of (point) (nth 2 point))
 
 (defun rad-to-deg (a)
+  "rad-to-deg converts radians to degrees
+`a' angle in radians
+"
   (* (/ 180.0d0 *pi*) a))
 
 (defun deg-to-rad (a)
-    (/ a (/ 180.0d0 *pi*)))
+  "deg-to-rad converts degrees to radians
+`a' angle in degrees
+"
+  (/ a (/ 180.0d0 *pi*)))
 
 (defun atan2 (y x)
+"atan2 returns tangent
+`y' y coordinate
+`x' x coordinate
+"
   (cond ((> x 0.0d0) (atan (/ y x)))
 	((and (< x 0.0d0) (>= y 0.0d0)) (+ (atan (/ y x)) *pi*))
 	((and (< x 0.0d0) (< y 0.0d0))  (- (atan (/ y x)) *pi*))
@@ -22,15 +32,22 @@
 	))
 
 ;; #+name: vector-functions
-
 (defun no-of-points-from-arc-radius (steps radius)
-    "we get the no-of-points to divide circle"
-    (let* ((divide (/ (* *2pi* radius) steps))
-           )
-                  ;;;turn to integer and find the closest to make 4-quarters
-      (* (round (/ divide 1.0))1))
-    )
-  (defun length-vector (v)
+"no-of-points-from-arc-radius: get number of points to divide a cricle at step arc length
+`steps' arc length  
+`radius' radius circle
+"
+  (let* ((divide (/ (* *2pi* radius) steps))
+         )
+;;;turn to integer and find the closest to make 4-quarters
+    (* (round (/ divide 1.0))1))
+  )
+
+
+(defun length-vector (v)
+"vector length
+`v' ((p1x p1y) (p2x p2y))
+"
     (let* ((p1 (nth 0 v))
            (p2 (nth 1 v))
            (p1x (x-of p1))
@@ -78,35 +95,35 @@
 		 (list (/ (- p2x p1x) l) (/ (- p2y p1y)l)))))
       (list '(0.0d0 0.0d0) vec)))
 
-  (defun angle-vector (v)
-    (let* ((p1 (nth 0 v))
-           (p2 (nth 1 v))
-           (p1x (x-of p1))
-           (p1y (y-of p1))
-           (p2x (x-of p2))
-           (p2y (y-of p2)))
-      (if (= p1x p2x)
-          (if (> p2y p1y)
-              (* *pi* 0.5d0)
-              (* *pi* -0.5d0))
-          (atan2 (- p2y p1y) (- p2x p1x))))
-      )
+(defun angle-vector (v)
+  (let* ((p1 (nth 0 v))
+         (p2 (nth 1 v))
+         (p1x (x-of p1))
+         (p1y (y-of p1))
+         (p2x (x-of p2))
+         (p2y (y-of p2)))
+    (if (= p1x p2x)
+        (if (> p2y p1y)
+            (* *pi* 0.5d0)
+            (* *pi* -0.5d0))
+        (atan2 (- p2y p1y) (- p2x p1x))))
+  )
 
-  (defun p+ (p1 p2)
-    (let* ((p1x (x-of p1))
-           (p1y (y-of p1))
-           (p2x (x-of p2))
-           (p2y (y-of p2))
-           )
-      (list (+ p1x p2x) (+ p1y p2y))
-      ))
+(defun p+ (p1 p2)
+  (let* ((p1x (x-of p1))
+         (p1y (y-of p1))
+         (p2x (x-of p2))
+         (p2y (y-of p2))
+         )
+    (list (+ p1x p2x) (+ p1y p2y))
+    ))
 
-  (defun scale-point (p scale-factor)
-    (let* ((px (x-of p))
-           (py (y-of p))
-           )
-      (list (* scale-factor px) (* scale-factor py))
-      ))
+(defun scale-point (p scale-factor)
+  (let* ((px (x-of p))
+         (py (y-of p))
+         )
+    (list (* scale-factor px) (* scale-factor py))
+    ))
 
 (defun middle-point (point-min point-max)
   (let ((x (* 0.5 (+ (x-of point-min) (x-of point-max))))
@@ -118,6 +135,7 @@
 `v' vector ( array of 2 points)
 "
   (middle-point (nth 0 v) (nth 1 v)))
+
 
 (defun vector-scale (v scale-factor)
 "vector-scale scales a vector, holds start point scales length by scale-factor for new end-point
@@ -209,6 +227,72 @@
 
 (defun offset-arc (arc)
   )
+
+(defclass arc ()
+  (
+   (name
+    :initarg :name
+    :accessor name
+    :initform "anononymous")
+   (center
+    :initarg :center
+    :accessor center
+    :documentation "center: list of 3 floats"
+    :initform '(0.0 0.0 0.0))
+   (direction
+    :initarg :direction
+    :accessor direction
+    :documentation "direction: list of 3 values"
+    :initform '(0.0 0.0 1.0))
+   (radius
+    :initarg :radius
+    :documentation "radius: 1 float"
+    :accessor radius
+    :initform 0.0)
+   (uv-params
+    :initarg :uv-params
+    :documentation "uv-params: list of 2 values"
+    :accessor uv-params
+    :initform '(0.0 6.28))
+   ))
+
+(setq arc1 (make-instance 'arc
+			  :name "my-arc"
+			  :center '(0.0 0.0 0.0)
+			  :radius 1.00
+			  :direction '(0 0 1)
+			  :uv-params '(0 1.5)))
+
+(center arc1)
+(direction arc1)
+(uv-params arc1)
+(radius arc1)
+
+
+(defmethod return-type-of-object (obj)
+  (format t "type of ~a~%" (type-of obj)))
+
+(defun make-arc (name &key center radius direction uv-params)
+  (make-instance 'arc
+   :name name
+   :center center
+   :radius radius
+   :direction direction
+   :uv-params uv-params))
+
+(setq s "hello")
+(setq arc3 (make-arc "hello"))
+
+(center arc3)
+
+(with-slots (center radius)
+    arc1
+  (format t "~s --- ~s ~%" center radius))
+
+(inspect arc1)
+
+
+
 
 ;; [[file:step.org::streams][streams]]
 (defun prologue (spindle output-stream)
