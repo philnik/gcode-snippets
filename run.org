@@ -20,7 +20,7 @@
 #+LATEX_HEADER: \usepackage{xltxtra}                                                      
 #+LATEX_HEADER: \usepackage{xgreek}                                                                                 
 #+LATEX_HEADER: \setmainfont[Mapping=tex-text]{Times New Roman}
-#+SETUPFILE:   /home/quill/public_html/org-html-themes/org/theme-readtheorg-local.setup
+#+SETUPFILE:   /home/me/public_html/org-html-themes/org/theme-readtheorg-local.setup
 
 * Drill functions
 
@@ -28,14 +28,16 @@
 ### file :file test-divide.ngc
 
 #+name: simple-drill-array-on-divide-circle
-#+BEGIN_SRC lisp :results output :tangle yes
-  (setq output-stream (open "/home/me/lispcnc/test-simple-drill-on-circle.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
+#+BEGIN_SRC lisp :results value :tangle yes
+  (setq output-stream (open "/home/me/lispcnc/test-simple-drill-on-circle-0.ngc"
+                            :external-format :utf-8
+                            :direction :output :if-does-not-exist :create :if-exists :supersede))
   (setq f- 600.0)
   (setq zsafe 30.0)
   (setq zstart 12.0)
   (setq zend 0.0)
 
-  (setq output-stream *STANDARD-OUTPUT*)
+; (setq output-stream *STANDARD-OUTPUT*)
 
   (setq center '(0.0d0 0.0d0))
   (setq divide-radius 100.0)
@@ -50,11 +52,14 @@
 
 #+END_SRC
 
+#+RESULTS: simple-drill-array-on-divide-circle
+: T
+
 
 ** Helical-drill-array-on-divide-circle
 #+name: helical-drill-array-on-divide-circle
 #+BEGIN_SRC lisp :results value :tangle yes
-  (setq output-stream (open "/home/me/lispcnc/test-helical-drill-on-circle.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
+  (setq output-stream (open "/home/me/lispcnc/test-helical-drill-on-circle0.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
   (setq zsafe 25.0)
   (setq zstart 15.0)
   (setq zend 0.0)
@@ -155,6 +160,9 @@ We take the values from the following table:
 
 #+END_SRC
 
+#+RESULTS: D-type-trochoidal
+: T
+
 
 
 *** Trochoidal circle by diameters circle type
@@ -184,6 +192,9 @@ We take the values from the following table:
 
 #+END_SRC
 
+#+RESULTS: trochoidal circle
+: T
+
 
 *** Trochoidal line
 #+NAME: trochoidal_line
@@ -208,6 +219,9 @@ We take the values from the following table:
 
 (close output-stream)
 #+END_SRC
+
+#+RESULTS: trochoidal_line
+: T
 
 
 

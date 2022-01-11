@@ -557,4 +557,39 @@ We plan to input the data from an org-mode table
 
 
 
+* external formats
+
+
+We need to test external formats of files
+
+#+name: external-formats
+#+BEGIN_SRC lisp :results value :tangle yes
+
+          (setq output-stream (open "/home/me/lispcnc/delme.txt" :direction :output
+                                    :if-does-not-exist :create
+                                    :if-exists :supersede
+                                    ))
+
+
+  (defparameter *crlf* (format nil "~C~C" #\return #\linefeed))
+
+  (setq mystring (concatenate 'string "3333" crlf "4444" crlf))
+
+  (format output-stream "1111~C~C2222~C~C" #\return #\linefeed #\return #\linefeed)
+
+  (format output-stream mystring)
+
+  (close output-stream)
+
+
+#+END_SRC
+
+#+RESULTS: external-formats
+: T
+
+It is not an encoding problem, it is a linefeed problem 
+
+
+
+
 

@@ -216,13 +216,28 @@
 
 ;; [[file:step.org::streams][streams]]
 (defun prologue (spindle output-stream)
-  (format output-stream "(prologue)~%M03 S~d~%~% (end of prologue)~%" spindle)
-    )
+  (format output-stream
+	  (concatenate 'string
+		       "(prologue)" *crlf*
+		       (format nil "M03 S~d" spindle) *crlf*
+		       "(end of prologue)" *crlf*)
+	  )
+  )
 
 
 (defun epilogue (output-stream)
-    (format output-stream "~%  (epilogue) ~% M05~% M30~% ~% (end of program)~% %%")
-)
+  (format output-stream
+	  (concatenate 'string
+		       *crlf*
+		       "(epilogue)" *crlf*
+		       "M05" *crlf*
+		       "M30" *crlf*
+		       "(end of program)" *crlf*
+		       "%%" *crlf*)
+	  ))
+
+
+
 
 ;; [move-functions]
 (defun goto (point str)
@@ -409,7 +424,11 @@
 	(z-list (helical-z-list zsafe zstart zend zstep))
 	)
 
-    (format output-stream "~%(helical drilling point: X~8,3F Y~8,3F)~%" (x-of point) (y-of point))
+    (format output-stream
+	    (concatenate 'string
+			 *crlf*
+			 (format nil "(helical drilling point: X~8,3F Y~8,3F)" (x-of point) (y-of point))
+			 *crlf*))
 
     (goto (list xi yi (pop z-list)) output-stream)
     (goto (list (+ xi radius ) yi (pop z-list)) output-stream)
@@ -458,7 +477,10 @@
 	 (point-start (list xi yi zstart))
 	 (point-end (list xi yi zend)))
     
-    (format output-stream "~%(drilling point: X~8,3F Y~8,3F)~%" xi yi)
+    (format output-stream (concatenate 'string
+				     *crlf*
+				     (format nil "(drilling point: X~8,3F Y~8,3F)" xi yi)
+				     *crlf*))
     (goto point-safe output-stream)
     (goto point-start output-stream)
     (linear-move point-end f- output-stream)
