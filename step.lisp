@@ -1,3 +1,9 @@
+;;;; I find CLOSER-MOP functions easier to use than
+;;;; implementation-specific functions
+(quicklisp:quickload :closer-mop)
+
+
+(defparameter *crlf* (format nil "~C~C" #\return #\linefeed))
 
 (defconstant *pi* 3.141592653589793d0)
 (defconstant *2pi* 6.283185307179586d0)
@@ -42,7 +48,6 @@
 ;;;turn to integer and find the closest to make 4-quarters
     (* (round (/ divide 1.0))1))
   )
-
 
 (defun length-vector (v)
 "vector length
@@ -209,119 +214,73 @@
       (list p2 p1)
       ))
 
-(defun radius-arc (arc-cen-2p)  ;; untested
-  "we will calculate radius of an arc"
-  (let* ((center (nth 0 arc-cen-2p))
-	 (start-point (nth 1 arc-cen-2p))
-	 (end-point (nth 2 arc-cen-2p))
-	 (v1 (list center start-point))
-	 (v2 (list center end-point))
-	 )
-    (if (> (- (length v1) (length v2)) 0.0)
-	(format t "error can not form arc from points and center")
-	(length v1)
-	)))
-    
-(defun center-arc (arc-rad)
-)  
-
-(defun offset-arc (arc)
-  )
-
-(defclass arc ()
-  (
-   (name
-    :initarg :name
-    :accessor name
-    :initform "anononymous")
-   (center
-    :initarg :center
-    :accessor center
-    :documentation "center: list of 3 floats"
-    :initform '(0.0 0.0 0.0))
-   (direction
-    :initarg :direction
-    :accessor direction
-    :documentation "direction: list of 3 values"
-    :initform '(0.0 0.0 1.0))
-   (radius
-    :initarg :radius
-    :documentation "radius: 1 float"
-    :accessor radius
-    :initform 0.0)
-   (uv-params
-    :initarg :uv-params
-    :documentation "uv-params: list of 2 values"
-    :accessor uv-params
-    :initform '(0.0 6.28))
-   ))
-
-(setq arc1 (make-instance 'arc
-			  :name "my-arc"
-			  :center '(0.0 0.0 0.0)
-			  :radius 1.00
-			  :direction '(0 0 1)
-			  :uv-params '(0 1.5)))
-
-(center arc1)
-(direction arc1)
-(uv-params arc1)
-(radius arc1)
-
-
-(defmethod return-type-of-object (obj)
-  (format t "type of ~a~%" (type-of obj)))
-
-(defun make-arc (name &key center radius direction uv-params)
-  (make-instance 'arc
-   :name name
-   :center center
-   :radius radius
-   :direction direction
-   :uv-params uv-params))
-
-(setq s "hello")
-(setq arc3 (make-arc "hello"))
-
-(center arc3)
-
-(with-slots (center radius)
-    arc1
-  (format t "~s --- ~s ~%" center radius))
-
-(inspect arc1)
-
-
-
-
 ;; [[file:step.org::streams][streams]]
 (defun prologue (spindle output-stream)
-    (format output-stream "(prologue)~% M03 S~d ~% ~% (end of prologue)~%" spindle)
+  (format output-stream "(prologue)~%M03 S~d~%~% (end of prologue)~%" spindle)
     )
-  (defun epilogue (output-stream)
+
+
+(defun epilogue (output-stream)
     (format output-stream "~%  (epilogue) ~% M05~% M30~% ~% (end of program)~% %%")
 )
 
 ;; [move-functions]
 (defun goto (point str)
-  (format str "G0 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F ~35T ~%" (x-of point) (y-of point) (z-of point)))
+  (let ((command-line (format nil "G00 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F ~35T"
+			      (x-of point)
+			      (y-of point)
+			      (z-of point)))
+	)
+    (format str (concatenate 'string command-line *crlf*))
+    ))
+
+    
 
 (defun linear-move (point f str)
-  (format str "G1 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F ~35T F~D ~%" (x-of point) (y-of point) (z-of point) f))
+  (let ((command-line (format nil "G01 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F ~35T F~D"
+			      (x-of point)
+			      (y-of point)
+			      (z-of point)
+			      f))
+	)
+    (format str (concatenate 'string command-line *crlf*))
+    ))
 
 (defun clockwise-move-ij (point i j f str)
-  (format str "G2 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F  I~8,3F ~35T J~8,3F ~45T F~D ~%" (x-of point) (y-of point) (z-of point) i j f))
-
+  (let ((command-line
+	 (format nil "G02 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F  I~8,3F ~35T J~8,3F ~45T F~D"
+			      (x-of point)
+			      (y-of point)
+			      (z-of point) i j f))
+	)
+(format str (concatenate 'string command-line *crlf*))
+    ))
+    
 (defun clockwise-move-R (point r f str)
-  (format str "G02 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F  R~8,3F  F~D ~%" (x-of point) (y-of point) (z-of point) r f))
+  (let ((command-line
+	 (format nil "G02 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F  R~8,3F  F~D"
+		 (x-of point)
+		 (y-of point)
+		 (z-of point) r f))
+	)
+    (format str (concatenate 'string command-line *crlf*))
+    ))
 
 (defun cw-move-R (point r f str)
-  "Clockwise interpolation G03 gcode string
+  "Clockwise interpolation G02 gcode string
 `point' endpoint of the arc
 `r' radius of the arc
 `f' feedrate of the move
 `str' output-stream"
-  (format str "G02 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F  R~8,3F  F~D ~%" (x-of point) (y-of point) (z-of point) r f))
+  (let ((command-line
+	 (format nil "G02 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F  R~8,3F  F~D"
+		 (x-of point)
+		 (y-of point)
+		 (z-of point)
+		 r f))
+	)
+    (format str (concatenate 'string command-line *crlf*))
+    ))
 
 (defun ccw-move-R (point r f str)
 "Counter clockwise interpolation G03 gcode string
@@ -329,7 +288,16 @@
 `r' radius of the arc
 `f' feedrate of the move
 `str' output-stream"
-  (format str "G03 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F  R~8,3F  F~D ~%" (x-of point) (y-of point) (z-of point) r f))
+(let ((command-line
+       (format nil "G03 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F  R~8,3F  F~D"
+	       (x-of point)
+	       (y-of point)
+	       (z-of point) r f))
+      )
+  (format str (concatenate 'string command-line *crlf*))
+  ))
+
+  
 
 (defun counter-clockwise-move-R (point r f str)
   "G03 interpolations calls ccw-move-R"
