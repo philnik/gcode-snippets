@@ -21,30 +21,28 @@
 `external-diameter' outside diameter
 `output-stream' where to output the g-code
 "
-  (progn  
-    (format output-stream "(xy-step [trochoidal step]: ~f  mm)~%" xystep)
-    (format output-stream "(trochoidal width: ~f  mm)~%" (* (- external-diameter internal-diameter) 0.5))
-    (format output-stream "~%")
-        
-    (format output-stream "(zsafe [ Safe height]: Z~f mm )~%" zsafe)
-    (format output-stream "(zstart [ Start helical movement from here]: Z~f mm )~%" zstart)
-    (format output-stream "(helical z feedrate: ~f mm/min) ~%" fz)
-    (format output-stream "(fxy feedrate: ~f mm/min) ~%" fxy)
-    (format output-stream "~%")
-
-    (format output-stream "(Center of the trochoidal circle: X~5$ mm  Y~5$)~%" (car center) (cadr center))
-    (format output-stream "~%")
-    
-    (format output-stream "(tool-diameter: ~3$ mm) ~%" tool-diameter)
-    (format output-stream "(internal diameter of trochoidal circle: ~3$ mm) ~%" internal-diameter)
-    (format output-stream "(external diameter of trochoidal circle: ~3$ mm) ~%" external-diameter)
-
-    
-    (format output-stream "~%")
-    (format output-stream "(Internal cutting radius: ~3$ mm)~%" (/ internal-diameter 2.0))
-    (format output-stream "(External cutting radius: ~3$ mm)~%" (/ external-diameter 2.0))
-    (format output-stream "~%")
-    ))
+  (format output-stream
+	  (concatenate 'string 
+		       (format nil "(xy-step [trochoidal step]: ~f  mm)" xystep) *crlf*
+		       (format nil "(trochoidal width: ~f  mm)" (* (- external-diameter internal-diameter) 0.5)) *crlf*
+		       *crlf*
+		       (format nil "(zsafe [ Safe height]: Z~f mm )" zsafe) *crlf*
+		       (format nil "(zstart [ Start helical movement from here]: Z~f mm )" zstart) *crlf*
+		       (format nil "(helical z feedrate: ~f mm/min)" fz) *crlf*
+		       (format nil "(fxy feedrate: ~f mm/min)" fxy) *crlf*
+		       *crlf*
+		       (format nil "(Center of the trochoidal circle: X~5$ mm  Y~5$)" (car center) (cadr center)) *crlf*
+		       *crlf*    
+		       (format nil "(tool-diameter: ~3$ mm)" tool-diameter) *crlf*
+		       (format nil "(internal diameter of trochoidal circle: ~3$ mm)" internal-diameter) *crlf*
+		       (format nil "(external diameter of trochoidal circle: ~3$ mm)" external-diameter) *crlf*
+		       *crlf*
+		       (format nil "(Internal cutting radius: ~3$ mm)" (/ internal-diameter 2.0)) *crlf*
+		       (format nil "(External cutting radius: ~3$ mm)" (/ external-diameter 2.0)) *crlf*
+		       *crlf*
+		       ))
+  )
+  
 
 (defmacro helical-move (start-pair z-list fz output-stream move-R)
   "helical-moving-function
@@ -56,7 +54,12 @@
 `(let* ((m2p (middle-point (car start-pair) (cadr start-pair)))
        (start-point (append m2p (list (car z-list))))
        (trocho-radius (* (length-vector ,start-pair) 0.5d0)))
-  (format output-stream "~%(helical drilling: X~8,3F Y~8,3F R~8,3F)~%" (x-of start-point) (y-of start-point) trocho-radius)
+   (format output-stream
+	   (concatenate 'string
+			*crlf*
+			(format nil "(helical drilling: X~8,3F Y~8,3F R~8,3F)" (x-of start-point) (y-of start-point) trocho-radius)
+			*crlf*
+			))
   (loop while ,z-list
 	do (let* ((z (pop ,z-list))
 		  (in-point (append (car start-pair) (list z)))
