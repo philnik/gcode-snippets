@@ -1,0 +1,134 @@
+
+
+M3S10000
+
+#1=0.000 (x-of helical hole)
+#2=0.000 (y-of helical hole)
+#3=1000.0 (helical feed rate)
+
+#4=0.000 (x-of horizontal line)
+#5=0.000 (y-of horizontal line)
+#6=25 ( βήμα x-αξονα, vima ston x-ajona)
+#10=21.651 (βημα στον Y-αξονα)
+#11=[#10/2.0] ( half step)
+
+#21= 960.0 (y-direction)
+#22=1123.5 (x-direction) 
+
+#7=14 ( no of double steps in vertical direction)
+#8=22 ( no of steps in horizontal direction)
+(212 1160)
+
+(Z24 kommati - Z130 mhxanh)
+(Z50 kommati - Z155 mhxanh)
+
+
+#9=18 (safe height)
+
+
+g1x1y1z10f[#3]
+M98 P40 L01
+M30
+
+O40 (run vertical lines)
+#2=0
+
+
+M98P30L[#7-1]
+#2=0
+M99
+
+O30 (vertical line)
+M98P20L01
+#2=[#2+#10]
+M99
+
+O20 (run horizontal line pair)
+
+M98 P500 L01
+
+#1=[#1+#6]
+M98P10L[#8-1]
+#2=[#2+#10]
+#1=[#1-#11]
+
+#1=[#1-#6]
+
+M98 P500 L01
+
+M98P05L[#8-1]
+#1=0.0
+
+M99
+
+O10 (horizontal line forward)
+M98 P300 L01
+#1=[#1+#6]
+M99
+
+O05 (horizontal line backward)
+#1=[#1-#6]
+M98 P301 L01
+M99
+
+O300 (L->R drilling)
+G18 G03 X [#1]   Y [#2]   Z[#9] R[#6/2.0] F6000  
+M98 P500 L01
+M99
+
+
+O301 (R->L drilling)
+G18 G02   X [#1]   Y [#2]   Z[#9] R[#6/2.0] F6000  
+M98 P500 L01
+M99
+
+
+O400  (peck drilling)
+G01   X [#1]   Y [#2]   Z[#9] F[#3]  
+G01   X [#1]   Y [#2]   Z 3.000 F[#3/1.5]  
+G01   X [#1]   Y [#2]   Z 0.000 F[#3/3.0]
+G01   X [#1]   Y [#2]   Z 3.000 F[#3/3.0]
+G01   Z [#9] F[#3]
+M99
+M30
+
+
+#50 = 20 ( diametros opis)
+#51 = 4.0 (diametros koptikou)
+#52 = [0.5*#50-0.5*#51] 
+
+#53= 12.0 (PAXOS TEMAXIOU)
+(Helical interpolation sample)
+
+O500  (helical drilling)
+G17
+G01 X [#1]   Y [#2]  Z[#9-1] F[#3]
+G02 X [#1+8]   Y [#2] R8  Z14.0 F[#3]
+G02 X [#1-8]   Y [#2] R8  Z12.0 F[#3]
+
+G02 X [#1+8]   Y [#2] R8  Z10.0 F[#3]
+G02 X [#1-8]   Y [#2] R8  Z9.0 F[#3]
+
+G02 X [#1+8]   Y [#2] R8  Z8.0 F[#3]
+G02 X [#1-8]   Y [#2] R8  Z6.0 F[#3]
+
+G02 X [#1+8]   Y [#2] R8  Z4.0 F[#3]
+G02 X [#1-8]   Y [#2] R8  Z2.0 F[#3]
+
+G02 X [#1+8]   Y [#2] R8  Z0.0 F[#3]
+G02 X [#1-8]   Y [#2] R8  Z0.0 F[#3]
+
+G02 X [#1+8]   Y [#2] R8  Z2.0 F[#3]
+G02 X [#1-8]   Y [#2] R8  Z4.0 F[#3]
+
+G02 X [#1+8]   Y [#2] R8  Z8.0 F[#3]
+G02 X [#1-8]   Y [#2] R8  Z16.0 F[#3]
+
+G02 X [#1+8]   Y [#2] R8  Z[#9-1] F[#3]
+G01 X [#1]   Y [#2]  Z[#9] F[#3]
+
+M99
+M30
+
+
+%
