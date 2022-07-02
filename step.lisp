@@ -45,7 +45,7 @@
 "
   (let* ((divide (/ (* *2pi* radius) steps))
          )
-;;;turn to integer and find the closest to make 4-quarters
+;;turn to integer and find the closest to make 4-quarters
     (* (round (/ divide 1.0))1))
   )
 

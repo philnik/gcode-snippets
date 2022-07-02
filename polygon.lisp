@@ -13,6 +13,7 @@
   	  )
   )
 
+(setf item (make-instance 'polygon))
 
 
 (defun polygon_angle_rad (no_of_sides)
