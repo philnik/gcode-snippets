@@ -1,8 +1,55 @@
 
 
+(shadow '+)
+
+(defgeneric + (a &rest b))
+
+(defmethod + ((a number) &rest b) (apply 'cl:+ a b))
+(+ 1 2)
+(+ 2 3 4)
+
+
+(defmethod + ((a string) &rest b) (apply #'cl:concatenate 'string a b))
+(+ "Hello" "World")
+"HelloWorld"
+(+ "Hello" " cruel " "World")
+"Hello cruel World"
+
+(defmethod + ((a vector) &rest b) (apply #'map 'vector 'cl:+ a b))
+(let ((v0 #(1 2 3)) (v1 #(4 5 6))) (+ v0 v1))
+
+(defmethod + ((a list) &rest b) (apply #'map 'list 'cl:+ a b))
+(let ((v0 #(1 2 3)) (v1 #(4 5 6))) (+ v0 v1))
 
 
 
+
+(defpackage generic-arithmetic 
+  (:use "COMMON-LISP")
+  (:shadow "+"))
+
+(in-package generic-arithmetic)
+
+(setf *pi* 3.14159)
+
+
+(defun + (&rest addends)
+  (reduce 'binary+ (cdr addends) :initial-value (car addends)))
+
+(defgeneric binary+ (addend1 addend2))
+
+(defmethod binary+ ((x number) (y number))
+  (cl:+ x y))
+
+(defmethod binary+ ((x vector) (y vector))
+  (map 'vector 'cl:+ x y))
+
+(defmethod binary+ ((x list) (y list))
+  (map 'list 'cl:+ x y))
+
+(use-package 'generic-arithmetic)
+
+(+ '(1 1.0) '(2 2))
 
 
 (defclass polygon ()
@@ -57,5 +104,6 @@
 (gcode_polygon '(0.0d0 0.0d0 0.0d0) 1.0 4)
 
 		   
+
 
  
