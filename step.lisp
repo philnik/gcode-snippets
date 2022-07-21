@@ -5,6 +5,7 @@
 
 (defparameter *crlf* (format nil "~C~C" #\return #\linefeed))
 
+(defconstant *windows* t)
 (defconstant *pi* 3.141592653589793d0)
 (defconstant *2pi* 6.283185307179586d0)
 
@@ -236,9 +237,6 @@
 		       "%%" *crlf*)
 	  ))
 
-
-
-
 ;; [move-functions]
 (defun goto (point str)
   (let ((command-line (format nil "G00 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F ~35T"
@@ -249,17 +247,33 @@
     (format str (concatenate 'string command-line *crlf*))
     ))
 
-    
+(defmacro add-feed (f)
+  `(if ,f
+       (format nil " F~D" f)) )
+
+
+(defun linear-move-command (point &optional f)
+  (concatenate 'string
+	       (format nil "G01 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F ~35T"
+		       (x-of point)
+		       (y-of point)
+		       (z-of point)
+		       )
+	       (add-feed f)
+	       (if *windows*
+		   *crlf*
+		   (format nil "~%")
+	       )))
+
+;;(linear-move-command '(0 0 0) 3)
 
 (defun linear-move (point f str)
-  (let ((command-line (format nil "G01 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F ~35T F~D"
-			      (x-of point)
-			      (y-of point)
-			      (z-of point)
-			      f))
-	)
-    (format str (concatenate 'string command-line *crlf*))
-    ))
+  (format str
+	  (linear-move-command point f)
+	  ))
+
+
+
 
 (defun clockwise-move-ij (point i j f str)
   (let ((command-line
@@ -348,7 +362,48 @@
 	(steps-up (z-step-list zstart zend (* 2.0 zstep))))
     (append (list zsafe) steps-down steps-up (list zsafe))))
 
-;; step-function ends here
+(defun helical-z-list-retract (zsafe zup zdown zretract zstep+ zstep-)
+  "helical-z-list creates the list of heights for helical drilling
+`zsafe' top z
+`zup' helical start here
+`zdown' helical ends here
+`zretract' helical return height
+`zstep+' z step down
+`zstep-' z step up
+"
+  (setf z '())
+  (append z zsafe)
+  (if (> zsafe zup) (cerror "zsafe must be higher than zup"))
+  (append z zup)
+  (dotimes (floor (- zup down) zstep-)
+    (append 
+
+
+     (let* ((zup 10)
+	    (zdown 2)
+	    (zstep 3)
+	    (zretract 6)
+	    )
+       (setf a
+	     (append
+	      (loop for i from zup downto zdown by zstep
+		    collect  i)
+	     
+	     (if (not (eq (last a) zdown))
+		 (list zdown))
+	     
+	     (loop for i from zdown upto zretract by zstep
+		   collect  i)
+	     
+	     (if (not (eq (last a) zretract))
+		 (list zretract))
+	     ))
+       a
+       )
+
+
+
+     
 ;; Divide a circle on points
 ;; [divide-circle]
 (defun polar-to-rect (center radius angle)
@@ -442,6 +497,9 @@
     (goto (list xi yi zsafe) output-stream)
     ))
 ;; helical-drill-at-point ends here
+
+
+
 
 ;; [helical-drill-array]
 (defun helical-drill-array (point-array zsafe zstart zend zstep radius f output-stream)
