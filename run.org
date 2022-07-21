@@ -132,6 +132,112 @@ We take the values from the following table:
 : T
 
 
+
+
+** Helical drill on rectangle and polygon
+We take the values from the following table:
+
+I decided to create the table:
+
+#+tblname: hello-world 
+#+begin_src lisp :results table
+
+
+(setq a (list (list "x" "y")))
+(setq a (append a (list (list "-" "-"))))
+(setq a '())
+(format nil "x | y~% ")
+(loop for i from 1 to 4
+      do (let (
+	       (x 25)
+	       (y (+ 25.0 (* 111.0 i)))
+		)
+	   (setf a (append a (list (list x y))))))
+
+(loop for i from 1 to 4
+      do (let (
+	       (y 469.0)
+	       (x (+ 25.0 (* 100.0 i)))
+		)
+	   (setf a (append a (list (list x y))))))
+
+(loop for i from 1 to 4
+      do (let (
+	       (x 469.0)
+	       (y (- 469 (* 111.0 i)))
+		)
+	   (setf a (append a (list (list x y))))))
+
+
+
+
+a
+
+
+#+end_src
+
+#+RESULTS: hello-world
+|    25 | 136.0 |
+|    25 | 247.0 |
+|    25 | 358.0 |
+|    25 | 469.0 |
+| 125.0 | 469.0 |
+| 225.0 | 469.0 |
+| 325.0 | 469.0 |
+| 425.0 | 469.0 |
+| 469.0 | 358.0 |
+| 469.0 | 247.0 |
+| 469.0 | 136.0 |
+| 469.0 |  25.0 |
+
+
+#+begin_src emacs-lisp :var v=hello-world
+v
+#+end_src
+
+#+RESULTS:
+| hello | world |
+
+#+name: test-drill-array
+#+BEGIN_SRC lisp :results value :var point-array=hello-world :tangle yes
+  (setq output-stream (open "/home/me/lispcnc/test-helical-drill-on-array.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
+  (setq zsafe 25.0)
+  (setq zstart 15.0)
+  (setq zend 0.0)
+  (setq zstep 3.0)
+
+  (setq hole-diameter 10.0d0)
+  (setq tool-diameter 4.0)
+  (setq path-radius (/ (- hole-diameter tool-diameter) 2.0))
+  (setq f- 600.0)
+
+  (prologue 3000 output-stream)
+
+  (loop for point in point-array
+	do (progn
+	     (helical-drill point zsafe zstart zend zstep  path-radius f- output-stream)
+	     
+	     (let ((polygon-point (list (x-of point)
+					(y-of point)
+					6.0)))
+	       (format output-stream "~%(polygon at:  ~{~a~^ , ~})~%" polygon-point)
+	       (gcode_polygon polygon-point
+			      8.0 6 output-stream)
+	)))
+
+  (epilogue output-stream)
+  (close output-stream)
+
+
+;;;(format t "~{~a~^, ~}" list)
+
+#+END_SRC
+
+#+RESULTS: test-drill-array
+: T
+
+
+
 * Trochoidal cutting
 *** Trochoidal-circle-by-diameters-D-type
 #+NAME: D-type-trochoidal 
