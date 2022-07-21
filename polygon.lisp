@@ -46,17 +46,18 @@
 		   Zc))))
 
 
-(defun gcode_polygon (center outside_radius no_of_sides)
+(defun gcode_polygon (center outside_radius no_of_sides output-stream)
   (let ((point_list
 	 (get-points-of-polygon center outside_radius no_of_sides)
 	  ))
     (loop for point in point_list
-	  do (linear-move point 900.0 *STANDARD-OUTPUT*))
+	  do (linear-move point 900.0 output-stream))
     ))
 
 
 (format *standard-output* "------~%")
-(gcode_polygon '(0.0d0 0.0d0 6.0d0) 8.0 6)
+(format *standard-output* "(polygon at ~a)" 
+(gcode_polygon '(0.0d0 0.0d0 6.0d0) 8.0 6 *standard-output*)
 (format *standard-output* "------~%")
 		   
 
