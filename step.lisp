@@ -376,32 +376,41 @@
   (if (> zsafe zup) (cerror "zsafe must be higher than zup"))
   (append z zup)
   (dotimes (floor (- zup down) zstep-)
-    (append 
+    (append )))
 
 
-     (let* ((zup 10)
-	    (zdown 2)
-	    (zstep 3)
-	    (zretract 6)
-	    )
-       (setf a
-	     (append
-	      (loop for i from zup downto zdown by zstep
-		    collect  i)
-	     
-	     (if (not (eq (last a) zdown))
-		 (list zdown))
-	     
-	     (loop for i from zdown upto zretract by zstep
-		   collect  i)
-	     
-	     (if (not (eq (last a) zretract))
-		 (list zretract))
-	     ))
-       a
-       )
+(defun helical-z-list-retract (zsafe zup zdown zretract zstep+ zstep-)
+  "helical-z-list creates the list of heights for helical drilling
+`zsafe' top z
+`zup' helical start here
+`zdown' helical ends here
+`zretract' helical return height
+`zstep+' z step down
+`zstep-' z step up
+"
+  (cond ((< zup zdown) (cerror "low zup"))
+	  ((< zretract zdown) (cerror "low zretract"))
+	  )
+  (append
+     (setq b
+	   (loop for i from zup downto zdown by zstep+
+		 collect  i)
+	   )
+     
+     (if (not (= (car (last b)) zdown))
+	 (list zdown))
+     
+     (setq c
+	   (loop for i from zdown upto zretract by zstep-
+		 collect  i))
+     
+     (if (not (= (car (last c)) zretract))
+	 (list zretract))
+     ))
 
 
+
+(helical-z-list-retract 30.0 20.0 0.0 6.0 30 20)
 
      
 ;; Divide a circle on points
