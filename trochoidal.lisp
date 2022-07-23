@@ -22,7 +22,7 @@
 `output-stream' where to output the g-code
 "
   (format output-stream
-	  (concatenate 'string 
+d	  (concatenate 'string 
 		       (format nil "(xy-step [trochoidal step]: ~f  mm)" xystep) *crlf*
 		       (format nil "(trochoidal width: ~f  mm)" (* (- external-diameter internal-diameter) 0.5)) *crlf*
 		       *crlf*

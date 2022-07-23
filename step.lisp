@@ -371,23 +371,6 @@
 `zstep+' z step down
 `zstep-' z step up
 "
-  (setf z '())
-  (append z zsafe)
-  (if (> zsafe zup) (cerror "zsafe must be higher than zup"))
-  (append z zup)
-  (dotimes (floor (- zup down) zstep-)
-    (append )))
-
-
-(defun helical-z-list-retract (zsafe zup zdown zretract zstep+ zstep-)
-  "helical-z-list creates the list of heights for helical drilling
-`zsafe' top z
-`zup' helical start here
-`zdown' helical ends here
-`zretract' helical return height
-`zstep+' z step down
-`zstep-' z step up
-"
   (cond ((< zup zdown) (cerror "low zup"))
 	  ((< zretract zdown) (cerror "low zretract"))
 	  )
@@ -408,11 +391,9 @@
 	 (list zretract))
      ))
 
+(helical-z-list-retract 20 10 0 0 1 1)
 
 
-(helical-z-list-retract 30.0 20.0 0.0 6.0 30 20)
-
-     
 ;; Divide a circle on points
 ;; [divide-circle]
 (defun polar-to-rect (center radius angle)
@@ -469,8 +450,6 @@
 	(push (list (list (car i) (cadr i)) (list (car j) (cadr j))) couples)
 	))
     (reverse couples)))
-
-
 
 ;; [helical-drill-at-point]
 (defun helical-drill (point zsafe zstart zend zstep radius f output-stream)
