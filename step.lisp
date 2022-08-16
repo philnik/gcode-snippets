@@ -50,20 +50,24 @@
     (* (round (/ divide 1.0))1))
   )
 
+
 (defun length-vector (v)
-"vector length
+  "vector length
 `v' ((p1x p1y) (p2x p2y))
 "
-    (let* ((p1 (nth 0 v))
-           (p2 (nth 1 v))
-           (p1x (x-of p1))
-           (p1y (y-of p1))
-           (p2x (x-of p2))
-           (p2y (y-of p2))
-           )
-      (sqrt (+ (expt (- p2x p1x) 2.0d0) (expt (- p2y p1y) 2.0d0)))
-      ))
-
+  (let ((cc 
+	(destructuring-bind (p1 p2)
+	    v
+	  (destructuring-bind (p1x p1y)
+	      p1
+	    (destructuring-bind (p2x p2y)
+		p2
+	      (sqrt (+ (expt (- p2x p1x) 2.0d0) (expt (- p2y p1y) 2.0d0)))
+	      )))
+	))
+    cc
+    ))
+  
 (defun normal-vector-2 (v)
   "normal-vector-2 normalize vector keeping start point
 `v' vector"
