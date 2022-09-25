@@ -306,20 +306,27 @@ v
 #+NAME: trochoidal_line
 #+BEGIN_SRC lisp :tangle yes 
 (setq output-stream (open "/home/me/lispcnc/line.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
-(setq xystep 3.00d0)
-(setq zstep 4.0)
+(setq xystep 1.00d0)
+(setq zstep 1.0)
 (setq zsafe 50.0)
 (setq zstart 12.0)
 (setq zend 0.0)
 (setq fz 2000)
 (setq fxy 2000)
 (setq tool-diameter 3.175)
-(setq trochoidal-width 80.0)
-(setq v (list '(0.0d0 0.0d0) '(100.0d0 0.0d0)))
+(setq trochoidal-width 8.0)
+(setq w 50.0d0)
+(setq v (list '(0.0d0 0.0d0) (list w 0.0d0)))
+(setq v2 (list (list w 0.0d0) (list w w)))
+(setq v3 (list (list w w) (list 0.0d0 w)))
+(setq v4 (list (list 0.0d0 w) (list 0.0d0 0.0d0)))
 
 (prologue 8000 output-stream)
 
-(external-trochoidal-line xystep zstep zsafe zstart zend fz fxy tool-diameter v trochoidal-width output-stream)
+(external-trochoidal-line-2 xystep zstep zsafe zstart zend fz fxy tool-diameter v trochoidal-width output-stream)
+(external-trochoidal-line-2 xystep zstep zsafe zstart zend fz fxy tool-diameter v2 trochoidal-width output-stream)
+(external-trochoidal-line-2 xystep zstep zsafe zstart zend fz fxy tool-diameter v3 trochoidal-width output-stream)
+(external-trochoidal-line-2 xystep zstep zsafe zstart zend fz fxy tool-diameter v4 trochoidal-width output-stream)
 
 (epilogue output-stream) 
 
