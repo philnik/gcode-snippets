@@ -636,8 +636,8 @@
 `direction' direction (cw or ccw)
 `trochoidal-width' distance between internal external points
 `no-of-points' number of points"
-    (let* ((internal-points (divide-circle center radius no-of-points))
-           (external-points (divide-circle center (+ radius trochoidal-width) no-of-points))
+    (let* ((internal-points (divide-arc center radius start-angle end-angle direction no-of-points))
+           (external-points (divide-arc center (+ radius trochoidal-width) start-angle end-angle direction  no-of-points))
            (couples (mapcar #'list internal-points external-points)))
       couples))
 
