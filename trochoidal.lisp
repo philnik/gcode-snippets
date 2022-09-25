@@ -607,14 +607,14 @@
 	 )
     (progn 
       (goto start-point output-stream)
-      (format output-stream "~%(helical drilling: X~8,3F Y~8,3F)~%" (x-of start-point) (y-of start-point))
-      (loop while z-list
-	    do (let* ((z (pop z-list))
-		      (in-point (append (car start-pair) (list z)))
-		      (out-point (append (cadr start-pair) (list z))))
-		 (ccw-move-R in-point trochoidal-radius fz output-stream)
-		 (ccw-move-R out-point trochoidal-radius  fz output-stream)
-		 ))
+      ;; (format output-stream "~%(helical drilling: X~8,3F Y~8,3F)~%" (x-of start-point) (y-of start-point))
+      ;; (loop while z-list
+      ;; 	    do (let* ((z (pop z-list))
+      ;; 		      (in-point (append (car start-pair) (list z)))
+      ;; 		      (out-point (append (cadr start-pair) (list z))))
+      ;; 		 (ccw-move-R in-point trochoidal-radius fz output-stream)
+      ;; 		 (ccw-move-R out-point trochoidal-radius  fz output-stream)
+      ;; 		 ))
       
       (format output-stream "~% (trochoidal circle cycle)~%")
       
@@ -628,23 +628,23 @@
 		 (ccw-move-R out-point trochoidal-radius  fxy output-stream)
 		 ))
 
-      (let* ((in-point (append (car start-pair) (list zend)))
-	     (out-point (append (cadr start-pair) (list zend))))
-	(progn
-	  (ccw-move-R out-point radius1  fxy output-stream)
-	  (ccw-move-R in-point trochoidal-radius fxy output-stream)
-	  (ccw-move-R out-point trochoidal-radius  fxy output-stream)
-	))
+      ;; (let* ((in-point (append (car end-pair) (list zend)))
+      ;; 	     (out-point (append (cadr end-pair) (list zend))))
+      ;; 	(progn
+      ;; 	  (ccw-move-R out-point radius1  fxy output-stream)
+      ;; 	  (ccw-move-R in-point trochoidal-radius fxy output-stream)
+      ;; 	  (ccw-move-R out-point trochoidal-radius  fxy output-stream)
+      ;; 	))
       
-      (format output-stream "~%(helical out: X~8,3F Y~8,3F)~%" (x-of start-point) (y-of start-point))
-      (loop while z+list
-	    do (let* ((z (pop z+list))
-		      (in-point (append (car start-pair) (list z)))
-		      (out-point (append (cadr start-pair) (list z))))
-		 (ccw-move-R in-point trochoidal-radius fz output-stream)
-		 (ccw-move-R out-point trochoidal-radius  fz output-stream)
-	       ))
-      (format output-stream "~% (end of cycle)~%")
-      (goto start-point output-stream)
+      ;; (format output-stream "~%(helical out: X~8,3F Y~8,3F)~%" (x-of start-point) (y-of start-point))
+      ;; (loop while z+list
+      ;; 	    do (let* ((z (pop z+list))
+      ;; 		      (in-point (append (car start-pair) (list z)))
+      ;; 		      (out-point (append (cadr start-pair) (list z))))
+      ;; 		 (ccw-move-R in-point trochoidal-radius fz output-stream)
+      ;; 		 (ccw-move-R out-point trochoidal-radius  fz output-stream)
+      ;; 	       ))
+      ;; (format output-stream "~% (end of cycle)~%")
+      ;; (goto start-point output-stream)
       )))
 
