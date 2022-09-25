@@ -22,7 +22,7 @@
 `output-stream' where to output the g-code
 "
   (format output-stream
-d	  (concatenate 'string 
+	  (concatenate 'string 
 		       (format nil "(xy-step [trochoidal step]: ~f  mm)" xystep) *crlf*
 		       (format nil "(trochoidal width: ~f  mm)" (* (- external-diameter internal-diameter) 0.5)) *crlf*
 		       *crlf*
@@ -597,7 +597,7 @@ d	  (concatenate 'string
 	 (trochoidal-radius (/ trochoidal-width 2.0))
 	 
 	 (no-of-points (no-of-points-from-arc-radius xystep radius))
-	 (couple (point-couples center radius trochoidal-width no-of-points))
+	 (couple (point-couples-arc center radius start-angle end-angle direction trochoidal-width no-of-points))
 
 	 (start-pair (pop couple))
 	 (start-point (append (middle-vector start-pair) (list zsafe)))
