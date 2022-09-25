@@ -419,6 +419,46 @@
           )
       (reverse point-array)
         ))
+
+
+(defclass arc ()
+  ((center
+    :initarg :center
+    :accessor center)
+   (start-angle
+    :initarg :start-angle
+    :accessor start-angle)
+   (end-angle
+    :initarg :end-angle
+    :accessor end-angle)
+   (direction
+    :initarg :direction
+    :accessor direction)
+   (radius
+    :initarg :radius
+    :accessor radius)
+   (no-of-points
+    :initarg :no-of-points
+    :accessor no-of-points)
+))
+   
+
+(defun divide-arc (center start-angle end-angle direction radius no-of-points)
+  "divide arc to points, starts from 0deg moving clockwise
+`center' center of the circle
+`radius' radius of the points
+`no-of-points' number of points"
+      (let ((angle (/ *2pi* no-of-points))
+            (point-array '()))
+
+        (dotimes (n  no-of-points)
+          (push (polar-to-rect center radius (* n angle)) point-array)
+          )
+      (reverse point-array)
+        ))
+
+
+
 ;; divide-circle ends here
 
 ;;;divide-line
@@ -559,6 +599,20 @@
   "point couples returns offset pairs internal-external of circle points
 `center' center of circle
 `radius' radius of circle
+`trochoidal-width' distance between internal external points
+`no-of-points' number of points"
+    (let* ((internal-points (divide-circle center radius no-of-points))
+           (external-points (divide-circle center (+ radius trochoidal-width) no-of-points))
+           (couples (mapcar #'list internal-points external-points)))
+      couples))
+
+(defun point-couples-arc (center radius start-angle end-angle direction trochoidal-width no-of-points)
+  "point couples returns offset pairs internal-external of circle points
+`center' center of circle
+`radius' radius of circle
+`start-angle' start angle
+`end-angle' end angle
+`direction' direction (cw or ccw)
 `trochoidal-width' distance between internal external points
 `no-of-points' number of points"
     (let* ((internal-points (divide-circle center radius no-of-points))
