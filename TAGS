@@ -1,56 +1,175 @@
 
-step.lisp,1270
-(defconstant *pi* 2,1
-(defconstant *2pi* 3,40
-(defun x-of 5,81
-(defun y-of 6,116
-(defun z-of 7,151
-(defun rad-to-deg 9,187
-(defun deg-to-rad 15,301
-(defun atan2 21,415
-(defun no-of-points-from-arc-radius 35,789
-(defun length-vector 44,1065
-(defun normal-vector-2 55,1340
-(defun normal-vector 74,1904
-(defun middle-point 122,3130
-(defun middle-vector 127,3307
-(defun vector-scale 133,3479
-(defun vector-rotate 148,4014
-(defun vector-rotate-deg 161,4426
-(defun vector-transform-to-zero 165,4527
-(defun vector-transform-by-vector 176,4828
-(defun vector-reverse 199,5486
-(defun radius-arc 205,5594
-(defun center-arc 218,5977
-(defun offset-arc 221,6010
-(defun prologue 225,6078
-(defun goto 233,6349
-(defun linear-move 236,6477
-(defun clockwise-move-ij 239,6620
-(defun clockwise-move-R 242,6797
-(defun cw-move-R 245,6954
-(defun ccw-move-R 253,7244
-(defun counter-clockwise-move-R 261,7541
-(defun z-step-list 267,7707
-(defun helical-z-list 285,8141
-(defun polar-to-rect 298,8601
-(defun divide-circle 304,8755
-(defun divide-line 320,9236
-(defun line-point-couples 336,9720
-(defun helical-drill 356,10357
-(defun helical-drill-array 387,11489
-(defun drill-point 405,11994
-(defun drill-point-array 430,12727
-(defun point-couples 445,13179
+arc.lisp,529
+(defun radius-arc 2,1
+(defun center-arc 15,384
+(defun offset-arc 18,417
+(defclass arc 21,446
+(defmethod return-type-of-object 62,1281
+(defmethod arc-from-three-points 65,1364
+(defmethod symmetric-arc-from-center-radius-angle 74,1681
+(defmethod rotate-arc 85,2004
+(defmethod copy-arc 92,2150
+(defgeneric copy-instance 103,2350
+(defun shallow-copy-object 123,3244
+(defmethod print-arc 137,3619
+(defun set-uv-params-from-center-angle 146,3995
+(defun set-center-from-radius-and-angle 150,4065
+(defun make-arc 155,4204
 
-trochoidal.lisp,298
+calc.mac,15
+plot2d(36,506
+
+classicladder-0.9.113.tar,89
+     function for 257,15128
+   function or 12269,1739656
+   function or 75499,3963285
+
+cnc.org,1056
+	a:a82,3153
+	t:1700.0/60/a,a83,3161
+	t:1700.0/60/a,numer;83,3161
+	v1:a*t;t84,3183
+  : v1=92,3262
+	a:a100,3406
+	t:1700.0/60/a,a101,3414
+	t:1700.0/60/a,numer;101,3414
+	v1:a*t;t102,3436
+	a:a115,3691
+	t:1700.0/60/a,a116,3699
+	t:1700.0/60/a,numer;116,3699
+	v1:a*t;t117,3721
+  v1 123,3796
+fb:%pi/2.0,numer;154,4434
+1/ka;ka159,4502
+1/kb;kb160,4508
+print(166,4585
+Ef=312,7845
+CL1:2*%pi*d^3/(L*DOC)*(sc/sm),numer;487,15850
+CL2:Wm*V/(sm*DOC*%pi*d)d488,15887
+CL2:Wm*V/(sm*DOC*%pi*d),numer;488,15887
+FR1:V/%pi/d*CL1,CL1489,15918
+FR1:V/%pi/d*CL1,numer;489,15918
+FR2:V/%pi/d*CL2,CL2490,15941
+FR2:V/%pi/d*CL2,numer;490,15941
+RPM1:V/d/%pi,pi492,15965
+RPM1:V/d/%pi,numer;492,15965
+Type 508,16205
+$$V=661,18692
+$${$$665,18785
+$$A=667,18849
+$$F_{$$F_669,18882
+$$F_{$$F_671,18948
+$$Ïƒ$$Ï674,19041
+$$Ïƒ$$Ï676,19080
+$$Ïƒ$$Ï681,19226
+$$Ïƒ$$Ï684,19366
+$$P=696,19899
+$$P=698,19964
+$$P=702,20107
+      P 705,20240
+DOC=720,20584
+DOC=724,20665
+\int_0^\infty e^{-x^2} dx 739,20808
+\int_0^\infty e^{-x^2} dx 753,20972
+
+offset.py~,10
+doc 5,61
+
+polygon.fasl,23
+SSB-INTOINTO7,806
+
+polygon.lisp,157
+(defclass polygon 10,60
+(defun polygon_angle_rad 21,260
+(defun polygon_angle_deg 28,413
+(defun get-points-of-polygon 36,594
+(defun gcode_polygon 49,939
+
+polygon.py,132
+def polygon_angle_rad 16,169
+def polygon_angle_deg 20,273
+def get_polygon_points 27,419
+def goto 37,733
+def linear_move 40,861
+
+polygon.py~,10
+pi 11,91
+
+step.fasl,79
+H‹SùH‹S11,770
+H‹SùH‹S13,1029
+H‹SùH‹S15,1308
+¨uq€yñwkHuq€yñwk30,3173
+
+step.lisp,1469
+(defparameter *crlf* 6,127
+(defconstant *windows* 8,190
+(defconstant *pi* 9,216
+(defconstant *2pi* 10,255
+(defun x-of 12,296
+(defun y-of 13,331
+(defun z-of 14,366
+(defun rad-to-deg 16,402
+(defun deg-to-rad 22,516
+(defun atan2 28,630
+(defun no-of-points-from-arc-radius 42,1002
+(defun length-vector 54,1342
+(defun normal-vector-2 71,1644
+(defun normal-vector 90,2208
+(defun angle-vector 108,2734
+(defun p+ 122,3054
+(defun scale-point 131,3226
+(defun middle-point 138,3378
+(defun middle-vector 143,3555
+(defun vector-scale 150,3728
+(defun vector-rotate 165,4263
+(defun vector-rotate-deg 178,4675
+(defun vector-transform-to-zero 182,4776
+(defun vector-transform-by-vector 193,5077
+(defun vector-reverse 216,5735
+(defun prologue 223,5882
+(defun epilogue 233,6094
+(defun goto 245,6347
+(defmacro add-feed 254,6589
+(defun linear-move-command 259,6656
+(defun linear-move 274,6996
+(defun clockwise-move-ij 282,7086
+(defun clockwise-move-R 292,7379
+(defun cw-move-R 302,7633
+(defun ccw-move-R 318,8023
+(defun counter-clockwise-move-R 335,8440
+(defun z-step-list 341,8606
+(defun helical-z-list 359,9040
+(defun helical-z-list-retract 369,9425
+(defun polar-to-rect 403,10205
+(defun divide-circle 409,10359
+(defun divide-line 425,10840
+(defun line-point-couples 441,11324
+(defun helical-drill 459,11959
+(defun helical-drill-array 497,13156
+(defun drill-point 515,13661
+(defun drill-point-array 543,14466
+(defun point-couples 558,14918
+
+step.org,189
+* install maxima49,2400
+    ;; (ql:quickload :computable-reals)reals101,3667
+* math functions109,3804
+    ;;center: center of circle439,13320
+    ;;radius: radius we move on440,13352
+
+trochoidal.lisp,448
 (defun trochoidal-data-gcode-prologue 9,269
-(defmacro helical-move 49,2000
-(defun internal-trochoidal-circle 68,2933
-(defun external-trochoidal-circle 145,5755
-(defun external-D-trochoidal-circle 222,8642
-(defun external-trochoidal-line 299,11589
-(defun external-D-trochoidal-line 365,13825
+(defmacro helical-move 47,1949
+(defun internal-trochoidal-circle 71,2945
+(defun external-trochoidal-circle 148,5767
+(defun external-D-trochoidal-circle 225,8654
+(defun external-trochoidal-line 302,11601
+(defun helical-dive 366,13829
+(defun helical-raise 393,14816
+(defun external-trochoidal-line-2 421,15734
+(defun external-D-trochoidal-line 475,17364
+(defun external-trochoidal-arc 560,20341
 
 works.lisp,674
 (defparameter center 5,4
@@ -78,4 +197,24 @@ works.lisp,674
 (defun drill-circle 70,1821
 (defun drilling-cycle 102,3118
 
+tests.org,0
+
+run.org,0
+
 run.lisp,0
+
+polygon.lisp~,0
+
+perforated,0
+
+offset.py,0
+
+nc_files,0
+
+mist_eliminator,0
+
+helical-circle-array.ngc,0
+
+configs,0
+
+classicladder,0
