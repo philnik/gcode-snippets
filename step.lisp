@@ -441,19 +441,40 @@
     :initarg :no-of-points
     :accessor no-of-points)
 ))
-   
 
-(defun divide-arc (center start-angle end-angle direction radius no-of-points)
+
+(defun included-angle (start-angle end-angle direction &optional (fca *2pi*))
+  (case direction
+    ('ccw
+     "ccw"
+     (mod (+ fca (- end-angle start-angle)) fca)
+     )
+    ('cw
+     "cw"
+     (mod (+ fca (- start-angle end-angle)) fca)
+     )
+    ))
+
+
+(defun divide-arc (center radius start-angle end-angle direction  no-of-points)
   "divide arc to points, starts from 0deg moving clockwise
 `center' center of the circle
+`start-angle'
+`end-angle'
+`direction' 'cw or 'ccw
 `radius' radius of the points
 `no-of-points' number of points"
-      (let ((angle (/ *2pi* no-of-points))
+  (if (< no-of-points 2)
+      (error "Divide arc:at least 2 points")
+      )
+  (let* ((included-angle (included-angle start-angle end-angle direction))
+	 (angle (/ included-angle (- no-of-points 1)))
             (point-array '()))
 
         (dotimes (n  no-of-points)
-          (push (polar-to-rect center radius (* n angle)) point-array)
+          (push (polar-to-rect center radius (+ start-angle (* n angle))) point-array)
           )
+    
       (reverse point-array)
         ))
 
