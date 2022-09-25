@@ -307,20 +307,20 @@ v
 #+NAME: trochoidal-arc 
 #+BEGIN_SRC lisp :tangle yes 
 (setq output-stream (open "/home/me/lispcnc/test-arc.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
-(setq xystep 9.00d0)
+(setq xystep 10.00d0)
 (setq zstep 3.0)
 (setq zsafe 50.0)
 (setq zstart 12.0)
 (setq zend 0.0)
-(setq fz 2000)
-(setq fxy 2000)
+(setq fz 20000)
+(setq fxy 20000)
 (setq center '(0.0 0.0))
 (setq tool-diameter 3.175)
 (setq internal-diameter 560.0)
 (setq external-diameter 596.0)
 (setf start-angle (/ *pi* 2.0))
-(setf end-angle *pi*)
-(setf direction 'cw)
+(setf end-angle (* 1.5 *pi*))
+(setf direction 'ccw)
 
 (trochoidal-data-gcode-prologue
  xystep zstep
@@ -342,6 +342,9 @@ v
   (close output-stream)
 
 #+END_SRC
+
+#+RESULTS: trochoidal-arc
+: T
 
 #+RESULTS: trochoidal circle
 : T
