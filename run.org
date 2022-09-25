@@ -302,10 +302,58 @@ v
 : T
 
 
-*** Trochoidal line
-#+NAME: trochoidal_line
+
+*** Trochoidal arc by diameters circle type
+#+NAME: trochoidal-arc 
 #+BEGIN_SRC lisp :tangle yes 
-(setq output-stream (open "/home/me/lispcnc/line.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
+(setq output-stream (open "/home/me/lispcnc/test-arc.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
+(setq xystep 9.00d0)
+(setq zstep 3.0)
+(setq zsafe 50.0)
+(setq zstart 12.0)
+(setq zend 0.0)
+(setq fz 2000)
+(setq fxy 2000)
+(setq center '(0.0 0.0))
+(setq tool-diameter 3.175)
+(setq internal-diameter 560.0)
+(setq external-diameter 596.0)
+(setf start-angle (/ *pi* 2.0))
+(setf end-angle *pi*)
+(setf direction 'cw)
+
+(trochoidal-data-gcode-prologue
+ xystep zstep
+ zsafe zstart zend
+ fz fxy
+ center tool-diameter internal-diameter external-diameter
+ output-stream)
+
+(external-trochoidal-arc
+ xystep zstep
+ zsafe zstart zend
+ fz fxy
+ center tool-diameter internal-diameter external-diameter
+ start-angle end-angle direction
+ output-stream)
+
+(epilogue output-stream) 
+
+  (close output-stream)
+
+#+END_SRC
+
+#+RESULTS: trochoidal circle
+: T
+
+
+
+
+
+*** Trochoidal rectangle
+#+NAME: trochoidal_rectangle
+#+BEGIN_SRC lisp :tangle yes 
+(setq output-stream (open "/home/me/lispcnc/rectangle.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
 (setq xystep 1.00d0)
 (setq zstep 1.0)
 (setq zsafe 50.0)
@@ -315,7 +363,7 @@ v
 (setq fxy 2000)
 (setq tool-diameter 3.175)
 (setq trochoidal-width 8.0)
-(setq w 50.0d0)
+(setq w 20.0d0)
 (setq v (list '(0.0d0 0.0d0) (list w 0.0d0)))
 (setq v2 (list (list w 0.0d0) (list w w)))
 (setq v3 (list (list w w) (list 0.0d0 w)))
@@ -323,11 +371,13 @@ v
 
 (prologue 8000 output-stream)
 
+(helical-dive xystep zstep zsafe zstart zend fz fxy tool-diameter v trochoidal-width output-stream)
 (external-trochoidal-line-2 xystep zstep zsafe zstart zend fz fxy tool-diameter v trochoidal-width output-stream)
 (external-trochoidal-line-2 xystep zstep zsafe zstart zend fz fxy tool-diameter v2 trochoidal-width output-stream)
 (external-trochoidal-line-2 xystep zstep zsafe zstart zend fz fxy tool-diameter v3 trochoidal-width output-stream)
 (external-trochoidal-line-2 xystep zstep zsafe zstart zend fz fxy tool-diameter v4 trochoidal-width output-stream)
 
+(helical-raise xystep zstep zsafe zstart zend fz fxy tool-diameter v4 trochoidal-width output-stream)
 (epilogue output-stream) 
 
 (close output-stream)
