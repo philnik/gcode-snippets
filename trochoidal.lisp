@@ -555,9 +555,21 @@ d	  (concatenate 'string
 
 
 
+(defclass trocho-arc ()
+  (
+   (xystep
+    :accessor xystep)
+   (zstep
+    :accessor zstep)
+   zsafe zstart zend fz fxy center tool-diameter internal-diameter external-diameter output-stream)
+  )
 
-
-(defun external-trochoidal-arc (xystep zstep zsafe zstart zend fz fxy center tool-diameter internal-diameter external-diameter output-stream)
+(defun external-trochoidal-arc (xystep zstep
+				zsafe zstart zend
+				fz fxy
+				center tool-diameter internal-diameter external-diameter
+				start-angle end-angle direction
+				output-stream)
   "Outputs a trochoidal path circle in gcode
 `xystep' stepping of each circle
 `zstep' helical step
@@ -570,6 +582,9 @@ d	  (concatenate 'string
 `tool-diameter' tool diameter
 `internal-diameter' inside diameter
 `external-diameter' outside diameter
+`start-angle'
+`end-angle'
+`direction'
 `output-stream' where to output the g-code
 "
   (let* (
