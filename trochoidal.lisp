@@ -339,7 +339,6 @@ d	  (concatenate 'string
 		 ))
       
       (format output-stream "~% (trochoidal line cycle)~%")
-      
       (loop while couple
 	    do (let* ((pair (pop couple))
 		      (in-point (append (car pair) (list zend)))
@@ -362,6 +361,114 @@ d	  (concatenate 'string
       (format output-stream "~% (end of cycle)~%")
       (goto start-point output-stream)
       )))
+
+
+(defun helical-dive (xystep zstep zsafe zstart zend fz fxy tool-diameter vector trochoidal-width output-stream)
+    (let* (
+	 (z+list (z-step-list zstart zend zstep))
+	 (z-list (z-step-list zend zstart (- 0 zstep)))
+
+	 (trochoidal-radius (/ trochoidal-width 2.0))
+	 
+	 (couple (line-point-couples vector trochoidal-width xystep))
+
+	 (start-pair (pop couple))
+	 (start-point (append (middle-vector start-pair) (list zsafe)))
+	 
+	 (end-pair (car(last couple)))
+	 (end-point (append (middle-vector end-pair) (list zsafe)))
+	 )
+      (progn
+    (goto start-point output-stream)
+    (format output-stream "~%(helical drilling: X~8,3F Y~8,3F)~%" (x-of start-point) (y-of start-point))
+    (loop while z-list
+	  do (let* ((z (pop z-list))
+		    (in-point (append (car start-pair) (list z)))
+		    (out-point (append (cadr start-pair) (list z))))
+	       (ccw-move-R in-point trochoidal-radius fz output-stream)
+	       (ccw-move-R out-point trochoidal-radius  fz output-stream)
+	       )))))
+
+
+(defun helical-raise (xystep zstep zsafe zstart zend fz fxy tool-diameter vector trochoidal-width output-stream)
+    (let* (
+	 (z+list (z-step-list zstart zend zstep))
+	 (z-list (z-step-list zend zstart (- 0 zstep)))
+
+	 (trochoidal-radius (/ trochoidal-width 2.0))
+	 
+	 (couple (line-point-couples vector trochoidal-width xystep))
+
+	 (start-pair (pop couple))
+	 (start-point (append (middle-vector start-pair) (list zsafe)))
+	 
+	 (end-pair (car(last couple)))
+	 (end-point (append (middle-vector end-pair) (list zsafe)))
+	 )
+(progn
+  (format output-stream "~%(helical out: X~8,3F Y~8,3F)~%" (x-of end-point) (y-of end-point))
+  (loop while z+list
+	do (let* ((z (pop z+list))
+		  (in-point (append (car end-pair) (list z)))
+		  (out-point (append (cadr end-pair) (list z))))
+	     (ccw-move-R in-point trochoidal-radius fz output-stream)
+	     (ccw-move-R out-point trochoidal-radius  fz output-stream)
+	     )))))
+
+
+
+
+(defun external-trochoidal-line-2 (xystep zstep zsafe zstart zend fz fxy tool-diameter vector trochoidal-width output-stream)
+  "Outputs a trochoidal line in gcode
+`xystep' stepping of each circle
+`zstep' helical step
+`zsafe' zsafe
+`zstart' zstart
+`zend' zend
+`fz' helical z feedrate
+`fxy' xy feedrate
+`tool-diameter' tool diameter
+`vector' vector describing line
+`trochoidal-width' trochoidal-width
+`output-stream' where to output the g-code
+"
+  (let* (
+	 (z+list (z-step-list zstart zend zstep))
+	 (z-list (z-step-list zend zstart (- 0 zstep)))
+
+	 (trochoidal-radius (/ trochoidal-width 2.0))
+	 
+	 (couple (line-point-couples vector trochoidal-width xystep))
+
+	 (start-pair (pop couple))
+	 (start-point (append (middle-vector start-pair) (list zsafe)))
+	 
+	 (end-pair (car(last couple)))
+	 (end-point (append (middle-vector end-pair) (list zsafe)))
+	 )
+    (progn 
+;      (helical-dive xystep zstep zsafe zstart zend fz fxy tool-diameter vector trochoidal-width output-stream)
+      
+      (format output-stream "~% (trochoidal line cycle)~%")
+      (loop while couple
+	    do (let* ((pair (pop couple))
+		      (in-point (append (car pair) (list zend)))
+		      (out-point (append (cadr pair) (list zend)))
+		      )
+		 (linear-move out-point fxy output-stream)
+		 (ccw-move-R in-point trochoidal-radius fxy output-stream)
+		 (ccw-move-R out-point trochoidal-radius  fxy output-stream)
+		 ))
+
+      
+;      (helical-raise xystep zstep zsafe zstart zend fz fxy tool-diameter vector trochoidal-width output-stream)
+      
+      (format output-stream "~% (end of cycle)~%")
+;      (goto start-point output-stream)
+      )))
+
+
+
 
 
 
