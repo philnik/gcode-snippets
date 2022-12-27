@@ -305,9 +305,11 @@ v
 
 *** Trochoidal arc by diameters circle type
 #+NAME: trochoidal-arc 
-#+BEGIN_SRC lisp :tangle yes 
+#+BEGIN_SRC lisp :tangle yes
+;(asdf:load-system :linuxcnc)
+(in-package :linuxcnc)
 (setq output-stream (open "/home/me/lispcnc/test-arc.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
-(setq xystep 10.00d0)
+(setq xystep 20.00d0)
 (setq zstep 3.0)
 (setq zsafe 50.0)
 (setq zstart 12.0)
@@ -318,8 +320,8 @@ v
 (setq tool-diameter 3.175)
 (setq internal-diameter 560.0)
 (setq external-diameter 596.0)
-(setf start-angle (/ *pi* 2.0))
-(setf end-angle (* 1.5 *pi*))
+(setf start-angle (/ *pi* 4.0))
+(setf end-angle (* 3 (/ *pi* 4.0)))
 (setf direction 'ccw)
 
 (trochoidal-data-gcode-prologue
@@ -355,7 +357,9 @@ v
 
 *** Trochoidal rectangle
 #+NAME: trochoidal_rectangle
-#+BEGIN_SRC lisp :tangle yes 
+#+BEGIN_SRC lisp :tangle yes :session sly-inferior-lisp for sbcl
+;(asdf:load-system :linuxcnc)
+(in-package :linuxcnc)
 (setq output-stream (open "/home/me/lispcnc/rectangle.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
 (setq xystep 1.00d0)
 (setq zstep 1.0)
@@ -386,6 +390,9 @@ v
 (close output-stream)
 #+END_SRC
 
+#+RESULTS: trochoidal_rectangle
+: T
+
 #+RESULTS: trochoidal_line
 : T
 
@@ -393,5 +400,15 @@ v
 
 
 
+
+
+* add oc support
+
+#+NAME: trochoidal_rectangle
+#+BEGIN_SRC lisp :tangle yes :session sly-inferior-lisp for sbcl
+(push "/usr/local/src/oc/" asdf:*central-registry*)
+(asdf:load-system :oc)
+
+#+end_src
 
 

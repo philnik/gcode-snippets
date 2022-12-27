@@ -5,6 +5,9 @@
 
 
 
+(load "step.lisp")
+(load "trochoidal.lisp")
+
 (assert (equal (included-angle -90 0 'cw 360.0d0) 270.0d0))
 (assert (equal (included-angle 0 -90 'cw 360.0d0) 90.0d0))
 
@@ -17,3 +20,6 @@
 
 
 
+(helical-dive-1 '(1.0d0 2.0d0) -4 10 0 10.0 10.0 10.0 *STANDARD-OUTPUT*)
+
+(helical-dive-1 '(1.0d0 2.0d0) 2 0 20 10.0 10.0 10.0 *STANDARD-OUTPUT*)

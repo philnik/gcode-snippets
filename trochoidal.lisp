@@ -362,6 +362,40 @@
       (goto start-point output-stream)
       )))
 
+(defun helical-dive-1 (point
+		       zstep zstart zend
+		       fz fxy
+		       radius
+		       output-stream
+		       )
+
+    (progn
+      (setf z-list (z-step-list zend zstart zstep))
+
+
+      (setf point1 (list (+ (x-of point) radius) (y-of point)))
+      (setf point2 (list (- (x-of point) radius) (y-of point)))
+
+      (setf start-point (list (x-of point2) (y-of point2) zstart))
+      (setf end-point (list (x-of point1) (y-of point1) zend))
+
+
+      
+      (linear-move start-point fxy output-stream )
+      (format output-stream "~%(helical drilling: X~8,3F Y~8,3F Z~8,3F )~%" (x-of start-point) (y-of start-point) (z-of start-point))
+
+      
+      (loop while z-list
+	    do (let* ((z (pop z-list))
+		      (in-point (append point1 (list z)))
+		      (out-point (append point2 (list z))))
+		 (ccw-move-R in-point radius fz output-stream)
+		 (ccw-move-R out-point radius  fz output-stream)
+		 ))
+      (ccw-move-R end-point radius  fz output-stream)
+      ))
+
+
 
 (defun helical-dive (xystep zstep zsafe zstart zend fz fxy tool-diameter vector trochoidal-width output-stream)
     (let* (

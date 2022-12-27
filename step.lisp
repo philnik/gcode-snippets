@@ -202,7 +202,7 @@
       (list (p+ p1 tr-point) (p+ p2 tr-point))
       ))
 
-  (defun vector-offset (v distance)
+(defun vector-offset (v distance)
     (let* ((p1 (nth 0 v))
            (p2 (nth 1 v))
 	   (vrotate (vector-rotate v (* *pi* 0.5)))
@@ -226,8 +226,7 @@
 		       "(prologue)" *crlf*
 		       (format nil "M03 S~d" spindle) *crlf*
 		       "(end of prologue)" *crlf*)
-	  )
-  )
+	  ))
 
 
 (defun epilogue (output-stream)
@@ -253,7 +252,7 @@
 
 (defmacro add-feed (f)
   `(if ,f
-       (format nil " F~D" f)) )
+       (format nil " F~D" f)))
 
 
 (defun linear-move-command (point &optional f)
@@ -276,26 +275,20 @@
 	  (linear-move-command point f)
 	  ))
 
-
-
-
 (defun clockwise-move-ij (point i j f str)
   (let ((command-line
 	 (format nil "G02 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F  I~8,3F ~35T J~8,3F ~45T F~D"
 			      (x-of point)
 			      (y-of point)
-			      (z-of point) i j f))
-	)
-(format str (concatenate 'string command-line *crlf*))
-    ))
-    
+			      (z-of point) i j f)))
+(format str (concatenate 'string command-line *crlf*))))
+
 (defun clockwise-move-R (point r f str)
   (let ((command-line
 	 (format nil "G02 ~4T X~8,3F ~15T Y~8,3F ~25T Z~8,3F  R~8,3F  F~D"
 		 (x-of point)
 		 (y-of point)
-		 (z-of point) r f))
-	)
+		 (z-of point) r f)))
     (format str (concatenate 'string command-line *crlf*))
     ))
 
@@ -329,8 +322,6 @@
       )
   (format str (concatenate 'string command-line *crlf*))
   ))
-
-  
 
 (defun counter-clockwise-move-R (point r f str)
   "G03 interpolations calls ccw-move-R"
@@ -477,8 +468,6 @@
     
       (reverse point-array)
         ))
-
-
 
 ;; divide-circle ends here
 
