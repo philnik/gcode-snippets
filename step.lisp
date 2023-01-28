@@ -1,6 +1,6 @@
 ;;;; I find CLOSER-MOP functions easier to use than
 ;;;; implementation-specific functions
-(quicklisp:quickload :closer-mop)
+;;(quicklisp:quickload :closer-mop)
 
 
 (defparameter *crlf* (format nil "~C~C" #\return #\linefeed))

@@ -380,10 +380,6 @@ I decided to create the table:
 #+RESULTS: trochoidal circle
 : T
 
-
-
-
-
 *** Trochoidal rectangle
 #+NAME: trochoidal_rectangle
 #+BEGIN_SRC lisp :tangle yes :session sly-inferior-lisp for sbcl
@@ -424,12 +420,6 @@ I decided to create the table:
 
 #+RESULTS: trochoidal_line
 : T
-
-
-
-
-
-
 
 * add oc support
 
