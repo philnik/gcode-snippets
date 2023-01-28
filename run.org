@@ -22,6 +22,15 @@
 #+LATEX_HEADER: \setmainfont[Mapping=tex-text]{Times New Roman}
 #+SETUPFILE:   /home/me/public_html/org-html-themes/org/theme-readtheorg-local.setup
 
+
+
+#+name: simple-drill-array-on-divide-circle
+#+BEGIN_SRC lisp :results value :tangle yes
+(setf *ROOT* "/home/me/linuxcnc/examples/")
+(defun full_path (fname)
+  (concatenate 'string *ROOT* fname ))
+#+end_src
+
 * Drill functions
 
 ** Simple-drill-array-on-divide-circle
@@ -29,13 +38,15 @@
 
 #+name: simple-drill-array-on-divide-circle
 #+BEGIN_SRC lisp :results value :tangle yes
-  (setq output-stream (open "/home/me/lispcnc/test-simple-drill-on-circle-0.ngc"
-                            :external-format :utf-8
-                            :direction :output :if-does-not-exist :create :if-exists :supersede))
-  (setq f- 600.0)
-  (setq zsafe 30.0)
-  (setq zstart 12.0)
-  (setq zend 0.0)
+(setf output_file (full_path "test-simple-drill-on-circle-0.ngc"))
+  (setq output-stream 
+	(open output_file  
+	      :external-format :utf-8
+	      :direction :output :if-does-not-exist :create :if-exists :supersede))
+(setq f- 600.0)
+(setq zsafe 30.0)
+(setq zstart 12.0)
+(setq zend 0.0)
 
 ; (setq output-stream *STANDARD-OUTPUT*)
 
@@ -59,7 +70,16 @@
 ** Helical-drill-array-on-divide-circle
 #+name: helical-drill-array-on-divide-circle
 #+BEGIN_SRC lisp :results value :tangle yes
-  (setq output-stream (open "/home/me/lispcnc/test-helical-drill-on-circle0.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
+(setf output_file (full_path
+			     "test-helical-drill-on-circle0.ngc"
+			     ))
+  (setq output-stream (open output_file
+			    :direction
+			    :output
+			    :if-does-not-exist
+			    :create
+			    :if-exists
+			    :supersede))
   (setq zsafe 25.0)
   (setq zstart 15.0)
   (setq zend 0.0)
@@ -109,7 +129,17 @@ We take the values from the following table:
 
 #+name: test-drill-array
 #+BEGIN_SRC lisp :results value :var point-array=my-table :tangle yes
-  (setq output-stream (open "/home/me/lispcnc/test-helical-drill-on-array.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
+(setf output_file (full_path
+			     "test-helical-drill-on-array.ngc"
+			     ))
+  (setq output-stream (open
+		       output_file
+		       :direction
+		       :output
+		       :if-does-not-exist
+		       :create
+		       :if-exists
+		       :supersede))
   (setq zsafe 25.0)
   (setq zstart 15.0)
   (setq zend 0.0)
@@ -139,48 +169,37 @@ We take the values from the following table:
 
 I decided to create the table:
 
-#+tblname: hello-world 
+#+tblname: point_data
 #+begin_src lisp :results table
 
+(defun helical_drill_on_rectangle ()
+  (setq a (list (list "x" "y")))
+  (setq a (append a (list (list "-" "-"))))
+  (setq a '())
+  (format nil "x | y~% ")
+  (loop for i from 1 to 4
+	do (let ((x 25.0)
+		 (y (+ 25.0 (* 111.0 i))))
+	     (setf a (append a (list (list x y))))))
+  
+  (loop for i from 1 to 4
+	do (let ((y 469.0)
+		 (x (+ 25.0 (* 100.0 i))))
+	     (setf a (append a (list (list x y))))))
 
-(setq a (list (list "x" "y")))
-(setq a (append a (list (list "-" "-"))))
-(setq a '())
-(format nil "x | y~% ")
-(loop for i from 1 to 4
-      do (let (
-	       (x 25)
-	       (y (+ 25.0 (* 111.0 i)))
-		)
-	   (setf a (append a (list (list x y))))))
-
-(loop for i from 1 to 4
-      do (let (
-	       (y 469.0)
-	       (x (+ 25.0 (* 100.0 i)))
-		)
-	   (setf a (append a (list (list x y))))))
-
-(loop for i from 1 to 4
-      do (let (
-	       (x 469.0)
-	       (y (- 469 (* 111.0 i)))
-		)
-	   (setf a (append a (list (list x y))))))
-
-
-
-
-a
-
-
+  (loop for i from 1 to 4
+	do (let ((x 469.0)
+		 (y (- 469 (* 111.0 i))))
+	     (setf a (append a (list (list x y))))))
+  a)
+(helical_drill_on_rectangle)
 #+end_src
 
-#+RESULTS: hello-world
-|    25 | 136.0 |
-|    25 | 247.0 |
-|    25 | 358.0 |
-|    25 | 469.0 |
+#+RESULTS: point_data
+|  25.0 | 136.0 |
+|  25.0 | 247.0 |
+|  25.0 | 358.0 |
+|  25.0 | 469.0 |
 | 125.0 | 469.0 |
 | 225.0 | 469.0 |
 | 325.0 | 469.0 |
@@ -191,16 +210,18 @@ a
 | 469.0 |  25.0 |
 
 
-#+begin_src emacs-lisp :var v=hello-world
-v
-#+end_src
-
-#+RESULTS:
-| hello | world |
-
 #+name: test-drill-array
-#+BEGIN_SRC lisp :results value :var point-array=hello-world :tangle yes
-  (setq output-stream (open "/home/me/lispcnc/test-helical-drill-on-array.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
+#+BEGIN_SRC lisp :results value :var point-array=point_data :tangle yes
+(setf output_file (full_path
+		   "test-helical-drill-on-array_1.ngc"
+		   ))
+  (setq output-stream (open output_file
+			    :direction
+			    :output
+			    :if-does-not-exist
+			    :create
+			    :if-exists
+			    :supersede))
   (setq zsafe 25.0)
   (setq zstart 15.0)
   (setq zend 0.0)
@@ -241,8 +262,18 @@ v
 * Trochoidal cutting
 *** Trochoidal-circle-by-diameters-D-type
 #+NAME: D-type-trochoidal 
-#+BEGIN_SRC lisp :tangle yes 
-  (setq output-stream (open "/home/me/lispcnc/test-D.ngc" :direction :output :if-does-not-exist :create :if-exists :supersede))
+#+BEGIN_SRC lisp :tangle yes
+(setf output_file (full_path
+		   "test-D.ngc"
+		   ))
+  (setq output-stream (open
+		       output_file
+		       :direction
+		       :output
+		       :if-does-not-exist
+		       :create :if-exists
+		       :supersede))
+
   (setq xystep 3.00d0)
   (setq zstep 4.0)
   (setq zsafe 50.0)
@@ -268,8 +299,6 @@ v
 
 #+RESULTS: D-type-trochoidal
 : T
-
-
 
 *** Trochoidal circle by diameters circle type
 #+NAME: trochoidal circle 
