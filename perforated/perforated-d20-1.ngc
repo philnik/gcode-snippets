@@ -21,7 +21,7 @@ M3S10000
 (-------- perforated step ---------)
 #6=25      (X hole step )
 #10=21.651 (Y hole step)
-(-------------------------------)
+(----------------------===---------)
 
 
 #11=[#10/2.0] ( half step)
@@ -44,11 +44,11 @@ M3S10000
 #52 = [0.5*#50-0.5*#51] 
 
 
-(#600=400 for drilling         - perforated hole diameter is ignored)
+(#600=400 for drilling         - perforated hole diameter is ignored=tool diameter)
 (#600=500 for helical drilling - perforated hole diameter #50)
 (---------------program run------------)
 #600=500
-(----------------------------)
+(-----------------------------------)
 
 
 (need to go near first hole - if next move is a G02/G03)
@@ -74,7 +74,7 @@ M99
 
 O20 (run horizontal line pair)
 
-M98 P500 L01
+M98 P[#600] L01
 
 #1=[#1+#6]
 M98P10L[#8-1]
@@ -83,7 +83,7 @@ M98P10L[#8-1]
 
 #1=[#1-#6]
 
-M98 P500 L01
+M98 P[#600] L01
 
 M98P05L[#8-1]
 #1=0.0
@@ -102,13 +102,13 @@ M99
 
 O300 (L->R drilling)
 G18 G03 X [#1]   Y [#2]   Z[#9] R[#6/2.0] F[#30]  
-M98 P500 L01
+M98 P[#600] L01
 M99
 
 
 O301 (R->L drilling)
 G18 G02   X [#1]   Y [#2]   Z[#9] R[#6/2.0] F[#30]  
-M98 P500 L01
+M98 P[#600] L01
 M99
 
 
