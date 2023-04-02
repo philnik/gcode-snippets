@@ -36,16 +36,18 @@
 # #+SETUPFILE:   ~/public_html/org-html-themes/org/theme-readtheorg.setup
 # #+SETUPFILE:   /home/quill/public_html/org-html-themes/org/theme-readtheorg-local.setup
 
+
+
 * cutting speed
-|               |     20-30 |           | m/min  |
-| cutting-speed |        20 |        30 | m/min  |
-|               | 333.33333 |      500. | mm/sec |
-|---------------+-----------+-----------+--------|
-| diameter      |     3.175 |     3.175 | mm     |
-| radius        |    1.5875 |    1.5875 | mm     |
-|               | 209.97375 | 314.96063 | /sec   |
-|               | 12598.425 | 18897.638 | rpm    |
-|               |           |           |        |
+|               |     20-30 |           | $[\frac{m}{min}]$ |
+| cutting-speed |        20 |        30 | $[\frac{m}{min}]$ |
+|               | 333.33333 |      500. | mm/sec            |
+|---------------+-----------+-----------+-------------------|
+| diameter      |     3.175 |     3.175 | $[mm]$            |
+| radius        |    1.5875 |    1.5875 | $[mm]$            |
+|               | 209.97375 | 314.96063 | /sec              |
+|               | 12598.425 | 18897.638 | rpm               |
+|               |           |           |                   |
 #+TBLFM: @3$2..@3$3=@2*1e3/60.0::@5$2..@5$3=@-1/2.0::@6$2..@6$3=@3/@5::@7$2..@7$3=@6*60
 
 
@@ -61,7 +63,7 @@
 |                |          |        |          |
 #+TBLFM: @6$2..@6$3=@5*@2*@3
 
-* σπασιμο εργαλείου
+* σπασιμο κοπτικού
 |              |                  |        |
 |--------------+------------------+--------|
 | ημ/νια       | <2021-07-26 Δευ> |        |
@@ -77,38 +79,43 @@
   | επιταχυνση | 1200 | $mm/sec^2$ |
 
 * υπολογισμός ταχύτητας
-  #+BEGIN_SRC maxima :results output verbatim
-	v:3500/60.0;
-	a:400;
-	t:1700.0/60/a,numer;
-	v1:a*t;
-	s:a*t^2;
-    print("v1=");
-    print(v1);
-
-  #+END_SRC
+#+BEGIN_SRC maxima :results value scalar raw :wrap org :exports results
+rnd(x,i):=round(x*10.0^i)/10.0^i;
+v:3500/60.0;
+a:400;
+t:1700.0/60/a,numer;
+v1:a*t;
+s:a*t^2;
+print("|v1|",rnd(v1,2),"|m/s|");
+#+END_SRC
 
   #+RESULTS:
-  : v1= 
-  : 28.33333333333333 
+  #+begin_org
+  |v1| 28.33 |m/s| 
+  #+end_org
 
 
-  * υπολογισμός ταχύτητας 2
+** υπολογισμός ταχύτητας 2
 
-  #+BEGIN_SRC maxima :results value scalar raw
-	v:3500/60.0;
-	a:400;
-	t:1700.0/60/a,numer;
-	v1:a*t;
-	s:a*t^2;
-    print("| v1 |", v1,"| mm/sec |");
-    print("|  s |", s ,"| mm     |");
+#+name: calculate_speed
+#+BEGIN_SRC maxima :results value scalar raw :wrap org :exports results
+rnd(x,i):=round(x*10.0^i)/10.0^i;
+v:3500/60.0;
+a:400;
+t:1700.0/60/a,numer;
+v1:a*t;
+s:a*t^2;
+print("| v1 |", rnd(v1,2),"| mm/sec |");
+print("|  s |", rnd(s,2) ,"| mm     |");
   #+END_SRC
 
-  
-  #+RESULTS:
-  | v1 | 28.33333333333333 | mm/sec |
-  | s  | 2.006944444444444 | mm     |
+  #+RESULTS: calculate_speed
+  #+begin_org
+  | v1 | 28.33 | mm/sec |
+  | s  |  2.01 | mm     |
+  #+end_org
+
+ 
 
   #+BEGIN_SRC maxima :results value raw
 	v:3500/60.0;
@@ -121,69 +128,7 @@
 
   #+RESULTS:
   v1 = 28.33333333333333 m/sec 
-  v1 = 28.33333333333333 m/sec 
 
-
-* Ζεύγη τόξων
-
-  #+name: biarc
-  #+BEGIN_SRC maxima :results value raw
-/* biarc from wikipedia */
-
-/* A:(-c,0) B(c,0)
--%pi<a<%pi  -%pi<b<%pi
-u1=k1*L1   u2=k2*L2
-*/
-w(a,b):=(a+b)/2.0;
-k1(c,a,b,p):=-(1/c)*(sin(a)+(1/p)*sin(w(a,b)));
-k2(c,a,b,p):=(1/c)*(sin(b)+p*sin(w(a,b)));
-
-/* turning angles */
-u1(p,a,b):=2*carg(%e^(-%i*a)+p^-1*%e^(-%i*w(a,b)));
-u2(p,a,b):=2*carg(%e^(%i*b)+p*%e^(%i*w(a,b)));
-
-/* join points */
-
-g(a,b):=(a-b)/2.0;
-Xj(c,a,b,p):=(c*(p^2-1)/(p^2+2*p*cos(g(a,b))+1));
-Yj(c,a,b,p):=2*c*p*sin(g(a,b))/(p^2+2*p*cos(g(a,b))+1);
-
-/*example*/
-
-fa:0.0;
-fb:%pi/2.0,numer;
-c:1.0;
-p:1.0;
-ka:k1(c,fa,fb,p);
-kb:k2(c,fa,fb,p);
-1/ka;
-1/kb;
-ua:u1(p,fa,fb);
-ub:u2(p,fa,fb);
-XXj:Xj(c,fa,fb,p);
-YYj:Yj(c,fa,fb,p);
-
-print("arc 1:")$
-print("Start point: (",-c,",",0,")")$
-print("End point:(",XXj,",",YYj,")")$
-print("Radius:",1/ka)$
-print("   ")$
-print("arc 2:")$
-print("Start point:(",XXj,",",YYj,")")$
-print("End point:(",c,",",0,")")$
-print("Radius:",1/kb)$
-  #+END_SRC
-
-  #+RESULTS: biarc
-  arc 1: 
-  Start point: ( - 1.0 , 0 ) 
-  End point:( 0.0 , - 0.414213562373095 ) 
-  Radius: - 1.414213562373095 
-
-  arc 2: 
-  Start point:( 0.0 , - 0.414213562373095 ) 
-  End point:( 1.0 , 0 ) 
-  Radius: 0.585786437626905 
 
 * ταχύτητα κοπής
 
@@ -474,7 +419,7 @@ plot GPp_machine using 1:2 with lines title "P_{machine}"
 
 #+name: solve-maxima
 #+header: :exports results
-#+begin_src maxima :results output
+#+begin_src maxima :results output :wrap #+begin
 (to-maxima);
 d:3.0;
 L:50.0;
@@ -522,14 +467,14 @@ FR2= 7739.812639345247
 
 | $FR$  | : | προωση  κοπής            | $[\frac{mm}{min}]$    |
 | $RPM$ | : | ταχύτητα   περιστροφής   | $[rpm]$               |
-| $T$   | : | αριθμός κοπτικών δοντίων | $[_ _ _ ]$         |
-| $CL$  | : | προωση ανα δοντί         | $[mm/{δόντι} ]$       |
+| $T$   | : | αριθμός κοπτικών δοντίων | $[#]$                 |
+| $CL$  | : | προωση ανα δοντί         | $[\frac{mm}{δόντι} ]$ |
 
 
 
 #+name: symbolic-solve-maxima
-#+header: :exports results :results output raw  :tangle yes
-#+begin_src maxima 
+#+header: :exports results :results value raw  :tangle yes
+#+begin_src maxima  :wrap org
 texput("*"," \\times ",nary);
 texput("sc","s_{c}");
 texput("Ft","F_{t}");
@@ -545,6 +490,7 @@ texput("Fc","F_{c}");
 texput("Sc","σ_{c}");
 texput("Iy","I_{y}");
 
+print("Η προωση υπολογίστηκε:");
 eq1: FR=RPM*T*CL;
 tex(eq1);
 
@@ -554,6 +500,7 @@ tex(eq11);
 eq2:solve(eq1,[T]);
 tex(eq2);
 
+print("Η ταχύτητα κοπής είναι:");
 eq3: V=RPM*d*%pi;
 tex(eq3);
 eq31: solve(eq3,RPM);
@@ -566,6 +513,7 @@ eq5: subst([eq31],eq1);
 
 tex(eq5);
 
+print("Η επιφάνεια κοπής υπολογίστηκε:");
 eq6: A=DOC*CL;
 
 tex(eq6);
@@ -585,6 +533,7 @@ eq82: solve([eq81],[Fc]);
 tex(eq81);
 tex(eq82);
 
+print("Οι δυναμείς κοπής είναι:");
 eq9: Sc=Ft*L*(d/2)/((%pi/4.0)*(d/2.0)^4);
 eq91: subst([eq71],eq9);
 tex(eq91);
@@ -597,6 +546,7 @@ eq94: solve([eq92],[FR]);
 tex(eq93);
 tex(eq94);
 
+print("Η ισχύς της μηχανής είναι:");
 eq201: P=Ft*d/2.0*RPM/2.0/%pi;
 eq202: subst([eq71],eq201);
 eq203: subst([eq4],eq202);
@@ -604,8 +554,10 @@ eq203: subst([eq4],eq202);
   tex(eq202);
   tex(eq203);
 
-
+print("O κώδικας σε FORTRAN είναι:");
 fortran(eq203);
+
+print("Οι παραπάνω εξισώσεις με τιμές γίνονται:");
 d:3.175;
 L:25.0;
 St:25.0;
@@ -621,7 +573,11 @@ tex(eq101);
 tex(eq102);
 DOC:6;
 RPM:8000;
+
+eq200: DOC=DOC;
+tex(eq200);
 print("DOC=",DOC);
+print("Οι στροφές είναι:");
 print("RPM=",RPM);
 eq103:eq94,numer;
 tex(eq103);
@@ -643,77 +599,61 @@ tex(eq203);
 
 DOC:12;
 RPM:8000;
-print("DOC=",DOC);
-print("RPM=",RPM);
+print("$$DOC=",DOC,"mm$$");
+print("$$RPM=",RPM,"rpm$$");
 eq103:eq94,numer;
 tex(eq103);
 eq203:eq202,numer;
 tex(eq203);
 
 #+end_src
+
 #+RESULTS: symbolic-solve-maxima
+#+begin_org
+Η προωση υπολογίστηκε: 
 $${\it FR}={\it CL} \times {\it RPM} \times T$$
-
 $$\left[ {\it CL}={{{\it FR}}\over{{\it RPM} \times T}} \right] $$
-
 $$\left[ T={{{\it FR}}\over{{\it CL} \times {\it RPM}}} \right] $$
-
+Η ταχύτητα κοπής είναι: 
 $$V=\pi \times {\it RPM} \times d$$
-
 $$\left[ {\it RPM}={{V}\over{\pi \times d}} \right] $$
-
 $${\it FR}={{{\it CL} \times T \times V}\over{\pi \times d}}$$
-
+Η επιφάνεια κοπής υπολογίστηκε: 
 $$A={\it CL} \times {\it DOC}$$
-
 $$F_{t}=A \times E_{f} \times σ_{t} \times T_{f} \times Z_{c}$$
-
 $$F_{t}={\it CL} \times {\it DOC} \times E_{f} \times σ_{t} \times 
  T_{f} \times Z_{c}$$
- 
 $$σ_{c}={{M \times y}\over{I_{y}}}$$
-
 $$σ_{c}={{32.0 \times F_{c} \times L}\over{\pi \times d^3}}$$
-
 $$\left[ F_{c}={{\pi \times σ_{c} \times d^3}\over{32 \times L}}
   \right] $$
-  
+Οι δυναμείς κοπής είναι: 
 $$σ_{c}={{32.0 \times {\it CL} \times {\it DOC} \times E_{f} \times 
  L \times σ_{t} \times T_{f} \times Z_{c}}\over{\pi \times d^3}}$$
- 
 $$σ_{c}={{32.0 \times {\it DOC} \times E_{f} \times {\it FR} \times 
  L \times σ_{t} \times T_{f} \times Z_{c}}\over{\pi \times {\it RPM}
   \times T \times d^3}}$$
-  
 $$\left[ {\it RPM}={{32 \times {\it DOC} \times E_{f} \times {\it FR}
   \times L \times σ_{t} \times T_{f} \times Z_{c}}\over{\pi \times 
  σ_{c} \times T \times d^3}} \right] $$
- 
 $$\left[ {\it FR}={{\pi \times {\it RPM} \times σ_{c} \times T
   \times d^3}\over{32 \times {\it DOC} \times E_{f} \times L \times 
  σ_{t} \times T_{f} \times Z_{c}}} \right] $$
- 
+Η ισχύς της μηχανής είναι: 
 $$P={{0.25 \times F_{t} \times {\it RPM} \times d}\over{\pi}}$$
-
 $$P={{0.25 \times {\it CL} \times {\it DOC} \times E_{f} \times 
  {\it RPM} \times σ_{t} \times T_{f} \times Z_{c} \times d}\over{\pi
  }}$$
- 
 $$P={{0.25 \times {\it DOC} \times E_{f} \times {\it FR} \times 
  σ_{t} \times T_{f} \times Z_{c} \times d}\over{\pi \times T}}$$
- 
       P = (2.5E-1*DOC*Ef*FR*St*Tf*Zc*d)/(%pi*T)
-      
-      
 $$\left[ {\it RPM}=0.6819650777896552 \times {\it DOC} \times 
  {\it FR} \right] $$
- 
- 
 $$\left[ {\it FR}={{1.466350745174724 \times {\it RPM}}\over{
  {\it DOC}}} \right] $$
-
-
+$$6=6$$
 DOC= 6 
+Οι στροφές είναι: 
 RPM= 8000 
 $$\left[ {\it FR}=1955.134326899633 \right] $$
 $$P=363828.1999080727 \times {\it CL}$$
@@ -721,38 +661,8 @@ DOC= 10
 RPM= 8000 
 FR= 1173.080596139779 
 $$P=7.11333002734375 \times 10^{+8}$$
-DOC= 12 
-RPM= 8000 
+$$DOC= 12 mm$$ 
+$$RPM= 8000 rpm$$ 
 $$\left[ 1173.080596139779=977.5671634498167 \right] $$
-
-
-
 $$P=8.5359960328125 \times 10^{+8}$$
-
-
-
-\[
-e^{i\pi} = -1
-\]
-
-\[
-\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}
-\]
-
-
-#+BEGIN_SRC latex :tangle /tmp/example.tex
-\documentclass{article}
-
-\begin{document}
-
-\[
-e^{i\pi} = -1
-\]
-
-\[
-\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}
-\]
-
-\end{document}
-
-#+END_SRC
+#+end_org
